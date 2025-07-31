@@ -1,0 +1,8 @@
+.env
+.idea
+
+# Supabase
+supabase/.branches
+supabase/.temp
+supabase/logs
+supabase/volumes

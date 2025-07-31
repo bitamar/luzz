@@ -1,0 +1,14 @@
+apiVersion: v2
+name: luz-api
+description: A Helm chart for Luz multi-studio booking system API
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - booking
+  - api
+  - nodejs
+home: https://github.com/bitamar/luz-api
+maintainers:
+  - name: Luz Team
+    email: team@luz.example.com 
