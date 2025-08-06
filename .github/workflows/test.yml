@@ -68,7 +68,7 @@ jobs:
     
     - name: Run tests
       working-directory: ./api
-      run: pnpm test:run
+      run: pnpm test:coverage
     
     - name: Upload coverage reports
       if: always()
