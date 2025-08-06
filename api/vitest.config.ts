@@ -50,7 +50,7 @@ export default defineConfig({
     },
     
     // Reporter configuration
-    reporter: process.env.CI ? 'junit' : 'verbose',
+    reporters: process.env.CI ? ['junit', 'verbose'] : 'verbose',
     outputFile: process.env.CI ? './test-results.xml' : undefined,
     
     // Test pattern matching
