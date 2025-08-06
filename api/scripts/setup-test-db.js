@@ -13,7 +13,7 @@ const path = require('path');
 // Configuration
 const config = {
   testDb: process.env.DATABASE_URL || 'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test',
-  migrationPath: path.join(__dirname, '../supabase/migrations/20250101000000_initial_schema.sql'),
+  migrationPath: path.join(__dirname, '../../supabase/migrations/20250101000000_initial_schema.sql'),
   isCI: process.env.CI === 'true',
 };
 
@@ -23,12 +23,11 @@ const config = {
 function execCommand(command, options = {}) {
   try {
     console.log(`🔄 Executing: ${command}`);
-    const result = execSync(command, { 
+    return execSync(command, {
       stdio: 'inherit', 
       encoding: 'utf8',
       ...options 
     });
-    return result;
   } catch (error) {
     console.error(`❌ Command failed: ${command}`);
     console.error(error.message);
