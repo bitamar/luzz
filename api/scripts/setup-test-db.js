@@ -12,8 +12,7 @@ const path = require('path');
 
 // Configuration
 const config = {
-  mainDb: process.env.DATABASE_URL || 'postgresql://postgres:postgres@127.0.0.1:54322/postgres',
-  testDb: process.env.DATABASE_URL_TEST || 'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test',
+  testDb: process.env.DATABASE_URL || 'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test',
   migrationPath: path.join(__dirname, '../supabase/migrations/20250101000000_initial_schema.sql'),
   isCI: process.env.CI === 'true',
 };
@@ -160,13 +159,12 @@ Options:
   --help, -h     Show this help message
   
 Environment Variables:
-  DATABASE_URL      Main database URL (default: postgresql://postgres:postgres@127.0.0.1:54322/postgres)
-  DATABASE_URL_TEST Test database URL (default: postgresql://postgres:postgres@127.0.0.1:54322/postgres_test)
+  DATABASE_URL      Database URL (default: postgresql://postgres:postgres@127.0.0.1:54322/postgres_test)
   CI               Set to 'true' for CI environment behavior
 
 Examples:
   node setup-test-db.js
-  DATABASE_URL_TEST=postgresql://localhost/test_db node setup-test-db.js
+  DATABASE_URL=postgresql://localhost/my_test_db node setup-test-db.js
   `);
   process.exit(0);
 }

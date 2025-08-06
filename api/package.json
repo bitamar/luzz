@@ -7,6 +7,8 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "start": "node dist/server.js",
     "build": "tsc",
+    "lint": "echo 'No linter configured yet. Consider adding ESLint.' && exit 0",
+    "type-check": "tsc --noEmit",
     "test": "NODE_ENV=test vitest",
     "test:run": "NODE_ENV=test vitest run",
     "test:coverage": "NODE_ENV=test vitest run --coverage",

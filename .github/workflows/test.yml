@@ -1,0 +1,88 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres_test
+      NODE_ENV: test
+      CI: true
+    
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: postgres_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Use Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'pnpm'
+        cache-dependency-path: api/pnpm-lock.yaml
+    
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 10
+        run_install: false
+    
+    - name: Install dependencies
+      working-directory: ./api
+      run: pnpm install --frozen-lockfile
+    
+    - name: Setup test database
+      working-directory: ./api
+      run: node scripts/setup-test-db.js
+    
+    - name: Run linting
+      working-directory: ./api
+      run: pnpm lint
+    
+    - name: Run type checking
+      working-directory: ./api
+      run: pnpm type-check
+    
+    - name: Run tests
+      working-directory: ./api
+      run: pnpm test:run
+    
+    - name: Upload coverage reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: api/coverage/
+        retention-days: 7
+        
+    - name: Generate test summary
+      if: always()
+      run: |
+        echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+        echo "✅ Tests completed" >> $GITHUB_STEP_SUMMARY
+        if [ -f api/coverage/coverage-summary.json ]; then
+          echo "📊 Coverage report generated" >> $GITHUB_STEP_SUMMARY
+        fi

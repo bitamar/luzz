@@ -29,14 +29,7 @@ export interface BookingFixture {
 export async function createCompleteStudio(): Promise<StudioFixture> {
   // Create the studio
   const studioData = Studios.createYogaStudio();
-  // Ensure all required properties are present
-  const completeStudioData = {
-    slug: studioData.slug || 'test-studio',
-    name: studioData.name || 'Test Studio',
-    timezone: studioData.timezone || 'America/New_York', 
-    currency: studioData.currency || 'USD'
-  };
-  const studio = await createTestStudio(completeStudioData);
+  const studio = await createTestStudio(studioData);
 
   // Create various types of slots
   const adultSlots = [
@@ -71,14 +64,7 @@ export async function createCompleteStudio(): Promise<StudioFixture> {
  */
 export async function createBusyStudio(): Promise<StudioFixture> {
   const studioData = Studios.createDanceStudio();
-  // Ensure all required properties are present
-  const completeStudioData = {
-    slug: studioData.slug || 'dance-studio',
-    name: studioData.name || 'Dance Studio',
-    timezone: studioData.timezone || 'Europe/London',
-    currency: studioData.currency || 'GBP'
-  };
-  const studio = await createTestStudio(completeStudioData);
+  const studio = await createTestStudio(studioData);
 
   // Create a busy schedule
   const busySlots = Scenarios.createBusySchedule();
