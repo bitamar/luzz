@@ -13,7 +13,7 @@ const createSlotSchema = z.object({
   price: z.number().min(0),
   minParticipants: z.number().int().min(0),
   maxParticipants: z.number().int().min(1),
-  forChildren: z.boolean()
+  forChildren: z.boolean(),
 });
 
 // POST /studios/:studioId/slots - Create a new slot for a studio
@@ -21,10 +21,15 @@ router.post('/:studioId/slots', async (req, res) => {
   try {
     const studioId = req.params.studioId;
     // Basic UUID format validation (36 chars with hyphens)
-    if (!studioId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(studioId)) {
+    if (
+      !studioId ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        studioId
+      )
+    ) {
       return res.status(400).json({ error: 'Invalid studio ID' });
     }
-    
+
     const {
       title,
       startsAt,
@@ -33,23 +38,30 @@ router.post('/:studioId/slots', async (req, res) => {
       price,
       minParticipants,
       maxParticipants,
-      forChildren
+      forChildren,
     } = createSlotSchema.parse(req.body);
-    
+
     // Get the appropriate database client (transaction in tests, regular pool otherwise)
     const client = getDbClient();
-    
+
     // Verify studio exists
-    const studioCheck = await client.query('SELECT id FROM studios WHERE id = $1', [studioId]);
+    const studioCheck = await client.query(
+      'SELECT id FROM studios WHERE id = $1',
+      [studioId]
+    );
     if (studioCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Studio not found' });
     }
-    
+
     // Validate min/max participants
     if (minParticipants > maxParticipants) {
-      return res.status(400).json({ error: 'Minimum participants cannot exceed maximum participants' });
+      return res
+        .status(400)
+        .json({
+          error: 'Minimum participants cannot exceed maximum participants',
+        });
     }
-    
+
     const query = `
       INSERT INTO slots (
         studio_id, title, starts_at, duration_min, recurrence_rule, 
@@ -58,25 +70,31 @@ router.post('/:studioId/slots', async (req, res) => {
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, true)
       RETURNING *
     `;
-    
+
     const { rows } = await client.query(query, [
-      studioId, title, startsAt, durationMin, recurrenceRule || null,
-      price, minParticipants, maxParticipants, forChildren
+      studioId,
+      title,
+      startsAt,
+      durationMin,
+      recurrenceRule || null,
+      price,
+      minParticipants,
+      maxParticipants,
+      forChildren,
     ]);
-    
+
     res.status(201).json(rows[0]);
-    
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ 
-        error: 'Validation failed', 
-        details: error.issues 
+      return res.status(400).json({
+        error: 'Validation failed',
+        details: error.issues,
       });
     }
-    
+
     console.error('Error creating slot:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-export default router; 
+export default router;

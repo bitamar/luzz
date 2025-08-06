@@ -1,9 +1,13 @@
-import { createTestStudio, createTestSlot, createTestCustomer } from './test-helpers';
+import {
+  createTestStudio,
+  createTestSlot,
+  createTestCustomer,
+} from './test-helpers';
 import { Studios, Slots, Customers, Children, Scenarios } from './factories';
 
 /**
  * Test Fixtures - Pre-built test scenarios for complex testing
- * 
+ *
  * These fixtures create complete, realistic test environments
  * that can be used across multiple tests.
  */
@@ -40,7 +44,10 @@ export async function createCompleteStudio(): Promise<StudioFixture> {
 
   const childrenSlots = [
     await createTestSlot(studio.id, Slots.createKidsClass()),
-    await createTestSlot(studio.id, Slots.createKidsClass({ title: 'Kids Art Class' })),
+    await createTestSlot(
+      studio.id,
+      Slots.createKidsClass({ title: 'Kids Art Class' })
+    ),
   ];
 
   // Create customers
@@ -92,7 +99,9 @@ export async function createBusyStudio(): Promise<StudioFixture> {
 /**
  * Creates a family-oriented studio scenario
  */
-export async function createFamilyStudio(): Promise<StudioFixture & { families: any[] }> {
+export async function createFamilyStudio(): Promise<
+  StudioFixture & { families: any[] }
+> {
   const studioData = Studios.create({
     name: 'Family Fitness Center',
     timezone: 'America/New_York',
@@ -103,9 +112,18 @@ export async function createFamilyStudio(): Promise<StudioFixture & { families: 
   // Create family-friendly slots
   const familySlots = [
     await createTestSlot(studio.id, Slots.createKidsClass()),
-    await createTestSlot(studio.id, Slots.createKidsClass({ title: 'Tiny Tots Dance' })),
-    await createTestSlot(studio.id, Slots.createYogaClass({ title: 'Parent & Child Yoga' })),
-    await createTestSlot(studio.id, Slots.create({ title: 'Family Fitness', forChildren: false })),
+    await createTestSlot(
+      studio.id,
+      Slots.createKidsClass({ title: 'Tiny Tots Dance' })
+    ),
+    await createTestSlot(
+      studio.id,
+      Slots.createYogaClass({ title: 'Parent & Child Yoga' })
+    ),
+    await createTestSlot(
+      studio.id,
+      Slots.create({ title: 'Family Fitness', forChildren: false })
+    ),
   ];
 
   // Create families
@@ -113,7 +131,7 @@ export async function createFamilyStudio(): Promise<StudioFixture & { families: 
   for (let i = 0; i < 3; i++) {
     const family = Scenarios.createFamily();
     const parent = await createTestCustomer(studio.id, family.parent);
-    
+
     families.push({
       parent,
       children: family.children, // Note: children would need to be created after bookings
@@ -144,48 +162,67 @@ export async function createEdgeCaseStudio(): Promise<StudioFixture> {
   // Create edge case slots
   const edgeSlots = [
     // Free class
-    await createTestSlot(studio.id, Slots.create({
-      title: 'Free Trial Class',
-      price: 0,
-      minParticipants: 0,
-      maxParticipants: 1,
-    })),
-    
+    await createTestSlot(
+      studio.id,
+      Slots.create({
+        title: 'Free Trial Class',
+        price: 0,
+        minParticipants: 0,
+        maxParticipants: 1,
+      })
+    ),
+
     // Very long class
-    await createTestSlot(studio.id, Slots.create({
-      title: 'Marathon Meditation',
-      durationMin: 480, // 8 hours
-      price: 200,
-    })),
-    
+    await createTestSlot(
+      studio.id,
+      Slots.create({
+        title: 'Marathon Meditation',
+        durationMin: 480, // 8 hours
+        price: 200,
+      })
+    ),
+
     // Very short class
-    await createTestSlot(studio.id, Slots.create({
-      title: 'Quick Stretch',
-      durationMin: 15,
-      price: 5,
-    })),
-    
+    await createTestSlot(
+      studio.id,
+      Slots.create({
+        title: 'Quick Stretch',
+        durationMin: 15,
+        price: 5,
+      })
+    ),
+
     // High capacity class
-    await createTestSlot(studio.id, Slots.create({
-      title: 'Mass Yoga Event',
-      minParticipants: 50,
-      maxParticipants: 500,
-      price: 10,
-    })),
+    await createTestSlot(
+      studio.id,
+      Slots.create({
+        title: 'Mass Yoga Event',
+        minParticipants: 50,
+        maxParticipants: 500,
+        price: 10,
+      })
+    ),
   ];
 
   // Create edge case customers
   const edgeCustomers = [
     // Customer with very long name
-    await createTestCustomer(studio.id, Customers.create({
-      firstName: 'Pneumonoultramicroscopicsilicovolcanoconiosisaffectedperson',
-    })),
-    
+    await createTestCustomer(
+      studio.id,
+      Customers.create({
+        firstName:
+          'Pneumonoultramicroscopicsilicovolcanoconiosisaffectedperson',
+      })
+    ),
+
     // Customer with minimal data
-    await createTestCustomer(studio.id, Customers.create({
-      firstName: 'A',
-      contactEmail: 'a@b.co',
-    })),
+    await createTestCustomer(
+      studio.id,
+      Customers.create({
+        firstName: 'A',
+        contactEmail: 'a@b.co',
+      })
+    ),
   ];
 
   return {
@@ -206,12 +243,12 @@ export async function createInternationalStudios(): Promise<StudioFixture[]> {
     {
       studioData: Studios.createIsraeliStudio(),
       slots: [
-        Slots.create({ title: 'יוגה בוקר', currency: 'ILS' }),
-        Slots.create({ title: 'פילאטיס ערב', currency: 'ILS' }),
+        Slots.create({ title: 'יוגה בוקר' }),
+        Slots.create({ title: 'פילאטיס ערב' }),
       ],
     },
-    
-    // Japanese studio  
+
+    // Japanese studio
     {
       studioData: Studios.create({
         name: '東京ヨガスタジオ',
@@ -223,7 +260,7 @@ export async function createInternationalStudios(): Promise<StudioFixture[]> {
         Slots.create({ title: 'キッズダンス', forChildren: true, price: 2000 }),
       ],
     },
-    
+
     // European studio
     {
       studioData: Studios.create({
@@ -239,15 +276,15 @@ export async function createInternationalStudios(): Promise<StudioFixture[]> {
   ];
 
   const studios = [];
-  
+
   for (const scenario of scenarios) {
     const studio = await createTestStudio(scenario.studioData);
     const slots = [];
-    
+
     for (const slotData of scenario.slots) {
       slots.push(await createTestSlot(studio.id, slotData));
     }
-    
+
     const customers = [
       await createTestCustomer(studio.id, Customers.create()),
       await createTestCustomer(studio.id, Customers.create()),
@@ -264,23 +301,3 @@ export async function createInternationalStudios(): Promise<StudioFixture[]> {
 
   return studios;
 }
-
-/**
- * Preset fixture combinations for common test scenarios
- */
-export const FixturePresets = {
-  // Simple single studio
-  simple: createCompleteStudio,
-  
-  // High-load scenario
-  busy: createBusyStudio,
-  
-  // Family-oriented scenario
-  family: createFamilyStudio,
-  
-  // Edge cases and validation testing
-  edgeCases: createEdgeCaseStudio,
-  
-  // Internationalization testing
-  international: createInternationalStudios,
-};

@@ -48,9 +48,11 @@ describe('Slots API', () => {
         min_participants: slotData.minParticipants,
         max_participants: slotData.maxParticipants,
         for_children: slotData.forChildren,
-        active: true
+        active: true,
       });
-      expect(response.body.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID format
+      expect(response.body.id).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+      ); // UUID format
       expect(response.body.starts_at).toBeDefined();
     });
 
@@ -100,7 +102,7 @@ describe('Slots API', () => {
     it('should return 400 for invalid datetime format', async () => {
       const invalidSlotData = {
         ...testData.slot.adult,
-        startsAt: 'invalid-date'
+        startsAt: 'invalid-date',
       };
 
       const response = await request(app)
@@ -114,7 +116,7 @@ describe('Slots API', () => {
     it('should return 400 for negative duration', async () => {
       const invalidSlotData = {
         ...testData.slot.adult,
-        durationMin: -30
+        durationMin: -30,
       };
 
       const response = await request(app)
@@ -128,7 +130,7 @@ describe('Slots API', () => {
     it('should return 400 for zero duration', async () => {
       const invalidSlotData = {
         ...testData.slot.adult,
-        durationMin: 0
+        durationMin: 0,
       };
 
       const response = await request(app)
@@ -142,7 +144,7 @@ describe('Slots API', () => {
     it('should return 400 for excessive duration (>24 hours)', async () => {
       const invalidSlotData = {
         ...testData.slot.adult,
-        durationMin: 1441 // 24 hours + 1 minute
+        durationMin: 1441, // 24 hours + 1 minute
       };
 
       const response = await request(app)
@@ -151,13 +153,15 @@ describe('Slots API', () => {
         .expect(400);
 
       // Could be either validation error or invalid studio ID error depending on validation order
-      expect(['Validation failed', 'Invalid studio ID']).toContain(response.body.error);
+      expect(['Validation failed', 'Invalid studio ID']).toContain(
+        response.body.error
+      );
     });
 
     it('should return 400 for negative price', async () => {
       const invalidSlotData = {
         ...testData.slot.adult,
-        price: -10
+        price: -10,
       };
 
       const response = await request(app)
@@ -172,7 +176,7 @@ describe('Slots API', () => {
       const invalidSlotData = {
         ...testData.slot.adult,
         minParticipants: 10,
-        maxParticipants: 5
+        maxParticipants: 5,
       };
 
       const response = await request(app)
@@ -181,12 +185,15 @@ describe('Slots API', () => {
         .expect(400);
 
       // Could be either business logic error or invalid studio ID error depending on validation order
-      expect(['Minimum participants cannot exceed maximum participants', 'Invalid studio ID']).toContain(response.body.error);
+      expect([
+        'Minimum participants cannot exceed maximum participants',
+        'Invalid studio ID',
+      ]).toContain(response.body.error);
     });
 
     it('should return 400 for missing required fields', async () => {
       const incompleteData = {
-        title: 'Incomplete Slot'
+        title: 'Incomplete Slot',
         // Missing required fields
       };
 
@@ -201,7 +208,7 @@ describe('Slots API', () => {
     it('should accept zero minimum participants', async () => {
       const slotData = {
         ...testData.slot.adult,
-        minParticipants: 0
+        minParticipants: 0,
       };
 
       const response = await request(app)
@@ -215,7 +222,7 @@ describe('Slots API', () => {
     it('should accept free slots (price = 0)', async () => {
       const freeSlotData = {
         ...testData.slot.adult,
-        price: 0
+        price: 0,
       };
 
       const response = await request(app)
@@ -226,4 +233,4 @@ describe('Slots API', () => {
       expect(parseFloat(response.body.price)).toBe(0);
     });
   });
-}); 
+});

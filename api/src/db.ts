@@ -10,12 +10,15 @@ if (process.env.NODE_ENV === 'test') {
 const getDatabaseUrl = () => {
   if (process.env.NODE_ENV === 'test') {
     // For tests, use postgres_test database
-    return process.env.DATABASE_URL || 'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test';
+    return (
+      process.env.DATABASE_URL ||
+      'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test'
+    );
   }
   return process.env.DATABASE_URL;
 };
 
-export const db = new Pool({ 
+export const db = new Pool({
   connectionString: getDatabaseUrl(),
   // Connection pool settings optimized for environment
   max: process.env.NODE_ENV === 'test' ? 5 : 20, // Fewer connections for tests
@@ -68,4 +71,4 @@ if (process.env.NODE_ENV !== 'test') {
     await closeDatabase();
     process.exit(0);
   });
-} 
+}

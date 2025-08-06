@@ -3,7 +3,7 @@ import { db } from '../db';
 
 /**
  * Transaction Manager for Test Isolation
- * 
+ *
  * Provides transaction-based test isolation where each test runs in its own transaction
  * that gets rolled back at the end, ensuring perfect isolation and fast cleanup.
  */
@@ -22,7 +22,7 @@ export class TransactionManager {
     this.client = await db.connect();
     await this.client.query('BEGIN');
     this.inTransaction = true;
-    
+
     return this.client;
   }
 

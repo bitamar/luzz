@@ -36,7 +36,7 @@ describe('Studios API', () => {
         slug: uniqueSlug,
         name: 'Test Studio',
         timezone: 'Asia/Jerusalem',
-        currency: 'ILS'
+        currency: 'ILS',
       };
 
       const response = await request(app)
@@ -48,7 +48,7 @@ describe('Studios API', () => {
         slug: uniqueSlug,
         name: 'Test Studio',
         timezone: 'Asia/Jerusalem',
-        currency: 'ILS'
+        currency: 'ILS',
       });
       expect(response.body.id).toBeDefined();
     });
@@ -58,7 +58,7 @@ describe('Studios API', () => {
         slug: 'Test Studio!', // Invalid - contains uppercase and special characters
         name: 'Test Studio',
         timezone: 'Asia/Jerusalem',
-        currency: 'ILS'
+        currency: 'ILS',
       };
 
       const response = await request(app)
@@ -76,7 +76,7 @@ describe('Studios API', () => {
         slug: uniqueSlug,
         name: 'Test Studio',
         timezone: 'Asia/Jerusalem',
-        currency: 'INVALID' // Invalid - not 3 letters
+        currency: 'INVALID', // Invalid - not 3 letters
       };
 
       const response = await request(app)
@@ -94,7 +94,7 @@ describe('Studios API', () => {
         slug: baseSlug,
         name: 'First Studio',
         timezone: 'Asia/Jerusalem',
-        currency: 'ILS'
+        currency: 'ILS',
       };
 
       // Create first studio
@@ -109,7 +109,7 @@ describe('Studios API', () => {
       // Try to create another with same slug
       const duplicateData = {
         ...studioData,
-        name: 'Second Studio'
+        name: 'Second Studio',
       };
 
       const response = await request(app)
@@ -135,4 +135,4 @@ describe('Studios API', () => {
       expect(response.body.error).toBe('Validation failed');
     });
   });
-}); 
+});

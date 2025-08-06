@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 /**
  * Advanced Test Data Factories
- * 
+ *
  * Provides comprehensive test data generation with realistic, randomized data
  * for thorough testing scenarios.
  */
@@ -49,7 +49,7 @@ export class Studios {
       .replace(/\s+/g, '-')
       .replace(/^-+|-+$/g, '') // Remove leading/trailing hyphens
       .slice(0, 20);
-    
+
     // Ensure slug is valid (non-empty, valid characters only)
     const validSlug = baseSlug || 'test-studio';
 
@@ -58,18 +58,20 @@ export class Studios {
       name: businessName,
       timezone: faker.helpers.arrayElement([
         'America/New_York',
-        'America/Los_Angeles', 
+        'America/Los_Angeles',
         'Europe/London',
         'Asia/Tokyo',
         'Asia/Jerusalem',
-        'Australia/Sydney'
+        'Australia/Sydney',
       ]),
       currency: faker.helpers.arrayElement(['USD', 'EUR', 'GBP', 'ILS', 'JPY']),
       ...overrides,
     };
   }
 
-  static createYogaStudio(overrides: Partial<StudioFactory> = {}): StudioFactory {
+  static createYogaStudio(
+    overrides: Partial<StudioFactory> = {}
+  ): StudioFactory {
     return this.create({
       name: `${faker.word.adjective()} Yoga Studio`,
       timezone: 'America/New_York',
@@ -78,16 +80,20 @@ export class Studios {
     });
   }
 
-  static createDanceStudio(overrides: Partial<StudioFactory> = {}): StudioFactory {
+  static createDanceStudio(
+    overrides: Partial<StudioFactory> = {}
+  ): StudioFactory {
     return this.create({
       name: `${faker.word.adjective()} Dance Academy`,
-      timezone: 'Europe/London', 
+      timezone: 'Europe/London',
       currency: 'GBP',
       ...overrides,
     });
   }
 
-  static createIsraeliStudio(overrides: Partial<StudioFactory> = {}): StudioFactory {
+  static createIsraeliStudio(
+    overrides: Partial<StudioFactory> = {}
+  ): StudioFactory {
     return this.create({
       name: `אולפן ${faker.word.adjective()}`,
       timezone: 'Asia/Jerusalem',
@@ -104,7 +110,7 @@ export class Slots {
   static create(overrides: Partial<SlotFactory> = {}): SlotFactory {
     const startTime = faker.date.future({ years: 0.5 });
     const duration = faker.helpers.arrayElement([30, 45, 60, 75, 90, 120]);
-    
+
     return {
       title: faker.helpers.arrayElement([
         'Morning Yoga Flow',
@@ -114,7 +120,7 @@ export class Slots {
         'Meditation Session',
         'Strength Training',
         'Cardio Blast',
-        'Flexibility Class'
+        'Flexibility Class',
       ]),
       startsAt: startTime.toISOString(),
       durationMin: duration,
@@ -148,14 +154,16 @@ export class Slots {
     });
   }
 
-  static createRecurringClass(overrides: Partial<SlotFactory> = {}): SlotFactory {
+  static createRecurringClass(
+    overrides: Partial<SlotFactory> = {}
+  ): SlotFactory {
     const recurrenceRules = [
       'FREQ=WEEKLY;BYDAY=MO',
       'FREQ=WEEKLY;BYDAY=WE',
       'FREQ=WEEKLY;BYDAY=FR',
       'FREQ=WEEKLY;BYDAY=SA',
       'FREQ=WEEKLY;BYDAY=MO,WE,FR',
-      'FREQ=WEEKLY;BYDAY=TU,TH'
+      'FREQ=WEEKLY;BYDAY=TU,TH',
     ];
 
     return this.create({
@@ -179,7 +187,7 @@ export class Slots {
 export class Customers {
   static create(overrides: Partial<CustomerFactory> = {}): CustomerFactory {
     const firstName = faker.person.firstName();
-    
+
     return {
       firstName,
       contactEmail: faker.internet.email({ firstName }),
@@ -189,21 +197,27 @@ export class Customers {
     };
   }
 
-  static createWithEmail(overrides: Partial<CustomerFactory> = {}): CustomerFactory {
+  static createWithEmail(
+    overrides: Partial<CustomerFactory> = {}
+  ): CustomerFactory {
     return this.create({
       contactPhone: undefined, // Email only
       ...overrides,
     });
   }
 
-  static createWithPhone(overrides: Partial<CustomerFactory> = {}): CustomerFactory {
+  static createWithPhone(
+    overrides: Partial<CustomerFactory> = {}
+  ): CustomerFactory {
     return this.create({
       contactEmail: undefined, // Phone only
       ...overrides,
     });
   }
 
-  static createParent(overrides: Partial<CustomerFactory> = {}): CustomerFactory {
+  static createParent(
+    overrides: Partial<CustomerFactory> = {}
+  ): CustomerFactory {
     return this.create({
       firstName: faker.person.firstName() + ' (Parent)',
       ...overrides,
@@ -223,7 +237,10 @@ export class Children {
     };
   }
 
-  static createSibling(baseName: string, overrides: Partial<ChildFactory> = {}): ChildFactory {
+  static createSibling(
+    baseName: string,
+    overrides: Partial<ChildFactory> = {}
+  ): ChildFactory {
     return this.create({
       firstName: `${baseName} ${faker.helpers.arrayElement(['Jr', 'II', 'Little'])}`,
       ...overrides,
@@ -240,8 +257,9 @@ export class Scenarios {
    */
   static createFamily() {
     const parent = Customers.createParent();
-    const children = Array.from({ length: faker.number.int({ min: 1, max: 3 }) }, () =>
-      Children.create()
+    const children = Array.from(
+      { length: faker.number.int({ min: 1, max: 3 }) },
+      () => Children.create()
     );
 
     return { parent, children };

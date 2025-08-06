@@ -24,13 +24,23 @@ app.use('/public', publicApi);
 app.use('/bookings', bookings);
 
 // Global error handler
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('Unhandled error:', err);
-  res.status(500).json({ 
-    error: 'Internal server error',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
-  });
-});
+app.use(
+  (
+    err: Error,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    console.error('Unhandled error:', err);
+    res.status(500).json({
+      error: 'Internal server error',
+      message:
+        process.env.NODE_ENV === 'development'
+          ? err.message
+          : 'Something went wrong',
+    });
+  }
+);
 
 // 404 handler
 app.use('*', (req, res) => {
@@ -42,4 +52,4 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`API server running on port ${port}`);
   console.log(`Health check: http://localhost:${port}/health`);
-}); 
+});

@@ -2,7 +2,7 @@
 
 /**
  * Test Database Reset Script
- * 
+ *
  * Completely resets the test database by dropping and recreating it
  */
 
@@ -10,7 +10,9 @@ const { execSync } = require('child_process');
 
 // Configuration
 const config = {
-  testDb: process.env.DATABASE_URL_TEST || 'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test',
+  testDb:
+    process.env.DATABASE_URL_TEST ||
+    'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test',
 };
 
 /**
@@ -19,10 +21,10 @@ const config = {
 function execCommand(command, options = {}) {
   try {
     console.log(`🔄 Executing: ${command}`);
-    const result = execSync(command, { 
-      stdio: 'inherit', 
+    const result = execSync(command, {
+      stdio: 'inherit',
       encoding: 'utf8',
-      ...options 
+      ...options,
     });
     return result;
   } catch (error) {
@@ -37,10 +39,10 @@ function execCommand(command, options = {}) {
  */
 function dropTestDatabase() {
   console.log('🗑️  Dropping test database...');
-  
+
   const testDbName = config.testDb.split('/').pop();
   const baseUrl = config.testDb.replace(`/${testDbName}`, '/postgres');
-  
+
   try {
     execCommand(`psql "${baseUrl}" -c "DROP DATABASE IF EXISTS ${testDbName}"`);
     console.log('✅ Test database dropped successfully');
@@ -54,17 +56,16 @@ function dropTestDatabase() {
  */
 function main() {
   console.log('🔄 Resetting test database...');
-  
+
   try {
     // Drop test database
     dropTestDatabase();
-    
+
     // Recreate by running setup script
     console.log('🏗️  Recreating test database...');
     execCommand('node scripts/setup-test-db.js');
-    
+
     console.log('🎉 Test database reset completed successfully!');
-    
   } catch (error) {
     console.error('💥 Test database reset failed:', error.message);
     process.exit(1);

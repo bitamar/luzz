@@ -1,9 +1,9 @@
 import { expect } from 'vitest';
-import { getDbClient } from './test-helpers';
+import { getDbClient } from '../db';
 
 /**
  * Advanced Test Utilities
- * 
+ *
  * Provides specialized testing utilities, custom assertions,
  * and database verification helpers.
  */
@@ -18,7 +18,9 @@ export const assertions = {
   toHaveValidUuid(response: any, field: string = 'id') {
     const uuid = response.body[field];
     expect(uuid).toBeDefined();
-    expect(uuid).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+    expect(uuid).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    );
     return uuid;
   },
 
@@ -59,7 +61,9 @@ export const assertions = {
    */
   async toExistInDatabase(table: string, id: string) {
     const client = getDbClient();
-    const result = await client.query(`SELECT 1 FROM ${table} WHERE id = $1`, [id]);
+    const result = await client.query(`SELECT 1 FROM ${table} WHERE id = $1`, [
+      id,
+    ]);
     expect(result.rows.length).toBe(1);
   },
 
@@ -68,7 +72,9 @@ export const assertions = {
    */
   async toNotExistInDatabase(table: string, id: string) {
     const client = getDbClient();
-    const result = await client.query(`SELECT 1 FROM ${table} WHERE id = $1`, [id]);
+    const result = await client.query(`SELECT 1 FROM ${table} WHERE id = $1`, [
+      id,
+    ]);
     expect(result.rows.length).toBe(0);
   },
 };
@@ -91,7 +97,9 @@ export const dbHelpers = {
    */
   async getRecord(table: string, id: string): Promise<any> {
     const client = getDbClient();
-    const result = await client.query(`SELECT * FROM ${table} WHERE id = $1`, [id]);
+    const result = await client.query(`SELECT * FROM ${table} WHERE id = $1`, [
+      id,
+    ]);
     return result.rows[0] || null;
   },
 
@@ -100,24 +108,31 @@ export const dbHelpers = {
    */
   async recordExists(table: string, id: string): Promise<boolean> {
     const client = getDbClient();
-    const result = await client.query(`SELECT 1 FROM ${table} WHERE id = $1`, [id]);
+    const result = await client.query(`SELECT 1 FROM ${table} WHERE id = $1`, [
+      id,
+    ]);
     return result.rows.length > 0;
   },
 
   /**
    * Get records with conditions
    */
-  async getRecords(table: string, where: Record<string, any> = {}): Promise<any[]> {
+  async getRecords(
+    table: string,
+    where: Record<string, any> = {}
+  ): Promise<any[]> {
     const client = getDbClient();
-    
+
     if (Object.keys(where).length === 0) {
       const result = await client.query(`SELECT * FROM ${table}`);
       return result.rows;
     }
 
-    const conditions = Object.keys(where).map((key, idx) => `${key} = $${idx + 1}`);
+    const conditions = Object.keys(where).map(
+      (key, idx) => `${key} = $${idx + 1}`
+    );
     const values = Object.values(where);
-    
+
     const query = `SELECT * FROM ${table} WHERE ${conditions.join(' AND ')}`;
     const result = await client.query(query, values);
     return result.rows;
@@ -126,7 +141,12 @@ export const dbHelpers = {
   /**
    * Verify foreign key relationships
    */
-  async verifyRelationship(childTable: string, parentTable: string, childId: string, parentField: string = 'studio_id'): Promise<boolean> {
+  async verifyRelationship(
+    childTable: string,
+    parentTable: string,
+    childId: string,
+    parentField: string = 'studio_id'
+  ): Promise<boolean> {
     const client = getDbClient();
     const query = `
       SELECT 1 FROM ${childTable} c
@@ -145,19 +165,24 @@ export const performance = {
   /**
    * Measure execution time of an async function
    */
-  async measureTime<T>(fn: () => Promise<T>): Promise<{ result: T; duration: number }> {
+  async measureTime<T>(
+    fn: () => Promise<T>
+  ): Promise<{ result: T; duration: number }> {
     const start = process.hrtime.bigint();
     const result = await fn();
     const end = process.hrtime.bigint();
     const duration = Number(end - start) / 1_000_000; // Convert to milliseconds
-    
+
     return { result, duration };
   },
 
   /**
    * Run a function multiple times and get statistics
    */
-  async benchmark<T>(fn: () => Promise<T>, iterations: number = 10): Promise<{
+  async benchmark<T>(
+    fn: () => Promise<T>,
+    iterations: number = 10
+  ): Promise<{
     results: T[];
     times: number[];
     avg: number;
@@ -175,7 +200,7 @@ export const performance = {
     }
 
     times.sort((a, b) => a - b);
-    
+
     return {
       results,
       times,
@@ -204,7 +229,9 @@ export const validation = {
    * Validate UUID format
    */
   isValidUuid(uuid: string): boolean {
-    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uuid);
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+      uuid
+    );
   },
 
   /**
@@ -298,7 +325,10 @@ export const env = {
    * Get test database URL
    */
   getTestDatabaseUrl(): string {
-    return process.env.DATABASE_URL || 'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test';
+    return (
+      process.env.DATABASE_URL ||
+      'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test'
+    );
   },
 
   /**

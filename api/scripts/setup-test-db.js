@@ -2,7 +2,7 @@
 
 /**
  * Test Database Setup Script
- * 
+ *
  * Automates the creation and setup of test database for CI/CD and local development
  */
 
@@ -12,8 +12,13 @@ const path = require('path');
 
 // Configuration
 const config = {
-  testDb: process.env.DATABASE_URL || 'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test',
-  migrationPath: path.join(__dirname, '../../supabase/migrations/20250101000000_initial_schema.sql'),
+  testDb:
+    process.env.DATABASE_URL ||
+    'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test',
+  migrationPath: path.join(
+    __dirname,
+    '../../supabase/migrations/20250101000000_initial_schema.sql'
+  ),
   isCI: process.env.CI === 'true',
 };
 
@@ -24,9 +29,9 @@ function execCommand(command, options = {}) {
   try {
     console.log(`🔄 Executing: ${command}`);
     return execSync(command, {
-      stdio: 'inherit', 
+      stdio: 'inherit',
       encoding: 'utf8',
-      ...options 
+      ...options,
     });
   } catch (error) {
     console.error(`❌ Command failed: ${command}`);
@@ -40,7 +45,9 @@ function execCommand(command, options = {}) {
  */
 function checkDatabaseExists(dbUrl) {
   try {
-    execCommand(`psql "${dbUrl}" -c "SELECT 1" > /dev/null 2>&1`, { stdio: 'ignore' });
+    execCommand(`psql "${dbUrl}" -c "SELECT 1" > /dev/null 2>&1`, {
+      stdio: 'ignore',
+    });
     return true;
   } catch {
     return false;
@@ -52,11 +59,11 @@ function checkDatabaseExists(dbUrl) {
  */
 function createTestDatabase() {
   console.log('🏗️  Creating test database...');
-  
+
   // Extract database name from URL
   const testDbName = config.testDb.split('/').pop();
   const baseUrl = config.testDb.replace(`/${testDbName}`, '/postgres');
-  
+
   try {
     execCommand(`psql "${baseUrl}" -c "CREATE DATABASE ${testDbName}"`);
     console.log('✅ Test database created successfully');
@@ -74,11 +81,11 @@ function createTestDatabase() {
  */
 function applySchema() {
   console.log('📦 Applying database schema...');
-  
+
   if (!fs.existsSync(config.migrationPath)) {
     throw new Error(`Migration file not found: ${config.migrationPath}`);
   }
-  
+
   execCommand(`psql "${config.testDb}" < "${config.migrationPath}"`);
   console.log('✅ Database schema applied successfully');
 }
@@ -88,17 +95,27 @@ function applySchema() {
  */
 function verifySetup() {
   console.log('🔍 Verifying database setup...');
-  
-  const tables = ['studios', 'customers', 'slots', 'invites', 'children', 'bookings'];
-  
+
+  const tables = [
+    'studios',
+    'customers',
+    'slots',
+    'invites',
+    'children',
+    'bookings',
+  ];
+
   for (const table of tables) {
     try {
-      execCommand(`psql "${config.testDb}" -c "SELECT 1 FROM ${table} LIMIT 1" > /dev/null`, { stdio: 'ignore' });
+      execCommand(
+        `psql "${config.testDb}" -c "SELECT 1 FROM ${table} LIMIT 1" > /dev/null`,
+        { stdio: 'ignore' }
+      );
     } catch {
       throw new Error(`Table ${table} does not exist or is not accessible`);
     }
   }
-  
+
   console.log(`✅ All ${tables.length} tables verified`);
 }
 
@@ -109,9 +126,11 @@ function cleanupTestData() {
   if (!config.isCI) {
     return; // Only cleanup in CI
   }
-  
+
   console.log('🧹 Cleaning up test data...');
-  execCommand(`psql "${config.testDb}" -c "TRUNCATE TABLE bookings, children, invites, customers, slots, studios CASCADE"`);
+  execCommand(
+    `psql "${config.testDb}" -c "TRUNCATE TABLE bookings, children, invites, customers, slots, studios CASCADE"`
+  );
   console.log('✅ Test data cleaned up');
 }
 
@@ -120,8 +139,10 @@ function cleanupTestData() {
  */
 function main() {
   console.log('🚀 Starting test database setup...');
-  console.log(`📍 Target database: ${config.testDb.replace(/\/\/[^@]+@/, '//***:***@')}`);
-  
+  console.log(
+    `📍 Target database: ${config.testDb.replace(/\/\/[^@]+@/, '//***:***@')}`
+  );
+
   try {
     // Check if test database exists, create if needed
     if (!checkDatabaseExists(config.testDb)) {
@@ -129,18 +150,17 @@ function main() {
     } else {
       console.log('ℹ️  Test database already exists');
     }
-    
+
     // Apply schema
     applySchema();
-    
+
     // Verify setup
     verifySetup();
-    
+
     // Clean up data in CI
     cleanupTestData();
-    
+
     console.log('🎉 Test database setup completed successfully!');
-    
   } catch (error) {
     console.error('💥 Test database setup failed:', error.message);
     process.exit(1);
