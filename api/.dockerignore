@@ -1,0 +1,19 @@
+node_modules
+npm-debug.log
+Dockerfile*
+.git
+.gitignore
+coverage
+.vscode
+.eslintcache
+
+# Ignore tests and local scripts from context
+**/*.test.ts
+src/test
+
+# Ignore local env files
+.env
+.env.*
+
+# TypeScript build cache
+*.tsbuildinfo
