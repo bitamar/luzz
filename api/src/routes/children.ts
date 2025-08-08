@@ -3,7 +3,10 @@ import { z } from 'zod';
 import { getDbClient } from '../db';
 import type { CreateChildRequest } from '../types';
 
-const router = Router();
+// Split routers: customerChildrenRouter handles /customers/:customerId/children
+// childrenRouter handles /children/:id operations
+export const customerChildrenRouter = Router();
+export const childrenRouter = Router();
 
 // Validation schema for child creation
 const createChildSchema = z.object({
@@ -15,7 +18,7 @@ const createChildSchema = z.object({
 const updateChildSchema = createChildSchema.partial();
 
 // POST /customers/:customerId/children - Create a new child
-router.post('/:customerId/children', async (req, res) => {
+customerChildrenRouter.post('/:customerId/children', async (req, res) => {
   try {
     const customerId = req.params.customerId;
     // Basic UUID format validation
@@ -68,7 +71,7 @@ router.post('/:customerId/children', async (req, res) => {
 });
 
 // GET /customers/:customerId/children - List children for a customer
-router.get('/:customerId/children', async (req, res) => {
+customerChildrenRouter.get('/:customerId/children', async (req, res) => {
   try {
     const customerId = req.params.customerId;
     if (
@@ -109,7 +112,7 @@ router.get('/:customerId/children', async (req, res) => {
 });
 
 // GET /children/:id - Get child details
-router.get('/:id', async (req, res) => {
+childrenRouter.get('/:id', async (req, res) => {
   try {
     const childId = req.params.id;
     if (
@@ -152,7 +155,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // PATCH /children/:id - Update child
-router.patch('/:id', async (req, res) => {
+childrenRouter.patch('/:id', async (req, res) => {
   try {
     const childId = req.params.id;
     if (
@@ -219,7 +222,7 @@ router.patch('/:id', async (req, res) => {
 });
 
 // DELETE /children/:id - Delete child (and cascade to bookings)
-router.delete('/:id', async (req, res) => {
+childrenRouter.delete('/:id', async (req, res) => {
   try {
     const childId = req.params.id;
     if (
@@ -268,4 +271,4 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-export default router;
+export default customerChildrenRouter;

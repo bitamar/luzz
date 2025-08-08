@@ -238,6 +238,29 @@ router.post('/', async (req, res) => {
       }
     }
 
+    // Enforce capacity: count existing bookings for the slot
+    const capacityResult = await client.query(
+      `SELECT COUNT(*)::int as count
+       FROM bookings 
+       WHERE slot_id = $1`,
+      [slotId]
+    );
+    const bookedCount: number = capacityResult.rows[0].count;
+
+    const capacityInfo = await client.query(
+      `SELECT max_participants
+       FROM slots
+       WHERE id = $1`,
+      [slotId]
+    );
+    const maxParticipants: number = capacityInfo.rows[0].max_participants;
+
+    if (bookedCount >= maxParticipants) {
+      return res
+        .status(409)
+        .json({ error: 'Slot capacity reached. Cannot create booking.' });
+    }
+
     // Create booking
     const bookingQuery = `
       INSERT INTO bookings (slot_id, customer_id, child_id, status, paid)

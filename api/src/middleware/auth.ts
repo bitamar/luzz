@@ -116,7 +116,6 @@ export function requestLogger(
   next: NextFunction
 ) {
   const start = Date.now();
-  const apiKey = req.apiKey;
 
   res.on('finish', () => {
     const duration = Date.now() - start;
@@ -125,7 +124,9 @@ export function requestLogger(
       url: req.originalUrl,
       status: res.statusCode,
       duration: `${duration}ms`,
-      apiKey: apiKey ? `${String(apiKey).substring(0, 6)}...` : 'none',
+      apiKey: req.apiKey
+        ? `${String(req.apiKey).substring(0, 6)}...`
+        : 'none',
       userAgent: req.get('User-Agent'),
       ip: req.ip,
       timestamp: new Date().toISOString(),

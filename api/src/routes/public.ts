@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { db } from '../db';
+import { getDbClient } from '../db';
 import type { Slot } from '../types';
 
 const router = Router();
@@ -8,7 +8,7 @@ const router = Router();
 // Validation schema for booking creation
 const createBookingSchema = z
   .object({
-    childId: z.number().int().positive().optional(),
+    childId: z.string().uuid().optional(),
     child: z
       .object({
         firstName: z.string().min(1).max(100),
@@ -63,7 +63,8 @@ router.get('/:slug/slots', async (req, res) => {
     }
 
     // Verify studio exists
-    const studioQuery = await db.query(
+    const client = getDbClient();
+    const studioQuery = await client.query(
       'SELECT id, name, timezone, currency FROM studios WHERE slug = $1',
       [slug]
     );
@@ -83,7 +84,7 @@ router.get('/:slug/slots', async (req, res) => {
       ORDER BY starts_at ASC
     `;
 
-    const { rows: slots } = await db.query(slotsQuery, [
+    const { rows: slots } = await client.query(slotsQuery, [
       studio.id,
       weekRange.startDate.toISOString(),
       weekRange.endDate.toISOString(),
@@ -124,7 +125,8 @@ router.post('/invites/:hash/bookings', async (req, res) => {
       WHERE i.short_hash = $1 AND i.expires_at > NOW()
     `;
 
-    const inviteResult = await db.query(inviteQuery, [hash]);
+    const client = getDbClient();
+    const inviteResult = await client.query(inviteQuery, [hash]);
     if (inviteResult.rows.length === 0) {
       return res.status(404).json({ error: 'Invite not found or expired' });
     }
@@ -134,12 +136,12 @@ router.post('/invites/:hash/bookings', async (req, res) => {
 
     // Get slot_id from request body (should be added to schema)
     const slotId = req.body.slotId;
-    if (!slotId || typeof slotId !== 'number') {
-      return res.status(400).json({ error: 'slotId is required' });
+    if (!slotId || typeof slotId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slotId)) {
+      return res.status(400).json({ error: 'slotId must be a valid UUID' });
     }
 
     // Verify slot exists and belongs to the same studio
-    const slotQuery = await db.query(
+    const slotQuery = await client.query(
       'SELECT * FROM slots WHERE id = $1 AND studio_id = $2 AND active = true',
       [slotId, invite.studio_id]
     );
@@ -159,7 +161,7 @@ router.post('/invites/:hash/bookings', async (req, res) => {
         RETURNING id
       `;
 
-      const childResult = await db.query(childQuery, [
+      const childResult = await client.query(childQuery, [
         invite.customer_id,
         child.firstName,
         child.avatarKey || null,
@@ -181,11 +183,11 @@ router.post('/invites/:hash/bookings', async (req, res) => {
     // Create booking
     const bookingQuery = `
       INSERT INTO bookings (slot_id, customer_id, child_id, status, created_at, paid, paid_at, paid_method)
-      VALUES ($1, $2, $3, 'confirmed', NOW(), false, NULL, NULL)
+      VALUES ($1, $2, $3, 'CONFIRMED', NOW(), false, NULL, NULL)
       RETURNING *
     `;
 
-    const { rows } = await db.query(bookingQuery, [
+    const { rows } = await client.query(bookingQuery, [
       slotId,
       slot.for_children ? null : invite.customer_id,
       slot.for_children ? finalChildId : null,

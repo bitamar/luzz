@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import crypto from 'crypto';
-import { db } from '../db';
+import { getDbClient } from '../db';
 
 const router = Router();
 
 // Validation schema for invite creation
 const createInviteSchema = z.object({
-  studioId: z.number().int().positive(),
+  studioId: z.string().uuid(),
   customer: z
     .object({
       firstName: z.string().min(1).max(100),
@@ -29,8 +29,10 @@ router.post('/', async (req, res) => {
   try {
     const { studioId, customer } = createInviteSchema.parse(req.body);
 
+    const client = getDbClient();
+
     // Verify studio exists
-    const studioCheck = await db.query(
+    const studioCheck = await client.query(
       'SELECT slug FROM studios WHERE id = $1',
       [studioId]
     );
@@ -42,7 +44,7 @@ router.post('/', async (req, res) => {
 
     // Check if customer already exists for this studio
     let customerId: number;
-    const existingCustomer = await db.query(
+    const existingCustomer = await client.query(
       'SELECT id FROM customers WHERE studio_id = $1 AND (contact_email = $2 OR contact_phone = $3)',
       [studioId, customer.email || null, customer.phone || null]
     );
@@ -56,7 +58,7 @@ router.post('/', async (req, res) => {
         VALUES ($1, $2, $3, $4, NOW())
         RETURNING id
       `;
-      const customerResult = await db.query(customerQuery, [
+      const customerResult = await client.query(customerQuery, [
         studioId,
         customer.firstName,
         customer.email || null,
@@ -70,7 +72,7 @@ router.post('/', async (req, res) => {
     let hashExists = true;
     do {
       shortHash = generateShortHash();
-      const hashCheck = await db.query(
+      const hashCheck = await client.query(
         'SELECT id FROM invites WHERE short_hash = $1',
         [shortHash]
       );
@@ -87,7 +89,7 @@ router.post('/', async (req, res) => {
       RETURNING *
     `;
 
-    const { rows } = await db.query(inviteQuery, [
+    const { rows } = await client.query(inviteQuery, [
       studioId,
       customerId,
       shortHash,

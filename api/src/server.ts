@@ -5,8 +5,8 @@ import slots from './routes/slots';
 import invites from './routes/invites';
 import publicApi from './routes/public';
 import bookings from './routes/bookings';
-import customers from './routes/customers';
-import children from './routes/children';
+import studioCustomers, { customersRouter as customersByIdRouter } from './routes/customers';
+import customerChildren, { childrenRouter as childrenByIdRouter } from './routes/children';
 import admin from './routes/admin';
 import {
   requireApiKey,
@@ -34,11 +34,12 @@ app.use('/public', optionalAuth, publicApi);
 // Protected routes (require API key)
 app.use('/studios', requireApiKey, studios);
 app.use('/studios', requireApiKey, slots); // slots are mounted under /studios/:studioId/slots
-app.use('/studios', requireApiKey, customers); // studio-scoped customers under /studios/:studioId/customers
+app.use('/studios', requireApiKey, studioCustomers); // studio-scoped customers under /studios/:studioId/customers
 
-// Resource-by-id routes
-app.use('/customers', requireApiKey, customers); // customers by id: /customers/:id
-app.use('/children', requireApiKey, children); // children by id: /children/:id
+// Resource-by-id routes and nested children
+app.use('/customers', requireApiKey, customersByIdRouter); // customers by id: /customers/:id
+app.use('/customers', requireApiKey, customerChildren); // /customers/:customerId/children
+app.use('/children', requireApiKey, childrenByIdRouter); // children by id: /children/:id
 
 app.use('/invites', requireApiKey, invites);
 app.use('/bookings', requireApiKey, bookings);

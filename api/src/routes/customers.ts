@@ -3,7 +3,9 @@ import { z } from 'zod';
 import { getDbClient } from '../db';
 import type { CreateCustomerRequest } from '../types';
 
-const router = Router();
+// Routers are split by concern to avoid path collisions when mounting
+export const studioCustomersRouter = Router(); // mounted under /studios
+export const customersRouter = Router(); // mounted under /customers
 
 // Validation schema for customer creation
 const createCustomerSchema = z
@@ -21,7 +23,7 @@ const createCustomerSchema = z
 const updateCustomerSchema = createCustomerSchema.partial();
 
 // POST /studios/:studioId/customers - Create a new customer
-router.post('/:studioId/customers', async (req, res) => {
+studioCustomersRouter.post('/:studioId/customers', async (req, res) => {
   try {
     const studioId = req.params.studioId;
     // Basic UUID format validation
@@ -105,7 +107,7 @@ router.post('/:studioId/customers', async (req, res) => {
 });
 
 // GET /studios/:studioId/customers - List customers for a studio
-router.get('/:studioId/customers', async (req, res) => {
+studioCustomersRouter.get('/:studioId/customers', async (req, res) => {
   try {
     const studioId = req.params.studioId;
     if (
@@ -129,8 +131,8 @@ router.get('/:studioId/customers', async (req, res) => {
 
     const query = `
       SELECT c.*, 
-             COUNT(ch.id) as children_count,
-             COUNT(b.id) as bookings_count
+             COUNT(DISTINCT ch.id) as children_count,
+             COUNT(DISTINCT b.id) as bookings_count
       FROM customers c
       LEFT JOIN children ch ON c.id = ch.customer_id
       LEFT JOIN bookings b ON c.id = b.customer_id
@@ -148,7 +150,7 @@ router.get('/:studioId/customers', async (req, res) => {
 });
 
 // GET /customers/:id - Get customer details
-router.get('/:id', async (req, res) => {
+customersRouter.get('/:id', async (req, res) => {
   try {
     const customerId = req.params.id;
     if (
@@ -196,7 +198,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // PATCH /customers/:id - Update customer
-router.patch('/:id', async (req, res) => {
+customersRouter.patch('/:id', async (req, res) => {
   try {
     const customerId = req.params.id;
     if (
@@ -271,7 +273,7 @@ router.patch('/:id', async (req, res) => {
 });
 
 // DELETE /customers/:id - Delete customer (and cascade to children/bookings)
-router.delete('/:id', async (req, res) => {
+customersRouter.delete('/:id', async (req, res) => {
   try {
     const customerId = req.params.id;
     if (
@@ -323,4 +325,4 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-export default router;
+export default studioCustomersRouter;
