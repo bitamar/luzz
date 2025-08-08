@@ -1,0 +1,40 @@
+# Production overrides for luz-api
+
+replicaCount: 1
+
+image:
+  repository: malshinim/luzapi
+  pullPolicy: IfNotPresent
+  tag: "latest" # CI will typically override with sha-<commit>
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+env:
+  NODE_ENV: production
+  PORT: "3000"
+
+# Secret configuration (must pre-exist in the namespace)
+secret:
+  name: supabase-db
+  databaseUrlKey: DATABASE_URL
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 250m
+    memory: 256Mi
+
+healthCheck:
+  enabled: true
+  path: /health
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+
+

@@ -42,4 +42,34 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  deploy:
+    name: Deploy to k3s
+    needs: docker
+    runs-on: [self-hosted, linux]
+    if: ${{ secrets.DATABASE_URL != '' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure namespace exists
+        run: |
+          kubectl create namespace luz-api --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Apply database secret
+        run: |
+          kubectl -n luz-api create secret generic supabase-db \
+            --from-literal=DATABASE_URL="$DATABASE_URL" \
+            --dry-run=client -o yaml | kubectl apply -f -
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Helm upgrade/install
+        run: |
+          helm upgrade --install luz-api ./helm/luz-api \
+            --namespace luz-api \
+            --create-namespace \
+            -f helm/luz-api/values-prod.yaml \
+            --set image.repository=malshinim/luzapi \
+            --set image.tag=sha-${GITHUB_SHA}
+
 
