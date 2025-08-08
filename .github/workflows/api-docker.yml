@@ -45,8 +45,9 @@ jobs:
   deploy:
     name: Deploy to k3s
     needs: docker
-    runs-on: [self-hosted, linux]
-    if: ${{ secrets.DATABASE_URL != '' }}
+    runs-on: self-hosted
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -60,8 +61,6 @@ jobs:
           kubectl -n luz-api create secret generic supabase-db \
             --from-literal=DATABASE_URL="$DATABASE_URL" \
             --dry-run=client -o yaml | kubectl apply -f -
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Helm upgrade/install
         run: |
