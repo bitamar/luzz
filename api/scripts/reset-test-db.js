@@ -6,7 +6,7 @@
  * Completely resets the test database by dropping and recreating it
  */
 
-const { execSync } = require('child_process');
+import { execSync } from 'node:child_process';
 
 // Configuration
 const config = {
@@ -21,12 +21,11 @@ const config = {
 function execCommand(command, options = {}) {
   try {
     console.log(`🔄 Executing: ${command}`);
-    const result = execSync(command, {
+    return execSync(command, {
       stdio: 'inherit',
       encoding: 'utf8',
       ...options,
     });
-    return result;
   } catch (error) {
     console.error(`❌ Command failed: ${command}`);
     console.error(error.message);
