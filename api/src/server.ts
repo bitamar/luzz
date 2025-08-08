@@ -5,11 +5,22 @@ import slots from './routes/slots';
 import invites from './routes/invites';
 import publicApi from './routes/public';
 import bookings from './routes/bookings';
+import customers from './routes/customers';
+import children from './routes/children';
+import admin from './routes/admin';
+import {
+  requireApiKey,
+  optionalAuth,
+  requestLogger,
+  rateLimit,
+} from './middleware/auth';
 
 const app = express();
 
 // Middleware
 app.use(express.json());
+app.use(requestLogger);
+app.use(rateLimit(process.env.NODE_ENV === 'production' ? 60 : 200)); // More lenient in dev
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -17,11 +28,21 @@ app.get('/health', (req, res) => {
 });
 
 // API routes
-app.use('/studios', studios);
-app.use('/studios', slots); // slots are mounted under /studios/:studioId/slots
-app.use('/invites', invites);
-app.use('/public', publicApi);
-app.use('/bookings', bookings);
+// Public routes (no auth required, but optional logging)
+app.use('/public', optionalAuth, publicApi);
+
+// Protected routes (require API key)
+app.use('/studios', requireApiKey, studios);
+app.use('/studios', requireApiKey, slots); // slots are mounted under /studios/:studioId/slots
+app.use('/studios', requireApiKey, customers); // studio-scoped customers under /studios/:studioId/customers
+
+// Resource-by-id routes
+app.use('/customers', requireApiKey, customers); // customers by id: /customers/:id
+app.use('/children', requireApiKey, children); // children by id: /children/:id
+
+app.use('/invites', requireApiKey, invites);
+app.use('/bookings', requireApiKey, bookings);
+app.use('/admin', requireApiKey, admin);
 
 // Global error handler
 app.use(
@@ -29,7 +50,7 @@ app.use(
     err: Error,
     req: express.Request,
     res: express.Response,
-    next: express.NextFunction
+    _next: express.NextFunction
   ) => {
     console.error('Unhandled error:', err);
     res.status(500).json({

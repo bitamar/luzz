@@ -1,5 +1,12 @@
 import { db, getDbClient } from '../db';
 import { testTransaction } from './transaction-manager';
+import type {
+  TestStudio,
+  TestCustomer,
+  TestSlot,
+  CreateStudioRequest,
+  CreateSlotRequest,
+} from '../types';
 
 // Legacy cleanup functions (kept for reference if needed)
 export async function cleanupDatabase() {
@@ -68,17 +75,17 @@ export const testData = {
 
   customer: {
     withEmail: {
-      firstName: 'John',
-      email: 'john@example.com',
+      first_name: 'John',
+      contact_email: 'john@example.com',
     },
     withPhone: {
-      firstName: 'Jane',
-      phone: '+1-555-0123',
+      first_name: 'Jane',
+      contact_phone: '+1-555-0123',
     },
     withBoth: {
-      firstName: 'Bob',
-      email: 'bob@example.com',
-      phone: '+1-555-0456',
+      first_name: 'Bob',
+      contact_email: 'bob@example.com',
+      contact_phone: '+1-555-0456',
     },
   },
 
@@ -95,13 +102,9 @@ export const testData = {
 
 // Helper to create a studio and return its ID
 export async function createTestStudio(
-  studioData: {
-    slug?: string;
-    name?: string;
-    timezone?: string;
-    currency?: string;
-  } = testData.studio.valid
-) {
+  studioData: Partial<CreateStudioRequest> = testData.studio
+    .valid as Partial<CreateStudioRequest>
+): Promise<TestStudio> {
   // Generate unique slug for each studio creation
   const uniqueStudioData = {
     ...studioData,
@@ -128,8 +131,9 @@ export async function createTestStudio(
 // Helper to create a slot and return its ID
 export async function createTestSlot(
   studioId: string,
-  slotData: any = testData.slot.adult
-) {
+  slotData: Partial<CreateSlotRequest> = testData.slot
+    .adult as Partial<CreateSlotRequest>
+): Promise<TestSlot> {
   const query = `
     INSERT INTO slots (
       studio_id, title, starts_at, duration_min, recurrence_rule,
@@ -157,8 +161,9 @@ export async function createTestSlot(
 // Helper to create a customer and return its ID
 export async function createTestCustomer(
   studioId: string,
-  customerData: any = testData.customer.withEmail
-) {
+  customerData: Partial<TestCustomer> = testData.customer
+    .withEmail as Partial<TestCustomer>
+): Promise<TestCustomer> {
   const query = `
     INSERT INTO customers (studio_id, first_name, contact_email, contact_phone, created_at)
     VALUES ($1, $2, $3, $4, NOW())
@@ -168,9 +173,9 @@ export async function createTestCustomer(
   const client = getDbClient();
   const { rows } = await client.query(query, [
     studioId,
-    customerData.firstName,
-    customerData.email || null,
-    customerData.phone || null,
+    customerData.first_name,
+    customerData.contact_email || null,
+    customerData.contact_phone || null,
   ]);
   return rows[0];
 }

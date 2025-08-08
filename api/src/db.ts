@@ -1,4 +1,4 @@
-import { Pool } from 'pg';
+import { Pool, PoolClient } from 'pg';
 import 'dotenv/config';
 
 // Load test environment if in test mode
@@ -32,17 +32,17 @@ let isPoolEnded = false;
 // Safe cleanup function
 export async function closeDatabase() {
   if (!isPoolEnded) {
-    console.log('Closing database pool...');
+    console.warn('Closing database pool...');
     await db.end();
     isPoolEnded = true;
   }
 }
 
 // Global test transaction client (only available in test environment)
-let testTransactionClient: any = null;
+let testTransactionClient: PoolClient | null = null;
 
 // Set the test transaction client (called from test setup)
-export function setTestTransactionClient(client: any) {
+export function setTestTransactionClient(client: PoolClient) {
   testTransactionClient = client;
 }
 

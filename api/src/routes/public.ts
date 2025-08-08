@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { db } from '../db';
+import type { Slot } from '../types';
 
 const router = Router();
 
@@ -89,8 +90,8 @@ router.get('/:slug/slots', async (req, res) => {
     ]);
 
     // Group slots by day
-    const slotsByDay: { [key: string]: any[] } = {};
-    slots.forEach(slot => {
+    const slotsByDay: { [key: string]: Slot[] } = {};
+    slots.forEach((slot: Slot) => {
       const date = new Date(slot.starts_at).toISOString().split('T')[0];
       if (!slotsByDay[date]) {
         slotsByDay[date] = [];

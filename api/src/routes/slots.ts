@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { db, getDbClient } from '../db';
+import { getDbClient } from '../db';
 
 const router = Router();
 
@@ -55,11 +55,9 @@ router.post('/:studioId/slots', async (req, res) => {
 
     // Validate min/max participants
     if (minParticipants > maxParticipants) {
-      return res
-        .status(400)
-        .json({
-          error: 'Minimum participants cannot exceed maximum participants',
-        });
+      return res.status(400).json({
+        error: 'Minimum participants cannot exceed maximum participants',
+      });
     }
 
     const query = `

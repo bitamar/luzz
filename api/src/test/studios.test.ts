@@ -1,9 +1,8 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import request from 'supertest';
 import express from 'express';
-import { db, closeDatabase } from '../db';
+import { closeDatabase } from '../db';
 import studiosRouter from '../routes/studios';
-import { cleanupDatabase } from './test-helpers';
 
 // Create test app
 const app = express();

@@ -1,4 +1,4 @@
-import { PoolClient } from 'pg';
+import { PoolClient, QueryResult } from 'pg';
 import { db } from '../db';
 
 /**
@@ -65,7 +65,7 @@ export class TransactionManager {
   /**
    * Execute a query within the current transaction
    */
-  async query(text: string, params?: any[]): Promise<any> {
+  async query(text: string, params?: unknown[]): Promise<QueryResult> {
     const client = this.getClient();
     return client.query(text, params);
   }

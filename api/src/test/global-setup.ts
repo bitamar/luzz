@@ -1,10 +1,10 @@
 import { db } from '../db';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+// import { exec } from 'child_process';
+// import { promisify } from 'util';
 import fs from 'fs/promises';
 import path from 'path';
 
-const execAsync = promisify(exec);
+// const execAsync = promisify(exec); // Future use for database operations
 
 /**
  * Global test setup - runs once before all tests
@@ -144,7 +144,7 @@ async function verifyDatabaseTables() {
   for (const table of requiredTables) {
     try {
       await db.query(`SELECT 1 FROM ${table} LIMIT 1`);
-    } catch (error) {
+    } catch {
       throw new Error(`Table ${table} does not exist or is not accessible`);
     }
   }

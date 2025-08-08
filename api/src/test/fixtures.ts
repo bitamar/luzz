@@ -3,7 +3,14 @@ import {
   createTestSlot,
   createTestCustomer,
 } from './test-helpers';
-import { Studios, Slots, Customers, Children, Scenarios } from './factories';
+import { Studios, Slots, Customers, Scenarios } from './factories';
+import type {
+  TestStudio,
+  TestCustomer,
+  TestChild,
+  TestSlot,
+  Booking,
+} from '../types';
 
 /**
  * Test Fixtures - Pre-built test scenarios for complex testing
@@ -13,18 +20,18 @@ import { Studios, Slots, Customers, Children, Scenarios } from './factories';
  */
 
 export interface StudioFixture {
-  studio: any;
-  adults: any[];
-  children: any[];
-  slots: any[];
-  customers: any[];
+  studio: TestStudio;
+  adults: TestSlot[];
+  children: TestSlot[];
+  slots: TestSlot[];
+  customers: TestCustomer[];
 }
 
 export interface BookingFixture {
-  studio: any;
-  customer: any;
-  slot: any;
-  booking: any;
+  studio: TestStudio;
+  customer: TestCustomer;
+  slot: TestSlot;
+  booking: Booking;
 }
 
 /**
@@ -52,9 +59,9 @@ export async function createCompleteStudio(): Promise<StudioFixture> {
 
   // Create customers
   const customers = [
-    await createTestCustomer(studio.id, Customers.createWithEmail()),
-    await createTestCustomer(studio.id, Customers.createWithPhone()),
-    await createTestCustomer(studio.id, Customers.createParent()),
+    await createTestCustomer(studio.id, Customers.createWithEmail() as any),
+    await createTestCustomer(studio.id, Customers.createWithPhone() as any),
+    await createTestCustomer(studio.id, Customers.createParent() as any),
   ];
 
   return {
@@ -84,7 +91,9 @@ export async function createBusyStudio(): Promise<StudioFixture> {
   // Create many customers
   const customers = [];
   for (let i = 0; i < 10; i++) {
-    customers.push(await createTestCustomer(studio.id, Customers.create()));
+    customers.push(
+      await createTestCustomer(studio.id, Customers.create() as any)
+    );
   }
 
   return {
@@ -100,7 +109,9 @@ export async function createBusyStudio(): Promise<StudioFixture> {
  * Creates a family-oriented studio scenario
  */
 export async function createFamilyStudio(): Promise<
-  StudioFixture & { families: any[] }
+  StudioFixture & {
+    families: Array<{ customer: TestCustomer; children: TestChild[] }>;
+  }
 > {
   const studioData = Studios.create({
     name: 'Family Fitness Center',
@@ -130,7 +141,7 @@ export async function createFamilyStudio(): Promise<
   const families = [];
   for (let i = 0; i < 3; i++) {
     const family = Scenarios.createFamily();
-    const parent = await createTestCustomer(studio.id, family.parent);
+    const parent = await createTestCustomer(studio.id, family.parent as any);
 
     families.push({
       parent,
@@ -144,7 +155,10 @@ export async function createFamilyStudio(): Promise<
     children: familySlots.filter(s => s.for_children),
     slots: familySlots,
     customers: families.map(f => f.parent),
-    families,
+    families: families.map(f => ({
+      customer: f.parent,
+      children: f.children as any,
+    })),
   };
 }
 
@@ -212,7 +226,7 @@ export async function createEdgeCaseStudio(): Promise<StudioFixture> {
       Customers.create({
         firstName:
           'Pneumonoultramicroscopicsilicovolcanoconiosisaffectedperson',
-      })
+      }) as any
     ),
 
     // Customer with minimal data
@@ -221,7 +235,7 @@ export async function createEdgeCaseStudio(): Promise<StudioFixture> {
       Customers.create({
         firstName: 'A',
         contactEmail: 'a@b.co',
-      })
+      }) as any
     ),
   ];
 
@@ -286,8 +300,8 @@ export async function createInternationalStudios(): Promise<StudioFixture[]> {
     }
 
     const customers = [
-      await createTestCustomer(studio.id, Customers.create()),
-      await createTestCustomer(studio.id, Customers.create()),
+      await createTestCustomer(studio.id, Customers.create() as any),
+      await createTestCustomer(studio.id, Customers.create() as any),
     ];
 
     studios.push({

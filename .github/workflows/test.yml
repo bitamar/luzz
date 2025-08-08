@@ -84,5 +84,8 @@ jobs:
         echo "## Test Results" >> $GITHUB_STEP_SUMMARY
         echo "✅ Tests completed" >> $GITHUB_STEP_SUMMARY
         if [ -f api/coverage/coverage-summary.json ]; then
-          echo "📊 Coverage report generated" >> $GITHUB_STEP_SUMMARY
+          echo "📊 Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo '```json' >> $GITHUB_STEP_SUMMARY
+          cat api/coverage/coverage-summary.json >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
         fi

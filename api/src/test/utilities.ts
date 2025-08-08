@@ -1,4 +1,5 @@
 import { expect } from 'vitest';
+import type { Response } from 'supertest';
 import { getDbClient } from '../db';
 
 /**
@@ -15,7 +16,7 @@ export const assertions = {
   /**
    * Assert that a response has valid UUID format
    */
-  toHaveValidUuid(response: any, field: string = 'id') {
+  toHaveValidUuid(response: Response, field: string = 'id') {
     const uuid = response.body[field];
     expect(uuid).toBeDefined();
     expect(uuid).toMatch(

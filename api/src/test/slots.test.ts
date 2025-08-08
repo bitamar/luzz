@@ -1,9 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import request from 'supertest';
 import express from 'express';
-import { db, closeDatabase } from '../db';
+import { closeDatabase } from '../db';
 import slotsRouter from '../routes/slots';
-import { cleanupDatabase, createTestStudio, testData } from './test-helpers';
+import { createTestStudio, testData } from './test-helpers';
+import type { TestStudio } from '../types';
 
 // Create test app with slots router
 const app = express();
@@ -11,7 +12,7 @@ app.use(express.json());
 app.use('/studios', slotsRouter);
 
 describe('Slots API', () => {
-  let testStudio: any;
+  let testStudio: TestStudio;
 
   beforeAll(async () => {
     // Verify we're using test database
