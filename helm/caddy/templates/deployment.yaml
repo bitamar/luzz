@@ -16,6 +16,7 @@ spec:
         - name: caddy
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["caddy"]
           args: ["run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
           ports:
             - name: http
