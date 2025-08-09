@@ -39,23 +39,7 @@ function main() {
     `- Branches: ${formatPct(b.pct)} (${b.covered}/${b.total})`,
     `- Functions: ${formatPct(f.pct)} (${f.covered}/${f.total})`,
     `- Lines: ${formatPct(l.pct)} (${l.covered}/${l.total})`,
-    '',
-    'Directory breakdown (key areas):',
-    '',
-    '| Path | Statements | Branches | Functions | Lines |',
-    '| --- | ---: | ---: | ---: | ---: |',
   ];
-
-  const interesting = ['src/routes', 'src/middleware', 'src/auth'];
-  for (const p of interesting) {
-    const entry = data[p];
-    if (!entry) continue;
-    const ps = entry.statements.pct;
-    const pb = entry.branches.pct;
-    const pf = entry.functions.pct;
-    const pl = entry.lines.pct;
-    md.push(`| ${p} | ${formatPct(ps)} | ${formatPct(pb)} | ${formatPct(pf)} | ${formatPct(pl)} |`);
-  }
 
   const content = md.join('\n');
   const gha = process.env.GITHUB_STEP_SUMMARY;
@@ -74,5 +58,3 @@ function main() {
 }
 
 main();
-
-
