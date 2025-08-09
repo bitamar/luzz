@@ -3,6 +3,8 @@ import request from 'supertest';
 import express from 'express';
 import { closeDatabase } from '../db';
 import studiosRouter from '../routes/studios';
+import { signAccessToken } from '../auth/jwt';
+import { db } from '../db';
 
 // Create test app
 const app = express();
@@ -17,6 +19,8 @@ describe('Studios API', () => {
     } else {
       console.log('✅ Using test database');
     }
+    // set JWT secret for tests
+    process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-secret-123';
   });
 
   afterAll(async () => {
@@ -29,6 +33,23 @@ describe('Studios API', () => {
   });
 
   describe('POST /studios', () => {
+    async function auth() {
+      // Ensure a real user row exists and sign its UUID
+      await db.query(
+        `insert into users (google_sub, email) values ($1,$2)
+         on conflict (google_sub) do update set email=excluded.email`,
+        ['sub-u-test', 'u@test']
+      );
+      const { rows } = await db.query(
+        'select id from users where google_sub=$1',
+        ['sub-u-test']
+      );
+      const token = await signAccessToken(
+        { userId: rows[0].id, isAdmin: false },
+        '5m'
+      );
+      return { Authorization: `Bearer ${token}` };
+    }
     it('should create a new studio with valid data', async () => {
       const uniqueSlug = `test-studio-${Date.now()}-${Math.random().toString(36).slice(2)}`;
       const studioData = {
@@ -40,6 +61,7 @@ describe('Studios API', () => {
 
       const response = await request(app)
         .post('/studios')
+        .set(await auth())
         .send(studioData)
         .expect(201);
 
@@ -62,6 +84,7 @@ describe('Studios API', () => {
 
       const response = await request(app)
         .post('/studios')
+        .set(await auth())
         .send(studioData)
         .expect(400);
 
@@ -80,6 +103,7 @@ describe('Studios API', () => {
 
       const response = await request(app)
         .post('/studios')
+        .set(await auth())
         .send(studioData)
         .expect(400);
 
@@ -99,6 +123,7 @@ describe('Studios API', () => {
       // Create first studio
       const firstResponse = await request(app)
         .post('/studios')
+        .set(await auth())
         .send(studioData)
         .expect(201);
 
@@ -113,6 +138,7 @@ describe('Studios API', () => {
 
       const response = await request(app)
         .post('/studios')
+        .set(await auth())
         .send(duplicateData)
         .expect(409);
 
@@ -128,6 +154,7 @@ describe('Studios API', () => {
 
       const response = await request(app)
         .post('/studios')
+        .set(await auth())
         .send(incompleteData)
         .expect(400);
 

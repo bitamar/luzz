@@ -13,10 +13,9 @@ imagePullSecrets:
   - name: dockerhub-cred
 
 service:
-  type: NodePort
+  type: ClusterIP
   port: 80
   targetPort: 3000
-  nodePort: 30080
 
 env:
   NODE_ENV: production
@@ -26,6 +25,11 @@ env:
 secret:
   name: supabase-db
   databaseUrlKey: DATABASE_URL
+
+appSecret:
+  name: app-config
+  jwtSecretKey: JWT_SECRET
+  googleClientIdsKey: GOOGLE_CLIENT_IDS
 
 resources:
   requests:

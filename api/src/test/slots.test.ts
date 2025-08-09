@@ -4,7 +4,9 @@ import express from 'express';
 import { closeDatabase } from '../db';
 import slotsRouter from '../routes/slots';
 import { createTestStudio, testData } from './test-helpers';
+import { getDbClient } from '../db';
 import type { TestStudio } from '../types';
+import { signAccessToken } from '../auth/jwt';
 
 // Create test app with slots router
 const app = express();
@@ -30,14 +32,42 @@ describe('Slots API', () => {
   beforeEach(async () => {
     // Create a test studio for each test (transaction isolation handled by global setup-each.ts)
     testStudio = await createTestStudio();
+    // Ensure test user is owner of the studio for authorization (use test transaction client)
+    const client = getDbClient();
+    await client.query(
+      `insert into users (google_sub, email) values ($1,$2)
+       on conflict (google_sub) do update set email=excluded.email`,
+      ['sub-u-test', 'u@test']
+    );
+    await client.query(
+      `insert into studio_owners (studio_id, user_id, role)
+       select $1, id, 'owner' from users where google_sub=$2
+       on conflict do nothing`,
+      [testStudio.id, 'sub-u-test']
+    );
   });
 
   describe('POST /studios/:studioId/slots', () => {
+    async function auth() {
+      process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-secret-123';
+      // derive userId for the created/ensured user
+      const client = getDbClient();
+      const { rows } = await client.query(
+        'select id from users where google_sub=$1',
+        ['sub-u-test']
+      );
+      const token = await signAccessToken(
+        { userId: rows[0].id, isAdmin: false },
+        '5m'
+      );
+      return { Authorization: `Bearer ${token}` };
+    }
     it('should create a basic adult slot with valid data', async () => {
       const slotData = testData.slot.adult;
 
       const response = await request(app)
         .post(`/studios/${testStudio.id}/slots`)
+        .set(await auth())
         .send(slotData)
         .expect(201);
 
@@ -62,6 +92,7 @@ describe('Slots API', () => {
 
       const response = await request(app)
         .post(`/studios/${testStudio.id}/slots`)
+        .set(await auth())
         .send(slotData)
         .expect(201);
 
@@ -74,6 +105,7 @@ describe('Slots API', () => {
 
       const response = await request(app)
         .post(`/studios/${testStudio.id}/slots`)
+        .set(await auth())
         .send(slotData)
         .expect(201);
 
@@ -83,6 +115,7 @@ describe('Slots API', () => {
     it('should return 400 for invalid studio ID format', async () => {
       const response = await request(app)
         .post('/studios/invalid/slots')
+        .set(await auth())
         .send(testData.slot.adult)
         .expect(400);
 
@@ -94,6 +127,7 @@ describe('Slots API', () => {
 
       const response = await request(app)
         .post(`/studios/${nonExistentStudioId}/slots`)
+        .set(await auth())
         .send(testData.slot.adult)
         .expect(404);
 
@@ -108,6 +142,7 @@ describe('Slots API', () => {
 
       const response = await request(app)
         .post(`/studios/${testStudio.id}/slots`)
+        .set(await auth())
         .send(invalidSlotData)
         .expect(400);
 
@@ -122,6 +157,7 @@ describe('Slots API', () => {
 
       const response = await request(app)
         .post(`/studios/${testStudio.id}/slots`)
+        .set(await auth())
         .send(invalidSlotData)
         .expect(400);
 
@@ -136,6 +172,7 @@ describe('Slots API', () => {
 
       const response = await request(app)
         .post(`/studios/${testStudio.id}/slots`)
+        .set(await auth())
         .send(invalidSlotData)
         .expect(400);
 
@@ -150,6 +187,7 @@ describe('Slots API', () => {
 
       const response = await request(app)
         .post(`/studios/${testStudio.id}/slots`)
+        .set(await auth())
         .send(invalidSlotData)
         .expect(400);
 
@@ -167,6 +205,7 @@ describe('Slots API', () => {
 
       const response = await request(app)
         .post(`/studios/${testStudio.id}/slots`)
+        .set(await auth())
         .send(invalidSlotData)
         .expect(400);
 
@@ -182,6 +221,7 @@ describe('Slots API', () => {
 
       const response = await request(app)
         .post(`/studios/${testStudio.id}/slots`)
+        .set(await auth())
         .send(invalidSlotData)
         .expect(400);
 
@@ -200,6 +240,7 @@ describe('Slots API', () => {
 
       const response = await request(app)
         .post(`/studios/${testStudio.id}/slots`)
+        .set(await auth())
         .send(incompleteData)
         .expect(400);
 
@@ -214,6 +255,7 @@ describe('Slots API', () => {
 
       const response = await request(app)
         .post(`/studios/${testStudio.id}/slots`)
+        .set(await auth())
         .send(slotData)
         .expect(201);
 
@@ -228,6 +270,7 @@ describe('Slots API', () => {
 
       const response = await request(app)
         .post(`/studios/${testStudio.id}/slots`)
+        .set(await auth())
         .send(freeSlotData)
         .expect(201);
 

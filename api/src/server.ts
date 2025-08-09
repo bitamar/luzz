@@ -12,6 +12,7 @@ import customerChildren, {
   childrenRouter as childrenByIdRouter,
 } from './routes/children';
 import admin from './routes/admin';
+import buildAuthRouter from './routes/auth';
 import {
   requireApiKey,
   optionalAuth,
@@ -34,6 +35,10 @@ app.get('/health', (req, res) => {
 // API routes
 // Public routes (no auth required, but optional logging)
 app.use('/public', optionalAuth, publicApi);
+// Auth routes
+buildAuthRouter().then(authRouter => {
+  app.use('/auth', authRouter);
+});
 
 // Protected routes (require API key)
 app.use('/studios', requireApiKey, studios);

@@ -5,20 +5,17 @@ import type { Slot } from '../types';
 
 const router = Router();
 
-// Validation schema for booking creation
-const createBookingSchema = z
-  .object({
-    childId: z.string().uuid().optional(),
-    child: z
-      .object({
-        firstName: z.string().min(1).max(100),
-        avatarKey: z.string().optional(),
-      })
-      .optional(),
-  })
-  .refine(data => data.childId || data.child, {
-    message: 'Either childId or child data must be provided',
-  });
+// Validation schema for booking creation (public invite)
+// Note: child data is optional here; route logic enforces it based on slot.for_children
+const createBookingSchema = z.object({
+  childId: z.string().uuid().optional(),
+  child: z
+    .object({
+      firstName: z.string().min(1).max(100),
+      avatarKey: z.string().optional(),
+    })
+    .optional(),
+});
 
 // Helper function to parse week parameter (YYYY-WW format)
 function parseWeekParam(
