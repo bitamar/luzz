@@ -136,6 +136,10 @@ export interface AuthenticatedRequest extends Request {
   apiKey?: string;
   authenticated?: boolean;
   studioId?: string;
+  user?: {
+    userId: string;
+    isAdmin: boolean;
+  };
 }
 
 // Database query result types

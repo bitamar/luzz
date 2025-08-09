@@ -14,6 +14,7 @@
     "test": "NODE_ENV=test vitest",
     "test:run": "NODE_ENV=test vitest run",
     "test:coverage": "NODE_ENV=test vitest run --coverage",
+    "ci:coverage": "pnpm test:coverage && node scripts/ci-coverage-summary.js",
     "test:watch": "NODE_ENV=test vitest --coverage",
     "test:ui": "NODE_ENV=test vitest --ui"
   },
@@ -44,6 +45,7 @@
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
     "pg": "^8.16.3",
+    "jose": "^5.2.4",
     "zod": "^4.0.5"
   }
 }

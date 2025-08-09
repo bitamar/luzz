@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -66,9 +70,14 @@ jobs:
       working-directory: ./api
       run: pnpm type-check
     
-    - name: Run tests
+    - name: Run tests with coverage
       working-directory: ./api
       run: pnpm test:coverage
+
+    - name: Enforce coverage thresholds
+      if: always()
+      working-directory: ./api
+      run: node scripts/enforce-coverage.js
     
     - name: Upload coverage reports
       if: always()
@@ -78,14 +87,14 @@ jobs:
         path: api/coverage/
         retention-days: 7
         
-    - name: Generate test summary
+    - name: Coverage summary
       if: always()
-      run: |
-        echo "## Test Results" >> $GITHUB_STEP_SUMMARY
-        echo "✅ Tests completed" >> $GITHUB_STEP_SUMMARY
-        if [ -f api/coverage/coverage-summary.json ]; then
-          echo "📊 Coverage Report" >> $GITHUB_STEP_SUMMARY
-          echo '```json' >> $GITHUB_STEP_SUMMARY
-          cat api/coverage/coverage-summary.json >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-        fi
+      working-directory: ./api
+      run: node scripts/ci-coverage-summary.js
+
+    - name: Comment coverage on PR
+      if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        recreate: true
+        path: api/coverage/coverage-summary.md

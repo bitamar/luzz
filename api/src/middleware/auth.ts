@@ -1,5 +1,6 @@
 import { Response, NextFunction } from 'express';
 import type { AuthenticatedRequest } from '../types';
+import { verifyAccessToken } from '../auth/jwt';
 
 // Simple API key authentication middleware
 // In production, you'd want to use JWT tokens or OAuth
@@ -54,6 +55,31 @@ export function requireStudioAccess(
 
   req.studioId = studioId;
   next();
+}
+
+// Ensure the current user is an owner/manager of the studio in params
+export function requireStudioOwner() {
+  return async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const studioId = req.params.studioId;
+      if (!studioId || !req.user)
+        return res.status(403).json({ error: 'forbidden' });
+      const { getDbClient } = await import('../db');
+      const client = getDbClient();
+      const q = await client.query(
+        'select 1 from studio_owners where studio_id=$1 and user_id=$2 limit 1',
+        [studioId, req.user.userId]
+      );
+      if (q.rowCount === 0) return res.status(403).json({ error: 'forbidden' });
+      return next();
+    } catch {
+      return res.status(403).json({ error: 'forbidden' });
+    }
+  };
 }
 
 // Optional auth middleware for public endpoints
@@ -138,4 +164,32 @@ export function requestLogger(
   });
 
   next();
+}
+
+// Verify our first-party JWT access token, set req.user
+export function requireUser() {
+  return async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const header = req.headers.authorization || '';
+      const token = header.startsWith('Bearer ') ? header.slice(7) : '';
+      if (!token) return res.status(401).json({ error: 'unauthorized' });
+      const claims = await verifyAccessToken(token);
+      req.user = { userId: claims.userId, isAdmin: claims.isAdmin };
+      return next();
+    } catch {
+      return res.status(401).json({ error: 'unauthorized' });
+    }
+  };
+}
+
+// Ensure current user is an admin
+export function requireAdmin() {
+  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    if (req.user?.isAdmin) return next();
+    return res.status(403).json({ error: 'forbidden' });
+  };
 }

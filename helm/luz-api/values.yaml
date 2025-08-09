@@ -53,6 +53,12 @@ secret:
   name: supabase-db
   databaseUrlKey: DATABASE_URL
 
+# Application-level secret (JWT/Google)
+appSecret:
+  name: app-config
+  jwtSecretKey: JWT_SECRET
+  googleClientIdsKey: GOOGLE_CLIENT_IDS
+
 # Health checks
 healthCheck:
   enabled: true

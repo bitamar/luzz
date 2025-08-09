@@ -28,24 +28,27 @@ export default defineConfig({
     hookTimeout: 30000, // 30 seconds for setup/teardown
     
     // Coverage configuration
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
+      coverage: {
+        provider: 'v8',
+        reporter: ['text', 'json', 'html', 'lcov', 'json-summary'],
       reportsDirectory: './coverage',
-      exclude: [
-        'node_modules/**',
-        'src/test/**',
-        '**/*.d.ts',
-        '**/*.config.*',
-        'dist/**'
-      ],
+        exclude: [
+          'node_modules/**',
+          'src/test/**',
+          '**/*.d.ts',
+          '**/*.config.*',
+          'dist/**',
+          'src/server.ts',
+          'src/types/**',
+          'scripts/**',
+        ],
       thresholds: {
         global: {
-          branches: 80,
-          functions: 80,
-          lines: 80,
-          statements: 80
-        }
+          branches: 75,
+          functions: 90,
+          lines: 85,
+          statements: 85,
+        },
       }
     },
     

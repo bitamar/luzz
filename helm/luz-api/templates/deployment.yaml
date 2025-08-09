@@ -40,6 +40,16 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secret.name }}
                   key: {{ .Values.secret.databaseUrlKey }}
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.appSecret.name }}
+                  key: {{ .Values.appSecret.jwtSecretKey }}
+            - name: GOOGLE_CLIENT_IDS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.appSecret.name }}
+                  key: {{ .Values.appSecret.googleClientIdsKey }}
           {{- if .Values.healthCheck.enabled }}
           livenessProbe:
             httpGet:
