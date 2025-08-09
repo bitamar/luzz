@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import express from 'express';
 import request from 'supertest';
 import publicRouter from '../routes/public';
@@ -156,6 +156,14 @@ describe('Public routes', () => {
 
     it('returns 404 for unknown/expired invite and when slot belongs to different studio', async () => {
       const app = makeApp();
+      const originalErr = console.error;
+      const errSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation((...args: any[]) => {
+          const msg = String(args[0] ?? '');
+          if (msg.includes('Error creating booking:')) return;
+          originalErr(...(args as any));
+        });
       const studioA = await createTestStudio();
       const studioB = await createTestStudio();
       const customerA = await createTestCustomer(studioA.id, {
@@ -187,6 +195,7 @@ describe('Public routes', () => {
         .post(`/public/invites/doesnotexist/bookings`)
         .send({ slotId: slotB.id })
         .expect(404);
+      errSpy.mockRestore();
     });
   });
 });

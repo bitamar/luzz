@@ -23,6 +23,14 @@ describe('Admin routes - failure branches', () => {
         },
       }),
     }));
+    const originalErr = console.error;
+    const errSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation((...args: any[]) => {
+        const msg = String(args[0] ?? '');
+        if (msg.includes('Error fetching metrics:')) return;
+        originalErr(...(args as any));
+      });
     const { default: adminRouter } = await import('../routes/admin');
     const app = express();
     app.use(express.json());
@@ -31,6 +39,7 @@ describe('Admin routes - failure branches', () => {
       .get('/admin/metrics')
       .set(await adminAuth())
       .expect(500);
+    errSpy.mockRestore();
   });
 
   it('health returns 503 on DB failure', async () => {
@@ -41,6 +50,14 @@ describe('Admin routes - failure branches', () => {
         },
       }),
     }));
+    const originalErr = console.error;
+    const errSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation((...args: any[]) => {
+        const msg = String(args[0] ?? '');
+        if (msg.includes('Health check failed:')) return;
+        originalErr(...(args as any));
+      });
     const { default: adminRouter } = await import('../routes/admin');
     const app = express();
     app.use(express.json());
@@ -49,6 +66,7 @@ describe('Admin routes - failure branches', () => {
       .get('/admin/health')
       .set(await adminAuth())
       .expect(503);
+    errSpy.mockRestore();
   });
 
   it('database/status returns 500 on DB failure', async () => {
@@ -59,6 +77,14 @@ describe('Admin routes - failure branches', () => {
         },
       }),
     }));
+    const originalErr = console.error;
+    const errSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation((...args: any[]) => {
+        const msg = String(args[0] ?? '');
+        if (msg.includes('Error fetching database status:')) return;
+        originalErr(...(args as any));
+      });
     const { default: adminRouter } = await import('../routes/admin');
     const app = express();
     app.use(express.json());
@@ -67,5 +93,6 @@ describe('Admin routes - failure branches', () => {
       .get('/admin/database/status')
       .set(await adminAuth())
       .expect(500);
+    errSpy.mockRestore();
   });
 });

@@ -28,9 +28,9 @@ export default defineConfig({
     hookTimeout: 30000, // 30 seconds for setup/teardown
     
     // Coverage configuration
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
+      coverage: {
+        provider: 'v8',
+        reporter: ['text', 'json', 'html', 'lcov', 'json-summary'],
       reportsDirectory: './coverage',
         exclude: [
           'node_modules/**',

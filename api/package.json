@@ -14,6 +14,7 @@
     "test": "NODE_ENV=test vitest",
     "test:run": "NODE_ENV=test vitest run",
     "test:coverage": "NODE_ENV=test vitest run --coverage",
+    "ci:coverage": "pnpm test:coverage && node scripts/ci-coverage-summary.js",
     "test:watch": "NODE_ENV=test vitest --coverage",
     "test:ui": "NODE_ENV=test vitest --ui"
   },
