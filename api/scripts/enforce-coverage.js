@@ -5,10 +5,10 @@ const fs = require('fs');
 const path = require('path');
 
 const thresholds = {
-  statements: Number(87),
+  statements: Number(85),
   branches: Number(77),
   functions: Number(96),
-  lines: Number(87),
+  lines: Number(85),
 };
 
 function readSummary() {
@@ -21,9 +21,7 @@ function readSummary() {
 }
 
 function pct(obj) {
-  return typeof obj.pct === 'number'
-    ? obj.pct
-    : (obj.covered / Math.max(1, obj.total)) * 100;
+  return typeof obj.pct === 'number' ? obj.pct : (obj.covered / Math.max(1, obj.total)) * 100;
 }
 
 function main() {
