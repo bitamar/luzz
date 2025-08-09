@@ -65,6 +65,12 @@ function main() {
   } else {
     console.log(content);
   }
+
+  // Also write to a markdown file for PR comment steps
+  const outPath = path.resolve(process.cwd(), 'coverage/coverage-summary.md');
+  fs.mkdirSync(path.dirname(outPath), { recursive: true });
+  fs.writeFileSync(outPath, content + '\n');
+  console.log(`Wrote coverage summary markdown to ${outPath}`);
 }
 
 main();
