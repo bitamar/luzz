@@ -61,5 +61,3 @@ describe('Auth schema', () => {
     expect(hasComposite).toBe(true);
   });
 });
-
-

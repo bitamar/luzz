@@ -99,7 +99,10 @@ async function ensureDatabaseSchema() {
 
     if (missingInitial.length || missingAuth.length) {
       console.log('📦 Missing tables detected, applying schema...');
-      await applyDatabaseSchema({ applyInitial: !!missingInitial.length, applyAuth: !!missingAuth.length });
+      await applyDatabaseSchema({
+        applyInitial: !!missingInitial.length,
+        applyAuth: !!missingAuth.length,
+      });
     } else {
       console.log('✅ Database schema is up to date');
     }
@@ -111,10 +114,17 @@ async function ensureDatabaseSchema() {
 /**
  * Apply database schema from migration file
  */
-async function applyDatabaseSchema(opts: { applyInitial: boolean; applyAuth: boolean }) {
+async function applyDatabaseSchema(opts: {
+  applyInitial: boolean;
+  applyAuth: boolean;
+}) {
   try {
-    const initialPath = await resolveRepoPath('supabase/migrations/20250101000000_initial_schema.sql');
-    const authPath = await resolveRepoPath('supabase/migrations/20250102000000_auth_schema.sql');
+    const initialPath = await resolveRepoPath(
+      'supabase/migrations/20250101000000_initial_schema.sql'
+    );
+    const authPath = await resolveRepoPath(
+      'supabase/migrations/20250102000000_auth_schema.sql'
+    );
     if (opts.applyInitial) {
       const initialSQL = await fs.readFile(initialPath, 'utf-8');
       await db.query(initialSQL);
