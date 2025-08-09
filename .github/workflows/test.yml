@@ -66,7 +66,7 @@ jobs:
       working-directory: ./api
       run: pnpm type-check
     
-    - name: Run tests
+    - name: Run tests with coverage
       working-directory: ./api
       run: pnpm test:coverage
     
@@ -78,14 +78,7 @@ jobs:
         path: api/coverage/
         retention-days: 7
         
-    - name: Generate test summary
+    - name: Coverage summary
       if: always()
-      run: |
-        echo "## Test Results" >> $GITHUB_STEP_SUMMARY
-        echo "✅ Tests completed" >> $GITHUB_STEP_SUMMARY
-        if [ -f api/coverage/coverage-summary.json ]; then
-          echo "📊 Coverage Report" >> $GITHUB_STEP_SUMMARY
-          echo '```json' >> $GITHUB_STEP_SUMMARY
-          cat api/coverage/coverage-summary.json >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-        fi
+      working-directory: ./api
+      run: node scripts/ci-coverage-summary.js
