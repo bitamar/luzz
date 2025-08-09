@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: caddy-config
+data:
+  Caddyfile: |
+    {{ .Values.domain }} {
+      encode gzip
+      reverse_proxy {{ .Values.backendService }}.{{ .Values.backendNamespace }}.svc.cluster.local:{{ .Values.backendPort }}
+    }
+

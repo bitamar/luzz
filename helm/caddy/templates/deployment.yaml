@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: caddy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: caddy
+  template:
+    metadata:
+      labels:
+        app: caddy
+    spec:
+      containers:
+        - name: caddy
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: ["run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+          ports:
+            - name: http
+              containerPort: 80
+              hostPort: {{ .Values.hostPorts.http }}
+              protocol: TCP
+            - name: https
+              containerPort: 443
+              hostPort: {{ .Values.hostPorts.https }}
+              protocol: TCP
+          volumeMounts:
+            - name: caddy-config
+              mountPath: /etc/caddy
+            - name: caddy-data
+              mountPath: /data
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+      volumes:
+        - name: caddy-config
+          configMap:
+            name: caddy-config
+        - name: caddy-data
+          persistentVolumeClaim:
+            claimName: caddy-data
+

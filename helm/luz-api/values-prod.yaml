@@ -2,6 +2,8 @@
 
 replicaCount: 1
 
+fullnameOverride: luz-api
+
 image:
   repository: malshinim/luzapi
   pullPolicy: IfNotPresent
