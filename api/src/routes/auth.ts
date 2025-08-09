@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import type { Response } from 'express';
 import { z } from 'zod';
 import { verifyGoogleIdToken as realVerify } from '../auth/google';
 import { upsertUserFromGoogle } from '../auth/service';
@@ -55,6 +56,25 @@ export default async function buildAuthRouter(deps?: Partial<AuthDeps>) {
       });
     } catch {
       return res.status(401).json({ error: 'invalid token' });
+    }
+  });
+
+  // Admin-only: expose auth config for debugging
+  router.get('/config', async (req, res: Response) => {
+    try {
+      const header = req.headers.authorization || '';
+      const token = header.startsWith('Bearer ') ? header.slice(7) : '';
+      if (!token) return res.status(401).json({ error: 'unauthorized' });
+      const { verifyAccessToken } = await import('../auth/jwt');
+      const claims = await verifyAccessToken(token);
+      if (!claims.isAdmin) return res.status(403).json({ error: 'forbidden' });
+
+      const audiences = (process.env.GOOGLE_CLIENT_IDS || '')
+        .split(',')
+        .filter(Boolean);
+      return res.json({ audiences });
+    } catch {
+      return res.status(401).json({ error: 'unauthorized' });
     }
   });
 

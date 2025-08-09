@@ -1,8 +1,13 @@
 import { Router } from 'express';
 import { getDbClient } from '../db';
+import { requireUser, requireAdmin } from '../middleware/auth';
 import type { BookingStatsRow, PopularStudioRow } from '../types';
 
 const router = Router();
+
+// Admin guard for all admin routes
+router.use(requireUser());
+router.use(requireAdmin());
 
 // GET /admin/metrics - Basic system metrics
 router.get('/metrics', async (req, res) => {
