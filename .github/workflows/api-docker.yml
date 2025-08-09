@@ -61,6 +61,7 @@ jobs:
           port: ${{ env.DEPLOY_PORT }}
           script: |
             set -euo pipefail
+            TAG="sha-${{ github.sha }}"
             cd ~/luzz || git clone https://github.com/bitamar/luzz.git ~/luzz && cd ~/luzz
             git pull --ff-only
             # Ensure prod namespace exists (idempotent)
@@ -70,7 +71,7 @@ jobs:
               -n prod -f helm/luz-api/values-prod.yaml \
               --set fullnameOverride=luz-api \
               --set image.repository=malshinim/luzapi \
-              --set image.tag=sha-${GITHUB_SHA} \
+              --set image.tag=${TAG} \
               --set service.type=ClusterIP
             # Deploy/refresh Caddy
             helm --kubeconfig /etc/rancher/k3s/k3s.yaml upgrade --install caddy ./helm/caddy \
