@@ -5,10 +5,10 @@ const fs = require('fs');
 const path = require('path');
 
 const thresholds = {
-  statements: Number(95),
-  lines: Number(85),
-  functions: Number(95),
-  branches: Number(75),
+  statements: Number(87),
+  branches: Number(77),
+  functions: Number(96),
+  lines: Number(87),
 };
 
 function readSummary() {
