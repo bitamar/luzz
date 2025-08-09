@@ -3,7 +3,11 @@ import express from 'express';
 import request from 'supertest';
 import publicRouter from '../routes/public';
 import { getDbClient } from '../db';
-import { createTestStudio, createTestSlot, createTestCustomer } from './test-helpers';
+import {
+  createTestStudio,
+  createTestSlot,
+  createTestCustomer,
+} from './test-helpers';
 
 function makeApp() {
   const app = express();
@@ -13,7 +17,6 @@ function makeApp() {
 }
 
 describe('Public routes', () => {
-
   describe('GET /public/:slug/slots', () => {
     let slug: string;
     beforeEach(async () => {
@@ -80,10 +83,10 @@ describe('Public routes', () => {
     it('creates booking for adult slot and validates slotId', async () => {
       const app = makeApp();
       const studio = await createTestStudio();
-      const customer = await createTestCustomer(
-        studio.id,
-        { first_name: 'Cust', contact_email: 'c@e.x' } as any
-      );
+      const customer = await createTestCustomer(studio.id, {
+        first_name: 'Cust',
+        contact_email: 'c@e.x',
+      } as any);
       const slot = await createTestSlot(studio.id, {
         title: 'Adult',
         startsAt: new Date().toISOString(),
@@ -115,10 +118,10 @@ describe('Public routes', () => {
     it('enforces child requirement for children slot and allows with child data', async () => {
       const app = makeApp();
       const studio = await createTestStudio();
-      const customer = await createTestCustomer(
-        studio.id,
-        { first_name: 'Par', contact_email: 'p@q.z' } as any
-      );
+      const customer = await createTestCustomer(studio.id, {
+        first_name: 'Par',
+        contact_email: 'p@q.z',
+      } as any);
       const slot = await createTestSlot(studio.id, {
         title: 'Kids',
         startsAt: new Date().toISOString(),
@@ -144,7 +147,10 @@ describe('Public routes', () => {
       // Provide child data -> 201
       await request(app)
         .post(`/public/invites/${inv.rows[0].short_hash}/bookings`)
-        .send({ slotId: slot.id, child: { firstName: 'Kiddo', avatarKey: 'av1' } })
+        .send({
+          slotId: slot.id,
+          child: { firstName: 'Kiddo', avatarKey: 'av1' },
+        })
         .expect(201);
     });
 
@@ -152,10 +158,10 @@ describe('Public routes', () => {
       const app = makeApp();
       const studioA = await createTestStudio();
       const studioB = await createTestStudio();
-      const customerA = await createTestCustomer(
-        studioA.id,
-        { first_name: 'AA', contact_email: 'aa@aa.aa' } as any
-      );
+      const customerA = await createTestCustomer(studioA.id, {
+        first_name: 'AA',
+        contact_email: 'aa@aa.aa',
+      } as any);
       const slotB = await createTestSlot(studioB.id, {
         title: 'B slot',
         startsAt: new Date().toISOString(),
@@ -184,5 +190,3 @@ describe('Public routes', () => {
     });
   });
 });
-
-

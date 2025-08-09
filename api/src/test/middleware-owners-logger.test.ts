@@ -10,9 +10,11 @@ function appWithOwnerRoute() {
     '/studios/:studioId/owners-only',
     // stub user middleware
     (req, _res, next) => {
-      (req as any).user = (req.headers['x-user']
-        ? { userId: String(req.headers['x-user']), isAdmin: false }
-        : undefined) as any;
+      (req as any).user = (
+        req.headers['x-user']
+          ? { userId: String(req.headers['x-user']), isAdmin: false }
+          : undefined
+      ) as any;
       next();
     },
     requireStudioOwner(),
@@ -72,5 +74,3 @@ describe('middleware: requireStudioOwner and requestLogger', () => {
     await request(app).get('/bad').expect(400);
   });
 });
-
-

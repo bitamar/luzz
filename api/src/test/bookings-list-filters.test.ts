@@ -2,7 +2,11 @@ import { describe, it, expect } from 'vitest';
 import express from 'express';
 import request from 'supertest';
 import bookingsRouter from '../routes/bookings';
-import { createTestStudio, createTestSlot, createTestCustomer } from './test-helpers';
+import {
+  createTestStudio,
+  createTestSlot,
+  createTestCustomer,
+} from './test-helpers';
 
 function appFactory() {
   const app = express();
@@ -93,5 +97,3 @@ describe('Bookings list filters', () => {
     expect(q5.body.length).toBeGreaterThanOrEqual(2);
   });
 });
-
-

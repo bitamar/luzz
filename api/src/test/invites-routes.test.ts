@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest';
 import express from 'express';
 import request from 'supertest';
 import invitesRouter from '../routes/invites';
-import { getDbClient } from '../db';
 import { createTestStudio } from './test-helpers';
 
 function makeApp() {
@@ -15,7 +14,6 @@ function makeApp() {
 describe('Invites routes', () => {
   it('POST /invites creates invite and returns URL', async () => {
     const app = makeApp();
-    const client = getDbClient();
     const studio = await createTestStudio();
 
     const res = await request(app)
@@ -42,7 +40,10 @@ describe('Invites routes', () => {
     // Unknown studio
     await request(app)
       .post('/invites')
-      .send({ studioId: '550e8400-e29b-41d4-a716-446655440000', customer: { firstName: 'A', email: 'a@b.co' } })
+      .send({
+        studioId: '550e8400-e29b-41d4-a716-446655440000',
+        customer: { firstName: 'A', email: 'a@b.co' },
+      })
       .expect(404);
 
     // Validation
@@ -62,5 +63,3 @@ describe('Invites routes', () => {
     expect(res3.body).toHaveProperty('short_hash');
   });
 });
-
-

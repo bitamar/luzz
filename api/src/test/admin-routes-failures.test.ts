@@ -27,7 +27,10 @@ describe('Admin routes - failure branches', () => {
     const app = express();
     app.use(express.json());
     app.use('/admin', adminRouter);
-    await request(app).get('/admin/metrics').set(await adminAuth()).expect(500);
+    await request(app)
+      .get('/admin/metrics')
+      .set(await adminAuth())
+      .expect(500);
   });
 
   it('health returns 503 on DB failure', async () => {
@@ -42,7 +45,10 @@ describe('Admin routes - failure branches', () => {
     const app = express();
     app.use(express.json());
     app.use('/admin', adminRouter);
-    await request(app).get('/admin/health').set(await adminAuth()).expect(503);
+    await request(app)
+      .get('/admin/health')
+      .set(await adminAuth())
+      .expect(503);
   });
 
   it('database/status returns 500 on DB failure', async () => {
@@ -63,5 +69,3 @@ describe('Admin routes - failure branches', () => {
       .expect(500);
   });
 });
-
-

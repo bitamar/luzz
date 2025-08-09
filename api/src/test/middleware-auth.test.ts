@@ -1,11 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import express from 'express';
 import request from 'supertest';
-import {
-  requireApiKey,
-  optionalAuth,
-  rateLimit,
-} from '../middleware/auth';
+import { requireApiKey, optionalAuth, rateLimit } from '../middleware/auth';
 
 describe('middleware: auth basics', () => {
   it('requireApiKey: 401 without key; 403 invalid; 200 with valid', async () => {
@@ -44,5 +40,3 @@ describe('middleware: auth basics', () => {
     expect(r3.body).toHaveProperty('retryAfter');
   });
 });
-
-

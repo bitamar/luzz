@@ -36,7 +36,7 @@ describe('Customers routes', () => {
       .expect(400);
 
     // duplicate detection by phone
-    const byPhone = await request(app)
+    await request(app)
       .post(`/studios/${studio.id}/customers`)
       .send({ firstName: 'Pho', contactPhone: '+155501' })
       .expect(201);
@@ -49,7 +49,10 @@ describe('Customers routes', () => {
   it('GET /studios/:studioId/customers lists customers', async () => {
     const app = makeApp();
     const studio = await createTestStudio();
-    await createTestCustomer(studio.id, { first_name: 'A', contact_email: 'a@b.co' } as any);
+    await createTestCustomer(studio.id, {
+      first_name: 'A',
+      contact_email: 'a@b.co',
+    } as any);
 
     const res = await request(app)
       .get(`/studios/${studio.id}/customers`)
@@ -63,7 +66,10 @@ describe('Customers routes', () => {
   it('GET /customers/:id returns details; PATCH updates fields; DELETE removes', async () => {
     const app = makeApp();
     const studio = await createTestStudio();
-    const customer = await createTestCustomer(studio.id, { first_name: 'X', contact_email: 'x@y.z' } as any);
+    const customer = await createTestCustomer(studio.id, {
+      first_name: 'X',
+      contact_email: 'x@y.z',
+    } as any);
 
     const get = await request(app).get(`/customers/${customer.id}`).expect(200);
     expect(get.body.id).toBe(customer.id);
@@ -76,19 +82,23 @@ describe('Customers routes', () => {
 
     await request(app).patch(`/customers/${customer.id}`).send({}).expect(400);
 
-    const del = await request(app).delete(`/customers/${customer.id}`).expect(200);
+    const del = await request(app)
+      .delete(`/customers/${customer.id}`)
+      .expect(200);
     expect(del.body).toHaveProperty('deleted');
 
     await request(app).get(`/customers/${customer.id}`).expect(404);
 
     // 404 not found branches
-    await request(app).get('/customers/550e8400-e29b-41d4-a716-446655440099').expect(404);
+    await request(app)
+      .get('/customers/550e8400-e29b-41d4-a716-446655440099')
+      .expect(404);
     await request(app)
       .patch('/customers/550e8400-e29b-41d4-a716-446655440099')
       .send({ firstName: 'X' })
       .expect(404);
-    await request(app).delete('/customers/550e8400-e29b-41d4-a716-446655440099').expect(404);
+    await request(app)
+      .delete('/customers/550e8400-e29b-41d4-a716-446655440099')
+      .expect(404);
   });
 });
-
-

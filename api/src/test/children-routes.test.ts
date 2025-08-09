@@ -16,7 +16,10 @@ describe('Children routes', () => {
   it('POST /customers/:customerId/children creates child; list returns children', async () => {
     const app = makeApp();
     const studio = await createTestStudio();
-    const customer = await createTestCustomer(studio.id, { first_name: 'P', contact_email: 'p@q.r' } as any);
+    const customer = await createTestCustomer(studio.id, {
+      first_name: 'P',
+      contact_email: 'p@q.r',
+    } as any);
 
     const create = await request(app)
       .post(`/customers/${customer.id}/children`)
@@ -43,21 +46,24 @@ describe('Children routes', () => {
       .expect(404);
 
     // invalid customer id format on list
-    await request(app)
-      .get('/customers/not-a-uuid/children')
-      .expect(400);
+    await request(app).get('/customers/not-a-uuid/children').expect(400);
   });
 
   it('GET/PATCH/DELETE /children/:id', async () => {
     const app = makeApp();
     const studio = await createTestStudio();
-    const customer = await createTestCustomer(studio.id, { first_name: 'Q', contact_email: 'q@w.e' } as any);
+    const customer = await createTestCustomer(studio.id, {
+      first_name: 'Q',
+      contact_email: 'q@w.e',
+    } as any);
     const created = await request(app)
       .post(`/customers/${customer.id}/children`)
       .send({ firstName: 'Zed', avatarKey: 'av' })
       .expect(201);
 
-    const got = await request(app).get(`/children/${created.body.id}`).expect(200);
+    const got = await request(app)
+      .get(`/children/${created.body.id}`)
+      .expect(200);
     expect(got.body.first_name).toBe('Zed');
 
     const patched = await request(app)
@@ -66,7 +72,9 @@ describe('Children routes', () => {
       .expect(200);
     expect(patched.body.first_name).toBe('Z');
 
-    const del = await request(app).delete(`/children/${created.body.id}`).expect(200);
+    const del = await request(app)
+      .delete(`/children/${created.body.id}`)
+      .expect(200);
     expect(del.body).toHaveProperty('deleted');
 
     // invalid id
@@ -75,13 +83,15 @@ describe('Children routes', () => {
     await request(app).delete('/children/not-a-uuid').expect(400);
 
     // 404 not found branches
-    await request(app).get('/children/550e8400-e29b-41d4-a716-446655440099').expect(404);
+    await request(app)
+      .get('/children/550e8400-e29b-41d4-a716-446655440099')
+      .expect(404);
     await request(app)
       .patch('/children/550e8400-e29b-41d4-a716-446655440099')
       .send({ firstName: 'Y' })
       .expect(404);
-    await request(app).delete('/children/550e8400-e29b-41d4-a716-446655440099').expect(404);
+    await request(app)
+      .delete('/children/550e8400-e29b-41d4-a716-446655440099')
+      .expect(404);
   });
 });
-
-

@@ -68,5 +68,3 @@ describe('Admin routes', () => {
     expect(res.body).toHaveProperty('tables');
   });
 });
-
-

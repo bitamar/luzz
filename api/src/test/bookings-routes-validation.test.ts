@@ -2,7 +2,11 @@ import { describe, it, expect } from 'vitest';
 import express from 'express';
 import request from 'supertest';
 import bookingsRouter from '../routes/bookings';
-import { createTestStudio, createTestSlot, createTestCustomer } from './test-helpers';
+import {
+  createTestStudio,
+  createTestSlot,
+  createTestCustomer,
+} from './test-helpers';
 import { getDbClient } from '../db';
 
 function appFactory() {
@@ -114,5 +118,3 @@ describe('Bookings routes - validations and 404s', () => {
     expect(listPaid.body.length).toBeGreaterThanOrEqual(1);
   });
 });
-
-
