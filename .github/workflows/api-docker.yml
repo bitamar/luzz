@@ -70,7 +70,7 @@ jobs:
               -n prod -f helm/luz-api/values-prod.yaml \
               --set fullnameOverride=luz-api \
               --set image.repository=malshinim/luzapi \
-              --set image.tag=latest \
+              --set image.tag=sha-${GITHUB_SHA} \
               --set service.type=ClusterIP
             # Deploy/refresh Caddy
             helm --kubeconfig /etc/rancher/k3s/k3s.yaml upgrade --install caddy ./helm/caddy \
