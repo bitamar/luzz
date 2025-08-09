@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -89,7 +93,7 @@ jobs:
       run: node scripts/ci-coverage-summary.js
 
     - name: Comment coverage on PR
-      if: ${{ github.event_name == 'pull_request' }}
+      if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
       uses: marocchino/sticky-pull-request-comment@v2
       with:
         recreate: true
