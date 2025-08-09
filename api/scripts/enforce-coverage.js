@@ -5,10 +5,10 @@ const fs = require('fs');
 const path = require('path');
 
 const thresholds = {
-  statements: Number(process.env.COV_STATEMENTS || 85),
-  lines: Number(process.env.COV_LINES || 85),
-  functions: Number(process.env.COV_FUNCTIONS || 90),
-  branches: Number(process.env.COV_BRANCHES || 75),
+  statements: Number(95),
+  lines: Number(85),
+  functions: Number(95),
+  branches: Number(75),
 };
 
 function readSummary() {
@@ -21,7 +21,9 @@ function readSummary() {
 }
 
 function pct(obj) {
-  return typeof obj.pct === 'number' ? obj.pct : (obj.covered / Math.max(1, obj.total)) * 100;
+  return typeof obj.pct === 'number'
+    ? obj.pct
+    : (obj.covered / Math.max(1, obj.total)) * 100;
 }
 
 function main() {
@@ -50,5 +52,3 @@ function main() {
 }
 
 main();
-
-
