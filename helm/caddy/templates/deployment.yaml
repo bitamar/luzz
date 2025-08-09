@@ -30,6 +30,8 @@ spec:
           volumeMounts:
             - name: caddy-config
               mountPath: /etc/caddy
+            - name: caddy-runtime
+              mountPath: /config
             - name: caddy-data
               mountPath: /data
           securityContext:
@@ -39,6 +41,8 @@ spec:
         - name: caddy-config
           configMap:
             name: caddy-config
+        - name: caddy-runtime
+          emptyDir: {}
         - name: caddy-data
           persistentVolumeClaim:
             claimName: caddy-data
