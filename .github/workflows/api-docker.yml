@@ -66,6 +66,12 @@ jobs:
             git pull --ff-only
             # Ensure prod namespace exists (idempotent)
             kubectl create namespace prod --dry-run=client -o yaml | kubectl apply -f -
+            # Ensure Docker Hub pull secret exists in prod (idempotent)
+            kubectl -n prod create secret docker-registry dockerhub-cred \
+              --docker-server=https://index.docker.io/v1/ \
+              --docker-username="${{ secrets.DOCKERHUB_USERNAME }}" \
+              --docker-password="${{ secrets.DOCKERHUB_TOKEN }}" \
+              --dry-run=client -o yaml | kubectl apply -f -
             # Deploy API using latest image
             helm --kubeconfig /etc/rancher/k3s/k3s.yaml upgrade --install luz-api ./helm/luz-api \
               -n prod -f helm/luz-api/values-prod.yaml \
