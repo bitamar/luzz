@@ -7,6 +7,9 @@ image:
   pullPolicy: IfNotPresent
   tag: "latest" # CI will typically override with sha-<commit>
 
+imagePullSecrets:
+  - name: dockerhub-cred
+
 service:
   type: ClusterIP
   port: 80
