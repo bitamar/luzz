@@ -46,14 +46,19 @@ jobs:
     name: Deploy to k3s
     needs: docker
     runs-on: ubuntu-latest
+    env:
+      DEPLOY_HOST: ${{ vars.SSH_HOST }}
+      DEPLOY_USER: ${{ vars.SSH_USER }}
+      DEPLOY_PORT: ${{ vars.SSH_PORT }}
+      DEPLOY_KEY: ${{ secrets.SSH_KEY }}
     steps:
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT || 22 }}
+          host: ${{ env.DEPLOY_HOST }}
+          username: ${{ env.DEPLOY_USER }}
+          key: ${{ env.DEPLOY_KEY }}
+          port: ${{ env.DEPLOY_PORT }}
           script: |
             set -euo pipefail
             cd ~/luzz || git clone https://github.com/bitamar/luzz.git ~/luzz && cd ~/luzz
