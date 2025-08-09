@@ -76,17 +76,7 @@ async function verifyTestDatabase() {
  */
 async function ensureDatabaseSchema() {
   try {
-    // Check if tables exist, if not apply schema
-    const tablesQuery = `
-      SELECT table_name 
-      FROM information_schema.tables 
-      WHERE table_schema = 'public' 
-      AND table_name IN ('studios', 'customers', 'slots', 'invites', 'children', 'bookings')
-    `;
-
-    const result = await db.query(tablesQuery);
-    const existingTables = result.rows.map(row => row.table_name);
-    const requiredTables = [
+    const initialTables = [
       'studios',
       'customers',
       'slots',
@@ -94,14 +84,22 @@ async function ensureDatabaseSchema() {
       'children',
       'bookings',
     ];
+    const authTables = ['users', 'studio_owners'];
 
-    const missingTables = requiredTables.filter(
-      table => !existingTables.includes(table)
-    );
+    const tablesQuery = `
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_schema = 'public'
+    `;
+    const result = await db.query(tablesQuery);
+    const existingTables = new Set(result.rows.map(row => row.table_name));
 
-    if (missingTables.length > 0) {
+    const missingInitial = initialTables.filter(t => !existingTables.has(t));
+    const missingAuth = authTables.filter(t => !existingTables.has(t));
+
+    if (missingInitial.length || missingAuth.length) {
       console.log('📦 Missing tables detected, applying schema...');
-      await applyDatabaseSchema();
+      await applyDatabaseSchema({ applyInitial: !!missingInitial.length, applyAuth: !!missingAuth.length });
     } else {
       console.log('✅ Database schema is up to date');
     }
@@ -113,19 +111,39 @@ async function ensureDatabaseSchema() {
 /**
  * Apply database schema from migration file
  */
-async function applyDatabaseSchema() {
+async function applyDatabaseSchema(opts: { applyInitial: boolean; applyAuth: boolean }) {
   try {
-    const migrationPath = path.join(
-      __dirname,
-      '../../supabase/migrations/20250101000000_initial_schema.sql'
-    );
-    const migrationSQL = await fs.readFile(migrationPath, 'utf-8');
-
-    await db.query(migrationSQL);
+    const initialPath = await resolveRepoPath('supabase/migrations/20250101000000_initial_schema.sql');
+    const authPath = await resolveRepoPath('supabase/migrations/20250102000000_auth_schema.sql');
+    if (opts.applyInitial) {
+      const initialSQL = await fs.readFile(initialPath, 'utf-8');
+      await db.query(initialSQL);
+    }
+    if (opts.applyAuth && (await fileExists(authPath))) {
+      const authSQL = await fs.readFile(authPath, 'utf-8');
+      await db.query(authSQL);
+    }
     console.log('✅ Database schema applied successfully');
   } catch (error) {
     throw new Error(`Failed to apply database schema: ${error}`);
   }
+}
+
+async function fileExists(p: string): Promise<boolean> {
+  try {
+    await fs.access(p);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function resolveRepoPath(relativeFromRoot: string): Promise<string> {
+  const try1 = path.resolve(process.cwd(), '..', relativeFromRoot);
+  if (await fileExists(try1)) return try1;
+  const try2 = path.resolve(__dirname, '../../../', relativeFromRoot);
+  if (await fileExists(try2)) return try2;
+  return path.resolve(relativeFromRoot);
 }
 
 /**

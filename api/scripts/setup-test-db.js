@@ -19,6 +19,9 @@ const config = {
     __dirname,
     '../../supabase/migrations/20250101000000_initial_schema.sql'
   ),
+  extraMigrations: [
+    path.join(__dirname, '../../supabase/migrations/20250102000000_auth_schema.sql'),
+  ],
   isCI: process.env.CI === 'true',
 };
 
@@ -87,6 +90,11 @@ function applySchema() {
   }
 
   execCommand(`psql "${config.testDb}" < "${config.migrationPath}"`);
+  for (const extra of config.extraMigrations) {
+    if (fs.existsSync(extra)) {
+      execCommand(`psql "${config.testDb}" < "${extra}"`);
+    }
+  }
   console.log('✅ Database schema applied successfully');
 }
 
