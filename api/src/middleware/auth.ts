@@ -124,9 +124,7 @@ export function requestLogger(
       url: req.originalUrl,
       status: res.statusCode,
       duration: `${duration}ms`,
-      apiKey: req.apiKey
-        ? `${String(req.apiKey).substring(0, 6)}...`
-        : 'none',
+      apiKey: req.apiKey ? `${String(req.apiKey).substring(0, 6)}...` : 'none',
       userAgent: req.get('User-Agent'),
       ip: req.ip,
       timestamp: new Date().toISOString(),

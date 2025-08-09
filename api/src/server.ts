@@ -5,8 +5,12 @@ import slots from './routes/slots';
 import invites from './routes/invites';
 import publicApi from './routes/public';
 import bookings from './routes/bookings';
-import studioCustomers, { customersRouter as customersByIdRouter } from './routes/customers';
-import customerChildren, { childrenRouter as childrenByIdRouter } from './routes/children';
+import studioCustomers, {
+  customersRouter as customersByIdRouter,
+} from './routes/customers';
+import customerChildren, {
+  childrenRouter as childrenByIdRouter,
+} from './routes/children';
 import admin from './routes/admin';
 import {
   requireApiKey,

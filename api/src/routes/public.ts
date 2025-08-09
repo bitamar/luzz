@@ -136,7 +136,13 @@ router.post('/invites/:hash/bookings', async (req, res) => {
 
     // Get slot_id from request body (should be added to schema)
     const slotId = req.body.slotId;
-    if (!slotId || typeof slotId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slotId)) {
+    if (
+      !slotId ||
+      typeof slotId !== 'string' ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        slotId
+      )
+    ) {
       return res.status(400).json({ error: 'slotId must be a valid UUID' });
     }
 
