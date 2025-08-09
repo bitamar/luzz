@@ -6,7 +6,7 @@
  * Completely resets the test database by dropping and recreating it
  */
 
-import { execSync } from 'node:child_process';
+const { execSync } = require('child_process');
 
 // Configuration
 const config = {
