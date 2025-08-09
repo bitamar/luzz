@@ -45,30 +45,30 @@ jobs:
   deploy:
     name: Deploy to k3s
     needs: docker
-    runs-on: self-hosted
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Ensure namespace exists
-        run: |
-          kubectl create namespace luz-api --dry-run=client -o yaml | kubectl apply -f -
-
-      - name: Apply database secret
-        run: |
-          kubectl -n luz-api create secret generic supabase-db \
-            --from-literal=DATABASE_URL="$DATABASE_URL" \
-            --dry-run=client -o yaml | kubectl apply -f -
-
-      - name: Helm upgrade/install
-        run: |
-          helm upgrade --install luz-api ./helm/luz-api \
-            --namespace luz-api \
-            --create-namespace \
-            -f helm/luz-api/values-prod.yaml \
-            --set image.repository=malshinim/luzapi \
-            --set image.tag=sha-${GITHUB_SHA}
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            set -euo pipefail
+            cd ~/luzz || git clone https://github.com/bitamar/luzz.git ~/luzz && cd ~/luzz
+            git pull --ff-only
+            # Ensure prod namespace exists (idempotent)
+            kubectl create namespace prod --dry-run=client -o yaml | kubectl apply -f -
+            # Deploy API using latest image
+            helm --kubeconfig /etc/rancher/k3s/k3s.yaml upgrade --install luz-api ./helm/luz-api \
+              -n prod -f helm/luz-api/values-prod.yaml \
+              --set fullnameOverride=luz-api \
+              --set image.repository=malshinim/luzapi \
+              --set image.tag=latest \
+              --set service.type=ClusterIP
+            # Deploy/refresh Caddy
+            helm --kubeconfig /etc/rancher/k3s/k3s.yaml upgrade --install caddy ./helm/caddy \
+              -n prod --set backendNamespace=prod --set backendService=luz-api
 
 

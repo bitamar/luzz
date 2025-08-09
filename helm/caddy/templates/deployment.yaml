@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: caddy
 spec:
+  strategy:
+    type: Recreate
   replicas: 1
   selector:
     matchLabels:
