@@ -160,10 +160,10 @@ apps/
 
 #### Monorepo structure
 
-- [ ] Create directories: `apps/dock`, `apps/sail`, `apps/hq`, `packages/*`
-- [ ] Add `packages/tsconfig` with base `tsconfig.base.json`
-- [ ] Add `packages/eslint-config` and wire ESLint to use it
-- [ ] Add `packages/config` with runtime config types and a loader stub
+- [x] Create directories: `apps/dock`, `apps/sail`, `apps/hq`, `packages/*`
+- [x] Add `packages/tsconfig` with base `tsconfig.base.json`
+- [x] Add `packages/eslint-config` and wire ESLint to use it
+- [x] Add `packages/config` with runtime config types and a loader stub
 
 #### SvelteKit apps scaffolding
 
