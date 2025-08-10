@@ -8,8 +8,23 @@ Tooling baseline
 Quick start
 
 ```sh
+# install
 pnpm i
+
+# run any app in dev
+pnpm -F @apps/dock dev
+pnpm -F @apps/sail dev
+pnpm -F @apps/hq dev
+
+# build all (turbo)
 pnpm -w build
+
+# run tests (vitest projects)
+pnpm vitest run
+
+# optional
+pnpm -w lint
+pnpm -w typecheck
 ```
 
 Workspace structure (planned)

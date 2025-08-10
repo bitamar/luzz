@@ -1,0 +1,24 @@
+{
+  "name": "@apps/dock",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "svelte-kit build",
+    "preview": "svelte-kit preview",
+    "lint": "echo 'noop'",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "echo 'noop'"
+  },
+  "dependencies": {
+    "@sveltejs/kit": "^2.7.0",
+    "svelte": "^5.0.0"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-node": "^5.2.0",
+    "@types/node": "^20.11.0",
+    "typescript": "^5.4.0",
+    "vite": "^6.3.0"
+  }
+}
+

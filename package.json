@@ -7,8 +7,13 @@
     "dev": "turbo dev",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
-    "test": "turbo test",
+    "test": "vitest run",
+    "test:fe": "vitest run --project dock --project sail --project hq --project packages",
     "test:e2e": "turbo test:e2e"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "jsdom": "^26.1.0",
+    "vitest": "^3.2.4"
   }
 }
-

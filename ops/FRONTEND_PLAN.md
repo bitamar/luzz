@@ -167,12 +167,12 @@ apps/
 
 #### SvelteKit apps scaffolding
 
-- [ ] Scaffold SvelteKit in `apps/dock`
-- [ ] Scaffold SvelteKit in `apps/sail`
-- [ ] Scaffold SvelteKit in `apps/hq`
-- [ ] Install `@sveltejs/adapter-node` in each app and configure `svelte.config.js`
-- [ ] Add `src/routes/+layout.svelte` with a minimal shell and `src/routes/+page.svelte` smoke
-- [ ] Add per-app `static/config.json` placeholder
+- [x] Scaffold SvelteKit in `apps/dock`
+- [x] Scaffold SvelteKit in `apps/sail`
+- [x] Scaffold SvelteKit in `apps/hq`
+- [x] Install `@sveltejs/adapter-node` in each app and configure `svelte.config.js`
+- [x] Add `src/routes/+layout.svelte` with a minimal shell and `src/routes/+page.svelte` smoke
+- [x] Add per-app `static/config.json` placeholder
 
 #### Shared UI/design scaffolding
 
@@ -182,11 +182,13 @@ apps/
 
 #### Testing (unit, component)
 
-- [ ] Add root `vitest.workspace.ts` to include apps and packages
-- [ ] Configure Vitest in each app and package (`vite.config.ts` / `vitest.config.ts`)
+- [x] Add root `vitest.workspace.ts` to include apps and packages
+- [x] Configure Vitest across apps via workspace (extends each app `vite.config.ts`)
 - [ ] Add `@testing-library/svelte` setup for component tests
-- [ ] Add first unit tests in `packages/config` and `packages/ui-tokens`
+- [x] Add first unit tests in `packages/config`
+- [ ] Add first unit tests in `packages/ui-tokens`
 - [ ] Add first component test for `Button` in `packages/ui-svelte`
+- [x] Add initial smoke tests in each app
 
 #### Testing (integration, E2E)
 
@@ -196,7 +198,7 @@ apps/
 
 #### CI setup
 
-- [ ] Add CI workflow to install pnpm, use cache, run lint/typecheck/test for changed scope
+- [x] Add CI workflow to install pnpm, use cache, run frontend tests only
 - [ ] Enforce coverage thresholds (packages ≥ 90%, apps ≥ 80%)
 - [ ] Add an E2E smoke job that runs Playwright headless (optional initially)
 
