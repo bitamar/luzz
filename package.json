@@ -1,0 +1,14 @@
+{
+  "name": "luzz-monorepo",
+  "private": true,
+  "packageManager": "pnpm@10.3.0",
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "test": "turbo test",
+    "test:e2e": "turbo test:e2e"
+  }
+}
+
