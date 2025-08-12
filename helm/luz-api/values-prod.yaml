@@ -7,7 +7,7 @@ fullnameOverride: luz-api
 image:
   repository: malshinim/luzapi
   pullPolicy: IfNotPresent
-  tag: "latest" # CI will typically override with sha-<commit>
+  tag: 'latest' # CI will typically override with sha-<commit>
 
 imagePullSecrets:
   - name: dockerhub-cred
@@ -19,7 +19,7 @@ service:
 
 env:
   NODE_ENV: production
-  PORT: "3000"
+  PORT: '3000'
 
 # Secret configuration (must pre-exist in the namespace)
 secret:
@@ -46,5 +46,3 @@ healthCheck:
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 6
-
-

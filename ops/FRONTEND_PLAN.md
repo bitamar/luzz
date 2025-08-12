@@ -51,6 +51,9 @@ Subdomains (example):
 - **Data**: typed `api-sdk` from OpenAPI; use `event.fetch` on server loads/actions
 - **Testing**: Vitest (unit), @testing-library/svelte (component), Playwright (E2E), contract tests for OpenAPI
 - **Build/CI**: Turborepo + pnpm, per-app Docker images; Helm/Caddy for routing
+- **Build tool routing (decision)**: Use Vite for build/dev/preview commands; use `svelte-kit` only for `sync`.
+  - Each app must include `src/app.html` (SvelteKit 2 requirement) and set `tsconfig.json` to extend `./.svelte-kit/tsconfig.json`.
+  - Root `vitest.config.ts` will define named projects so CI can filter reliably.
 
 ## Auth and sessions
 
@@ -87,19 +90,19 @@ Subdomains (example):
 
 ### Testing layers (from fast to slow)
 
-1) **Unit (packages)**
+1. **Unit (packages)**
    - Scope: pure functions, auth helpers, token parsing, schema validation, API client utilities.
    - Tools: Vitest + ts-node/tsup; 95–100% coverage target on small utilities.
 
-2) **Component (apps + `ui-svelte`)**
+2. **Component (apps + `ui-svelte`)**
    - Scope: Bits-based components (focus, keyboard nav), form widgets, dialogs.
    - Tools: @testing-library/svelte + Vitest; add `axe-core`/`vitest-axe` for a11y checks on key components.
 
-3) **Integration (SvelteKit)**
+3. **Integration (SvelteKit)**
    - Scope: route `load`/`actions` with mocked `api-sdk` and cookies; auth guards in `hooks.server`.
    - Tools: Vitest running SvelteKit in test mode; MSW (or SDK-level mocks) for HTTP.
 
-4) **E2E (per app)**
+4. **E2E (per app)**
    - Scope: critical journeys (login, invite accept, book slot, create slot, admin views).
    - Tools: Playwright; run against ephemeral test env seeded via existing `api/scripts/*`.
 
@@ -118,6 +121,7 @@ Subdomains (example):
   - Unit + component + integration tests must pass with coverage ≥ 90% for `packages/*`, ≥ 80% for `apps/*`.
   - Playwright smoke suite must pass on PR (full E2E nightly).
   - Contract check: OpenAPI drift detection; regenerate `api-sdk` and fail if diff not committed.
+- Vitest projects are named in `vitest.config.ts` and CI runs `pnpm test:fe` (or equivalent `--project` filters matching names).
 
 ### Test organization
 
@@ -135,17 +139,17 @@ apps/
 
 ### Initial milestones (TDD-driven)
 
-1) Workspace setup: Turborepo, pnpm, SvelteKit scaffolds, adapter-node, Vitest/Playwright setup.
+1. Workspace setup: Turborepo, pnpm, SvelteKit scaffolds, adapter-node, Vitest/Playwright setup.
    - Red: failing CI skeleton (no tests) → Green: minimal sanity test per app.
-2) `ui-tokens` + `ui-svelte` base (Button, Input, Select, Dialog, Toast).
+2. `ui-tokens` + `ui-svelte` base (Button, Input, Select, Dialog, Toast).
    - Start with component tests for focus/keyboard/a11y; then wire into a sample page.
-3) Auth foundation: `@luzz/auth`, `@luzz/auth-svelte`, `hooks.server` guard, login redirect.
+3. Auth foundation: `@luzz/auth`, `@luzz/auth-svelte`, `hooks.server` guard, login redirect.
    - Integration tests for guard + role redirects; Playwright test for login flow.
-4) Sail invite flow (no CSR): form validation, token verify, account/child creation.
+4. Sail invite flow (no CSR): form validation, token verify, account/child creation.
    - E2E: open invite link → successful signup → redirect to dashboard; integration tests for actions.
-5) Dock: slots CRUD with actions; optimistic UX optional later.
+5. Dock: slots CRUD with actions; optimistic UX optional later.
    - Component tests for form widgets; integration for actions; E2E happy path.
-6) HQ: read-only dashboards → management tools next.
+6. HQ: read-only dashboards → management tools next.
    - E2E smoke; integration tests for access control.
 
 ### Milestone 1 — Workspace setup (detailed checklist)
@@ -156,6 +160,7 @@ apps/
 - [x] Enable pnpm in repo (document version in `README`)
 - [x] Add `pnpm-workspace.yaml` covering `apps/*` and `packages/*`
 - [x] Add `turbo.json` with pipelines for build/test/lint/typecheck
+- [ ] Add `turbo` as a root devDependency so `turbo build` works in scripts/CI
 - [x] Root `README` section for dev setup and commands
 
 #### Monorepo structure
@@ -173,6 +178,8 @@ apps/
 - [x] Install `@sveltejs/adapter-node` in each app and configure `svelte.config.js`
 - [x] Add `src/routes/+layout.svelte` with a minimal shell and `src/routes/+page.svelte` smoke
 - [x] Add per-app `static/config.json` placeholder
+- [ ] Add `src/app.html` to each app (required by SvelteKit 2)
+- [ ] Update each app `tsconfig.json` to `extends: "./.svelte-kit/tsconfig.json"`
 
 #### Shared UI/design scaffolding
 
@@ -182,8 +189,9 @@ apps/
 
 #### Testing (unit, component)
 
-- [x] Add root `vitest.workspace.ts` to include apps and packages
-- [x] Configure Vitest across apps via workspace (extends each app `vite.config.ts`)
+- [x] Add root `vitest.config.ts` with projects for `apps/*` and `packages/*`
+- [ ] Add `name` for each project in `vitest.config.ts` (so CI filters match)
+- [ ] Ensure CI uses named project filters or `pnpm test:fe`
 - [ ] Add `@testing-library/svelte` setup for component tests
 - [x] Add first unit tests in `packages/config`
 - [ ] Add first unit tests in `packages/ui-tokens`
@@ -199,26 +207,37 @@ apps/
 #### CI setup
 
 - [x] Add CI workflow to install pnpm, use cache, run frontend tests only
+- [ ] Update CI test step to run `pnpm test:fe` or align `--project` filters with named projects
 - [ ] Enforce coverage thresholds (packages ≥ 90%, apps ≥ 80%)
 - [ ] Add an E2E smoke job that runs Playwright headless (optional initially)
 
 #### Scripts and DX
 
-- [ ] Root scripts: `build`, `dev`, `lint`, `typecheck`, `test`, `test:e2e`
+- [x] Root scripts: `build`, `dev`, `lint`, `typecheck`, `test`, `test:e2e`
 - [ ] Pre-commit hooks (Husky + lint-staged) for lint/typecheck on changed files (optional)
 
 #### Adapters, Docker, Helm (baseline)
 
-- [ ] Verify `adapter-node` builds for all apps
+- [ ] Verify `adapter-node` builds for all apps (after adding `src/app.html` and updating `tsconfig`)
 - [ ] Add minimal Dockerfiles per app (Node runtime) and ignore files
 - [ ] Note: Helm/Caddy routes to be added in a later milestone
 
 #### Definition of done for Milestone 1
 
-- [ ] `pnpm i` works and `pnpm -w build` succeeds across workspace
+- [ ] `pnpm i` works and `pnpm -w build` succeeds across workspace (requires `turbo` installed) or per-app `vite build` succeeds
 - [ ] `pnpm -w test` runs unit/component tests and produces coverage reports
 - [ ] Each app runs locally (`pnpm -F @apps/dock dev`, etc.) and shows a smoke page
 - [ ] CI pipeline runs: lint, typecheck, unit/component tests; optional E2E smoke
+- [ ] Each app contains `src/app.html` and extends `./.svelte-kit/tsconfig.json`
+
+---
+
+### Selected route now
+
+- Proceed with multi-app SvelteKit 2 setup using Vite for build/dev.
+- Immediately add `src/app.html` and update `tsconfig.json` in all apps to enable builds.
+- Name Vitest projects in `vitest.config.ts` and update CI to use `pnpm test:fe` (or matching `--project` filters).
+- Then continue Milestone 2 (`ui-tokens` + `ui-svelte`) before Auth, so shared UI is in place for all apps.
 
 ### Tooling specifics
 

@@ -12,17 +12,11 @@ export interface GoogleProfile {
  * Verify a Google ID token and return its payload.
  * allowedClientIds: one or more OAuth client IDs this backend accepts as audience.
  */
-export async function verifyGoogleIdToken(
-  idToken: string,
-  allowedClientIds: string[]
-): Promise<GoogleProfile> {
+export async function verifyGoogleIdToken(idToken: string, allowedClientIds: string[]): Promise<GoogleProfile> {
   if (!idToken) throw new Error('missing id token');
-  if (!allowedClientIds || allowedClientIds.length === 0)
-    throw new Error('no allowed client ids');
+  if (!allowedClientIds || allowedClientIds.length === 0) throw new Error('no allowed client ids');
 
-  const JWKS = Jose.createRemoteJWKSet(
-    new URL('https://www.googleapis.com/oauth2/v3/certs')
-  );
+  const JWKS = Jose.createRemoteJWKSet(new URL('https://www.googleapis.com/oauth2/v3/certs'));
   const { payload } = await Jose.jwtVerify(idToken, JWKS, {
     issuer: ['https://accounts.google.com', 'accounts.google.com'],
     audience: allowedClientIds,

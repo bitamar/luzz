@@ -5,4 +5,3 @@ describe('dock smoke', () => {
     expect(true).toBe(true);
   });
 });
-

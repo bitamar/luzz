@@ -10,9 +10,7 @@ const { execSync } = require('child_process');
 
 // Configuration
 const config = {
-  testDb:
-    process.env.DATABASE_URL_TEST ||
-    'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test',
+  testDb: process.env.DATABASE_URL_TEST || 'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test',
 };
 
 /**

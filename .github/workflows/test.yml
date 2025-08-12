@@ -2,9 +2,9 @@ name: Tests
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 permissions:
   contents: read
@@ -14,12 +14,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    
+
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres_test
       NODE_ENV: test
       CI: true
-    
+
     services:
       postgres:
         image: postgres:17
@@ -34,67 +34,65 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-    
 
-    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Install pnpm
-      uses: pnpm/action-setup@v4
-      with:
-        version: 10
-        run_install: false
-    
-    - name: Use Node.js 20
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'pnpm'
-        cache-dependency-path: api/pnpm-lock.yaml
-    
-    - name: Install dependencies
-      working-directory: ./api
-      run: pnpm install --frozen-lockfile
-    
-    - name: Setup test database
-      working-directory: ./api
-      run: node scripts/setup-test-db.js
-    
-    - name: Run linting
-      working-directory: ./api
-      run: pnpm lint
-    
-    - name: Run type checking
-      working-directory: ./api
-      run: pnpm type-check
-    
-    - name: Run tests with coverage
-      working-directory: ./api
-      run: pnpm test:coverage
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Enforce coverage thresholds
-      if: always()
-      working-directory: ./api
-      run: node scripts/enforce-coverage.js
-    
-    - name: Upload coverage reports
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage-report
-        path: api/coverage/
-        retention-days: 7
-        
-    - name: Coverage summary
-      if: always()
-      working-directory: ./api
-      run: node scripts/ci-coverage-summary.js
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
 
-    - name: Comment coverage on PR
-      if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
-      uses: marocchino/sticky-pull-request-comment@v2
-      with:
-        recreate: true
-        path: api/coverage/coverage-summary.md
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: api/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: ./api
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup test database
+        working-directory: ./api
+        run: node scripts/setup-test-db.js
+
+      - name: Run linting
+        working-directory: ./api
+        run: pnpm lint
+
+      - name: Run type checking
+        working-directory: ./api
+        run: pnpm type-check
+
+      - name: Run tests with coverage
+        working-directory: ./api
+        run: pnpm test:coverage
+
+      - name: Enforce coverage thresholds
+        if: always()
+        working-directory: ./api
+        run: node scripts/enforce-coverage.js
+
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: api/coverage/
+          retention-days: 7
+
+      - name: Coverage summary
+        if: always()
+        working-directory: ./api
+        run: node scripts/ci-coverage-summary.js
+
+      - name: Comment coverage on PR
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          recreate: true
+          path: api/coverage/coverage-summary.md

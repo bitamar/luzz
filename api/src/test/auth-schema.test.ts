@@ -17,15 +17,7 @@ describe('Auth schema', () => {
     expect(cols.rowCount).toBeGreaterThan(0);
     const names = cols.rows.map(r => r.column_name);
     expect(names).toEqual(
-      expect.arrayContaining([
-        'id',
-        'google_sub',
-        'email',
-        'name',
-        'avatar_url',
-        'is_admin',
-        'created_at',
-      ])
+      expect.arrayContaining(['id', 'google_sub', 'email', 'name', 'avatar_url', 'is_admin', 'created_at'])
     );
 
     const unique = await db.query(
@@ -37,16 +29,12 @@ describe('Auth schema', () => {
        WHERE t.relname = 'users' AND ix.indisunique = true`
     );
     // At least unique on google_sub
-    const hasGoogleSubUnique = unique.rows.some(r =>
-      String(r.index_name).includes('google_sub')
-    );
+    const hasGoogleSubUnique = unique.rows.some(r => String(r.index_name).includes('google_sub'));
     expect(hasGoogleSubUnique).toBe(true);
   });
 
   it('creates studio_owners table with expected FKs and unique (studio_id,user_id)', async () => {
-    const exists = await db.query(
-      `SELECT to_regclass('public.studio_owners') as reg`
-    );
+    const exists = await db.query(`SELECT to_regclass('public.studio_owners') as reg`);
     expect(exists.rows[0].reg).toBe('studio_owners');
 
     const pkey = await db.query(
@@ -55,9 +43,7 @@ describe('Auth schema', () => {
        JOIN pg_class t ON c.conrelid = t.oid
        WHERE t.relname = 'studio_owners' AND c.contype = 'p'`
     );
-    const hasComposite = pkey.rows.some(r =>
-      String(r.def).includes('PRIMARY KEY (studio_id, user_id)')
-    );
+    const hasComposite = pkey.rows.some(r => String(r.def).includes('PRIMARY KEY (studio_id, user_id)'));
     expect(hasComposite).toBe(true);
   });
 });

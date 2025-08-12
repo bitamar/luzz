@@ -40,14 +40,8 @@ describe('Studios API', () => {
          on conflict (google_sub) do update set email=excluded.email`,
         ['sub-u-test', 'u@test']
       );
-      const { rows } = await db.query(
-        'select id from users where google_sub=$1',
-        ['sub-u-test']
-      );
-      const token = await signAccessToken(
-        { userId: rows[0].id, isAdmin: false },
-        '5m'
-      );
+      const { rows } = await db.query('select id from users where google_sub=$1', ['sub-u-test']);
+      const token = await signAccessToken({ userId: rows[0].id, isAdmin: false }, '5m');
       return { Authorization: `Bearer ${token}` };
     }
     it('should create a new studio with valid data', async () => {

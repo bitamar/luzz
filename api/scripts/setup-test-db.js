@@ -12,16 +12,9 @@ const path = require('path');
 
 // Configuration
 const config = {
-  testDb:
-    process.env.DATABASE_URL ||
-    'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test',
-  migrationPath: path.join(
-    __dirname,
-    '../../supabase/migrations/20250101000000_initial_schema.sql'
-  ),
-  extraMigrations: [
-    path.join(__dirname, '../../supabase/migrations/20250102000000_auth_schema.sql'),
-  ],
+  testDb: process.env.DATABASE_URL || 'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test',
+  migrationPath: path.join(__dirname, '../../supabase/migrations/20250101000000_initial_schema.sql'),
+  extraMigrations: [path.join(__dirname, '../../supabase/migrations/20250102000000_auth_schema.sql')],
   isCI: process.env.CI === 'true',
 };
 
@@ -104,21 +97,11 @@ function applySchema() {
 function verifySetup() {
   console.log('🔍 Verifying database setup...');
 
-  const tables = [
-    'studios',
-    'customers',
-    'slots',
-    'invites',
-    'children',
-    'bookings',
-  ];
+  const tables = ['studios', 'customers', 'slots', 'invites', 'children', 'bookings'];
 
   for (const table of tables) {
     try {
-      execCommand(
-        `psql "${config.testDb}" -c "SELECT 1 FROM ${table} LIMIT 1" > /dev/null`,
-        { stdio: 'ignore' }
-      );
+      execCommand(`psql "${config.testDb}" -c "SELECT 1 FROM ${table} LIMIT 1" > /dev/null`, { stdio: 'ignore' });
     } catch {
       throw new Error(`Table ${table} does not exist or is not accessible`);
     }
@@ -147,9 +130,7 @@ function cleanupTestData() {
  */
 function main() {
   console.log('🚀 Starting test database setup...');
-  console.log(
-    `📍 Target database: ${config.testDb.replace(/\/\/[^@]+@/, '//***:***@')}`
-  );
+  console.log(`📍 Target database: ${config.testDb.replace(/\/\/[^@]+@/, '//***:***@')}`);
 
   try {
     // Check if test database exists, create if needed

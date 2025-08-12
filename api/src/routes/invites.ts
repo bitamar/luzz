@@ -32,10 +32,7 @@ router.post('/', async (req, res) => {
     const client = getDbClient();
 
     // Verify studio exists
-    const studioCheck = await client.query(
-      'SELECT slug FROM studios WHERE id = $1',
-      [studioId]
-    );
+    const studioCheck = await client.query('SELECT slug FROM studios WHERE id = $1', [studioId]);
     if (studioCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Studio not found' });
     }
@@ -72,10 +69,7 @@ router.post('/', async (req, res) => {
     let hashExists = true;
     do {
       shortHash = generateShortHash();
-      const hashCheck = await client.query(
-        'SELECT id FROM invites WHERE short_hash = $1',
-        [shortHash]
-      );
+      const hashCheck = await client.query('SELECT id FROM invites WHERE short_hash = $1', [shortHash]);
       hashExists = hashCheck.rows.length > 0;
     } while (hashExists);
 
@@ -89,12 +83,7 @@ router.post('/', async (req, res) => {
       RETURNING *
     `;
 
-    const { rows } = await client.query(inviteQuery, [
-      studioId,
-      customerId,
-      shortHash,
-      expiresAt,
-    ]);
+    const { rows } = await client.query(inviteQuery, [studioId, customerId, shortHash, expiresAt]);
     const invite = rows[0];
 
     // Return invite with URL

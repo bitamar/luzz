@@ -69,9 +69,7 @@ export class Studios {
     };
   }
 
-  static createYogaStudio(
-    overrides: Partial<StudioFactory> = {}
-  ): StudioFactory {
+  static createYogaStudio(overrides: Partial<StudioFactory> = {}): StudioFactory {
     return this.create({
       name: `${faker.word.adjective()} Yoga Studio`,
       timezone: 'America/New_York',
@@ -80,9 +78,7 @@ export class Studios {
     });
   }
 
-  static createDanceStudio(
-    overrides: Partial<StudioFactory> = {}
-  ): StudioFactory {
+  static createDanceStudio(overrides: Partial<StudioFactory> = {}): StudioFactory {
     return this.create({
       name: `${faker.word.adjective()} Dance Academy`,
       timezone: 'Europe/London',
@@ -91,9 +87,7 @@ export class Studios {
     });
   }
 
-  static createIsraeliStudio(
-    overrides: Partial<StudioFactory> = {}
-  ): StudioFactory {
+  static createIsraeliStudio(overrides: Partial<StudioFactory> = {}): StudioFactory {
     return this.create({
       name: `אולפן ${faker.word.adjective()}`,
       timezone: 'Asia/Jerusalem',
@@ -154,9 +148,7 @@ export class Slots {
     });
   }
 
-  static createRecurringClass(
-    overrides: Partial<SlotFactory> = {}
-  ): SlotFactory {
+  static createRecurringClass(overrides: Partial<SlotFactory> = {}): SlotFactory {
     const recurrenceRules = [
       'FREQ=WEEKLY;BYDAY=MO',
       'FREQ=WEEKLY;BYDAY=WE',
@@ -197,27 +189,21 @@ export class Customers {
     };
   }
 
-  static createWithEmail(
-    overrides: Partial<CustomerFactory> = {}
-  ): CustomerFactory {
+  static createWithEmail(overrides: Partial<CustomerFactory> = {}): CustomerFactory {
     return this.create({
       contactPhone: undefined, // Email only
       ...overrides,
     });
   }
 
-  static createWithPhone(
-    overrides: Partial<CustomerFactory> = {}
-  ): CustomerFactory {
+  static createWithPhone(overrides: Partial<CustomerFactory> = {}): CustomerFactory {
     return this.create({
       contactEmail: undefined, // Phone only
       ...overrides,
     });
   }
 
-  static createParent(
-    overrides: Partial<CustomerFactory> = {}
-  ): CustomerFactory {
+  static createParent(overrides: Partial<CustomerFactory> = {}): CustomerFactory {
     return this.create({
       firstName: faker.person.firstName() + ' (Parent)',
       ...overrides,
@@ -237,10 +223,7 @@ export class Children {
     };
   }
 
-  static createSibling(
-    baseName: string,
-    overrides: Partial<ChildFactory> = {}
-  ): ChildFactory {
+  static createSibling(baseName: string, overrides: Partial<ChildFactory> = {}): ChildFactory {
     return this.create({
       firstName: `${baseName} ${faker.helpers.arrayElement(['Jr', 'II', 'Little'])}`,
       ...overrides,
@@ -257,10 +240,7 @@ export class Scenarios {
    */
   static createFamily() {
     const parent = Customers.createParent();
-    const children = Array.from(
-      { length: faker.number.int({ min: 1, max: 3 }) },
-      () => Children.create()
-    );
+    const children = Array.from({ length: faker.number.int({ min: 1, max: 3 }) }, () => Children.create());
 
     return { parent, children };
   }

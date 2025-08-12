@@ -19,9 +19,7 @@ export const assertions = {
   toHaveValidUuid(response: Response, field: string = 'id') {
     const uuid = response.body[field];
     expect(uuid).toBeDefined();
-    expect(uuid).toMatch(
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-    );
+    expect(uuid).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
     return uuid;
   },
 
@@ -62,9 +60,7 @@ export const assertions = {
    */
   async toExistInDatabase(table: string, id: string) {
     const client = getDbClient();
-    const result = await client.query(`SELECT 1 FROM ${table} WHERE id = $1`, [
-      id,
-    ]);
+    const result = await client.query(`SELECT 1 FROM ${table} WHERE id = $1`, [id]);
     expect(result.rows.length).toBe(1);
   },
 
@@ -73,9 +69,7 @@ export const assertions = {
    */
   async toNotExistInDatabase(table: string, id: string) {
     const client = getDbClient();
-    const result = await client.query(`SELECT 1 FROM ${table} WHERE id = $1`, [
-      id,
-    ]);
+    const result = await client.query(`SELECT 1 FROM ${table} WHERE id = $1`, [id]);
     expect(result.rows.length).toBe(0);
   },
 };
@@ -98,9 +92,7 @@ export const dbHelpers = {
    */
   async getRecord(table: string, id: string): Promise<any> {
     const client = getDbClient();
-    const result = await client.query(`SELECT * FROM ${table} WHERE id = $1`, [
-      id,
-    ]);
+    const result = await client.query(`SELECT * FROM ${table} WHERE id = $1`, [id]);
     return result.rows[0] || null;
   },
 
@@ -109,19 +101,14 @@ export const dbHelpers = {
    */
   async recordExists(table: string, id: string): Promise<boolean> {
     const client = getDbClient();
-    const result = await client.query(`SELECT 1 FROM ${table} WHERE id = $1`, [
-      id,
-    ]);
+    const result = await client.query(`SELECT 1 FROM ${table} WHERE id = $1`, [id]);
     return result.rows.length > 0;
   },
 
   /**
    * Get records with conditions
    */
-  async getRecords(
-    table: string,
-    where: Record<string, any> = {}
-  ): Promise<any[]> {
+  async getRecords(table: string, where: Record<string, any> = {}): Promise<any[]> {
     const client = getDbClient();
 
     if (Object.keys(where).length === 0) {
@@ -129,9 +116,7 @@ export const dbHelpers = {
       return result.rows;
     }
 
-    const conditions = Object.keys(where).map(
-      (key, idx) => `${key} = $${idx + 1}`
-    );
+    const conditions = Object.keys(where).map((key, idx) => `${key} = $${idx + 1}`);
     const values = Object.values(where);
 
     const query = `SELECT * FROM ${table} WHERE ${conditions.join(' AND ')}`;
@@ -166,9 +151,7 @@ export const performance = {
   /**
    * Measure execution time of an async function
    */
-  async measureTime<T>(
-    fn: () => Promise<T>
-  ): Promise<{ result: T; duration: number }> {
+  async measureTime<T>(fn: () => Promise<T>): Promise<{ result: T; duration: number }> {
     const start = process.hrtime.bigint();
     const result = await fn();
     const end = process.hrtime.bigint();
@@ -230,9 +213,7 @@ export const validation = {
    * Validate UUID format
    */
   isValidUuid(uuid: string): boolean {
-    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-      uuid
-    );
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uuid);
   },
 
   /**
@@ -326,10 +307,7 @@ export const env = {
    * Get test database URL
    */
   getTestDatabaseUrl(): string {
-    return (
-      process.env.DATABASE_URL ||
-      'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test'
-    );
+    return process.env.DATABASE_URL || 'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test';
   },
 
   /**

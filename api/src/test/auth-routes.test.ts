@@ -27,10 +27,7 @@ describe('POST /auth/google/token', () => {
     app.use(express.json());
     app.use('/auth', router);
 
-    const res = await request(app)
-      .post('/auth/google/token')
-      .send({ idToken: 'fake-id-token' })
-      .expect(200);
+    const res = await request(app).post('/auth/google/token').send({ idToken: 'fake-id-token' }).expect(200);
 
     expect(res.body.accessToken).toBeDefined();
     expect(res.headers['set-cookie']).toBeDefined();
@@ -50,10 +47,7 @@ describe('POST /auth/google/token', () => {
     app.use(express.json());
     app.use('/auth', router);
 
-    const res = await request(app)
-      .post('/auth/google/token')
-      .send({ idToken: 'this-looks-like-a-token' })
-      .expect(401);
+    const res = await request(app).post('/auth/google/token').send({ idToken: 'this-looks-like-a-token' }).expect(401);
     expect(res.body.error).toMatch(/invalid token/i);
   });
 
@@ -69,25 +63,13 @@ describe('POST /auth/google/token', () => {
     await request(app).get('/auth/config').expect(401);
 
     // Non-admin
-    const userToken = await signAccessToken(
-      { userId: 'u', isAdmin: false },
-      '5m'
-    );
-    await request(app)
-      .get('/auth/config')
-      .set('Authorization', `Bearer ${userToken}`)
-      .expect(403);
+    const userToken = await signAccessToken({ userId: 'u', isAdmin: false }, '5m');
+    await request(app).get('/auth/config').set('Authorization', `Bearer ${userToken}`).expect(403);
 
     // Admin
     process.env.GOOGLE_CLIENT_IDS = 'a,b';
-    const adminToken = await signAccessToken(
-      { userId: 'a1', isAdmin: true },
-      '5m'
-    );
-    const res = await request(app)
-      .get('/auth/config')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .expect(200);
+    const adminToken = await signAccessToken({ userId: 'a1', isAdmin: true }, '5m');
+    const res = await request(app).get('/auth/config').set('Authorization', `Bearer ${adminToken}`).expect(200);
     expect(res.body.audiences).toEqual(['a', 'b']);
   });
 });

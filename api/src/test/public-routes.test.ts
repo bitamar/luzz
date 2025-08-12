@@ -3,11 +3,7 @@ import express from 'express';
 import request from 'supertest';
 import publicRouter from '../routes/public';
 import { getDbClient } from '../db';
-import {
-  createTestStudio,
-  createTestSlot,
-  createTestCustomer,
-} from './test-helpers';
+import { createTestStudio, createTestSlot, createTestCustomer } from './test-helpers';
 
 function makeApp() {
   const app = express();
@@ -43,10 +39,7 @@ describe('Public routes', () => {
       const app = makeApp();
       const now = new Date();
       const oneJan = new Date(now.getFullYear(), 0, 1);
-      const week = Math.ceil(
-        ((now.getTime() - oneJan.getTime()) / 86400000 + oneJan.getDay() + 1) /
-          7
-      )
+      const week = Math.ceil(((now.getTime() - oneJan.getTime()) / 86400000 + oneJan.getDay() + 1) / 7)
         .toString()
         .padStart(2, '0');
       const res = await request(app)
@@ -60,22 +53,13 @@ describe('Public routes', () => {
     it('400 on missing or bad week', async () => {
       const app = makeApp();
       await request(app).get(`/public/${slug}/slots`).expect(400);
-      await request(app)
-        .get(`/public/${slug}/slots`)
-        .query({ week: 'bad' })
-        .expect(400);
-      await request(app)
-        .get(`/public/${slug}/slots`)
-        .query({ week: '2024-54' })
-        .expect(400);
+      await request(app).get(`/public/${slug}/slots`).query({ week: 'bad' }).expect(400);
+      await request(app).get(`/public/${slug}/slots`).query({ week: '2024-54' }).expect(400);
     });
 
     it('404 for unknown studio', async () => {
       const app = makeApp();
-      await request(app)
-        .get(`/public/does-not-exist/slots`)
-        .query({ week: '2024-01' })
-        .expect(404);
+      await request(app).get(`/public/does-not-exist/slots`).query({ week: '2024-01' }).expect(404);
     });
   });
 
@@ -157,13 +141,11 @@ describe('Public routes', () => {
     it('returns 404 for unknown/expired invite and when slot belongs to different studio', async () => {
       const app = makeApp();
       const originalErr = console.error;
-      const errSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation((...args: any[]) => {
-          const msg = String(args[0] ?? '');
-          if (msg.includes('Error creating booking:')) return;
-          originalErr(...(args as any));
-        });
+      const errSpy = vi.spyOn(console, 'error').mockImplementation((...args: any[]) => {
+        const msg = String(args[0] ?? '');
+        if (msg.includes('Error creating booking:')) return;
+        originalErr(...(args as any));
+      });
       const studioA = await createTestStudio();
       const studioB = await createTestStudio();
       const customerA = await createTestCustomer(studioA.id, {
@@ -191,10 +173,7 @@ describe('Public routes', () => {
         .send({ slotId: slotB.id })
         .expect(404);
 
-      await request(app)
-        .post(`/public/invites/doesnotexist/bookings`)
-        .send({ slotId: slotB.id })
-        .expect(404);
+      await request(app).post(`/public/invites/doesnotexist/bookings`).send({ slotId: slotB.id }).expect(404);
       errSpy.mockRestore();
     });
   });
