@@ -27,5 +27,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Generate SvelteKit types (sync)
+        run: pnpm -r run sync
+
       - name: Run frontend unit tests (Vitest projects)
         run: pnpm test:fe
