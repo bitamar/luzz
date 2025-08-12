@@ -18,7 +18,9 @@
     "jsdom": "^26.1.0",
     "vitest": "^3.2.4",
     "prettier": "^3.3.3",
-    "prettier-plugin-svelte": "^3.3.3"
+    "prettier-plugin-svelte": "^3.3.3",
+    "@testing-library/svelte": "^5.2.6",
+    "@testing-library/jest-dom": "^6.6.3"
   },
   "pnpm": {
     "overrides": {

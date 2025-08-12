@@ -2,6 +2,7 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
+    setupFiles: ['./vitest.setup.ts'],
     projects: [
       { name: 'dock', test: { environment: 'jsdom', include: ['apps/dock/**/*.test.{ts,tsx}'] } },
       { name: 'sail', test: { environment: 'jsdom', include: ['apps/sail/**/*.test.{ts,tsx}'] } },

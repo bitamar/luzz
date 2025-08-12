@@ -178,8 +178,8 @@ apps/
 - [x] Install `@sveltejs/adapter-node` in each app and configure `svelte.config.js`
 - [x] Add `src/routes/+layout.svelte` with a minimal shell and `src/routes/+page.svelte` smoke
 - [x] Add per-app `static/config.json` placeholder
-- [ ] Add `src/app.html` to each app (required by SvelteKit 2)
-- [ ] Update each app `tsconfig.json` to `extends: "./.svelte-kit/tsconfig.json"`
+- [x] Add `src/app.html` to each app (required by SvelteKit 2)
+- [x] Update each app `tsconfig.json` to `extends: "./.svelte-kit/tsconfig.json"`
 
 #### Shared UI/design scaffolding
 
@@ -191,8 +191,8 @@ apps/
 
 - [x] Add root `vitest.config.ts` with projects for `apps/*` and `packages/*`
 - [ ] Add `name` for each project in `vitest.config.ts` (so CI filters match)
-- [ ] Ensure CI uses named project filters or `pnpm test:fe`
-- [ ] Add `@testing-library/svelte` setup for component tests
+- [x] Ensure CI uses named project filters or `pnpm test:fe`
+- [x] Add `@testing-library/svelte` setup for component tests
 - [x] Add first unit tests in `packages/config`
 - [ ] Add first unit tests in `packages/ui-tokens`
 - [ ] Add first component test for `Button` in `packages/ui-svelte`
@@ -207,7 +207,7 @@ apps/
 #### CI setup
 
 - [x] Add CI workflow to install pnpm, use cache, run frontend tests only
-- [ ] Update CI test step to run `pnpm test:fe` or align `--project` filters with named projects
+- [x] Update CI test step to run `pnpm test:fe` or align `--project` filters with named projects
 - [ ] Enforce coverage thresholds (packages ≥ 90%, apps ≥ 80%)
 - [ ] Add an E2E smoke job that runs Playwright headless (optional initially)
 
@@ -224,11 +224,11 @@ apps/
 
 #### Definition of done for Milestone 1
 
-- [ ] `pnpm i` works and `pnpm -w build` succeeds across workspace (requires `turbo` installed) or per-app `vite build` succeeds
-- [ ] `pnpm -w test` runs unit/component tests and produces coverage reports
-- [ ] Each app runs locally (`pnpm -F @apps/dock dev`, etc.) and shows a smoke page
-- [ ] CI pipeline runs: lint, typecheck, unit/component tests; optional E2E smoke
-- [ ] Each app contains `src/app.html` and extends `./.svelte-kit/tsconfig.json`
+- [x] `pnpm i` works and `pnpm -w build` succeeds across workspace (requires `turbo` installed) or per-app `vite build` succeeds
+- [x] `pnpm -w test` runs unit/component tests and produces coverage reports
+- [x] Each app runs locally (`pnpm -F @apps/dock dev`, etc.) and shows a smoke page
+- [x] CI pipeline runs: lint, typecheck, unit/component tests; optional E2E smoke
+- [x] Each app contains `src/app.html` and extends `./.svelte-kit/tsconfig.json`
 
 ---
 
