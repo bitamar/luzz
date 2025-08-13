@@ -10,4 +10,7 @@ helm/**
 node_modules
 pnpm-lock.yaml
 
+# Use per-scope configs: apps has Svelte-specific Prettier config
+apps/**/.svelte-kit/**
+
 

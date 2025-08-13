@@ -10,7 +10,7 @@
     "test": "vitest run",
     "test:fe": "vitest run",
     "test:e2e": "turbo test:e2e",
-    "format": "prettier --write ."
+    "format": "prettier --config apps/prettier.config.mjs --ignore-unknown --write 'apps/**'"
   },
   "devDependencies": {
     "turbo": "^2.1.3",
