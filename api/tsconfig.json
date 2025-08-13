@@ -1,5 +1,11 @@
 {
-  "exclude": ["vitest.config.ts", "scripts/**/*", "dist/**/*", "coverage/**/*", "test-performance/**/*"],
+  "exclude": [
+    "vitest.config.ts",
+    "scripts/**/*",
+    "dist/**/*",
+    "coverage/**/*",
+    "test-performance/**/*"
+  ],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
 

@@ -37,13 +37,13 @@ describe('Slots API', () => {
     await client.query(
       `insert into users (google_sub, email) values ($1,$2)
        on conflict (google_sub) do update set email=excluded.email`,
-      ['sub-u-test', 'u@test']
+      ['sub-u-test', 'u@test'],
     );
     await client.query(
       `insert into studio_owners (studio_id, user_id, role)
        select $1, id, 'owner' from users where google_sub=$2
        on conflict do nothing`,
-      [testStudio.id, 'sub-u-test']
+      [testStudio.id, 'sub-u-test'],
     );
   });
 
@@ -52,7 +52,9 @@ describe('Slots API', () => {
       process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-secret-123';
       // derive userId for the created/ensured user
       const client = getDbClient();
-      const { rows } = await client.query('select id from users where google_sub=$1', ['sub-u-test']);
+      const { rows } = await client.query('select id from users where google_sub=$1', [
+        'sub-u-test',
+      ]);
       const token = await signAccessToken({ userId: rows[0].id, isAdmin: false }, '5m');
       return { Authorization: `Bearer ${token}` };
     }
@@ -75,7 +77,9 @@ describe('Slots API', () => {
         for_children: slotData.forChildren,
         active: true,
       });
-      expect(response.body.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID format
+      expect(response.body.id).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+      ); // UUID format
       expect(response.body.starts_at).toBeDefined();
     });
 
@@ -216,9 +220,10 @@ describe('Slots API', () => {
         .expect(400);
 
       // Could be either business logic error or invalid studio ID error depending on validation order
-      expect(['Minimum participants cannot exceed maximum participants', 'Invalid studio ID']).toContain(
-        response.body.error
-      );
+      expect([
+        'Minimum participants cannot exceed maximum participants',
+        'Invalid studio ID',
+      ]).toContain(response.body.error);
     });
 
     it('should return 400 for missing required fields', async () => {

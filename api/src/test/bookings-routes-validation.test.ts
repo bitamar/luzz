@@ -43,7 +43,10 @@ describe('Bookings routes - validations and 404s', () => {
       .expect(400);
 
     // 404 when customer not in slot studio
-    await request(app).post('/bookings').send({ slotId: slot.id, customerId: otherCustomer.id }).expect(404);
+    await request(app)
+      .post('/bookings')
+      .send({ slotId: slot.id, customerId: otherCustomer.id })
+      .expect(404);
   });
 
   it('returns 404 when child belongs to different studio; list filters work', async () => {
@@ -70,12 +73,15 @@ describe('Bookings routes - validations and 404s', () => {
     const childInsert = await client.query(
       `insert into children (customer_id, first_name, avatar_key)
        values ($1, $2, $3) returning *`,
-      [parentB.id, 'KidB', 'k']
+      [parentB.id, 'KidB', 'k'],
     );
     const childB = childInsert.rows[0];
 
     // Attempt to book slot in A with child from B -> 404
-    await request(app).post('/bookings').send({ slotId: slotAChild.id, childId: childB.id }).expect(404);
+    await request(app)
+      .post('/bookings')
+      .send({ slotId: slotAChild.id, childId: childB.id })
+      .expect(404);
 
     // Create adult slot and book in A for listing filters
     const parentA = await createTestCustomer(studioA.id, {
@@ -95,9 +101,15 @@ describe('Bookings routes - validations and 404s', () => {
       .post('/bookings')
       .send({ slotId: slotAAdult.id, customerId: parentA.id })
       .expect(201);
-    await request(app).patch(`/bookings/${booking2.body.id}/payment`).send({ paidMethod: 'cash' }).expect(200);
+    await request(app)
+      .patch(`/bookings/${booking2.body.id}/payment`)
+      .send({ paidMethod: 'cash' })
+      .expect(200);
 
-    const listPaid = await request(app).get('/bookings').query({ slotId: slotAAdult.id, paid: 'true' }).expect(200);
+    const listPaid = await request(app)
+      .get('/bookings')
+      .query({ slotId: slotAAdult.id, paid: 'true' })
+      .expect(200);
     expect(Array.isArray(listPaid.body)).toBe(true);
     expect(listPaid.body.length).toBeGreaterThanOrEqual(1);
   });

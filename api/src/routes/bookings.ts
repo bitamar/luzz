@@ -24,7 +24,7 @@ const createBookingSchema = z
       })
       .optional(),
   })
-  .refine(data => data.customerId || data.childId || data.childData, {
+  .refine((data) => data.customerId || data.childId || data.childData, {
     message: 'Either customerId, childId, or childData must be provided',
   });
 
@@ -47,7 +47,9 @@ router.patch('/:id/payment', async (req, res) => {
     const client = getDbClient();
 
     // Verify booking exists
-    const bookingCheck = await client.query('SELECT id, paid FROM bookings WHERE id = $1', [bookingId]);
+    const bookingCheck = await client.query('SELECT id, paid FROM bookings WHERE id = $1', [
+      bookingId,
+    ]);
     if (bookingCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Booking not found' });
     }
@@ -127,12 +129,15 @@ router.get('/:id', async (req, res) => {
 // POST /bookings - Create a new booking (admin/direct booking)
 router.post('/', async (req, res) => {
   try {
-    const { slotId, customerId, childId, childData }: CreateBookingRequest = createBookingSchema.parse(req.body);
+    const { slotId, customerId, childId, childData }: CreateBookingRequest =
+      createBookingSchema.parse(req.body);
 
     const client = getDbClient();
 
     // Verify slot exists and is active
-    const slotCheck = await client.query('SELECT * FROM slots WHERE id = $1 AND active = true', [slotId]);
+    const slotCheck = await client.query('SELECT * FROM slots WHERE id = $1 AND active = true', [
+      slotId,
+    ]);
     if (slotCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Slot not found or not active' });
     }
@@ -150,10 +155,10 @@ router.post('/', async (req, res) => {
       }
 
       // Verify customer exists and belongs to the same studio
-      const customerCheck = await client.query('SELECT id FROM customers WHERE id = $1 AND studio_id = $2', [
-        customerId,
-        slot.studio_id,
-      ]);
+      const customerCheck = await client.query(
+        'SELECT id FROM customers WHERE id = $1 AND studio_id = $2',
+        [customerId, slot.studio_id],
+      );
       if (customerCheck.rows.length === 0) {
         return res.status(404).json({
           error: 'Customer not found or does not belong to this studio',
@@ -166,7 +171,11 @@ router.post('/', async (req, res) => {
         RETURNING id
       `;
 
-      const childResult = await client.query(childQuery, [customerId, childData.firstName, childData.avatarKey]);
+      const childResult = await client.query(childQuery, [
+        customerId,
+        childData.firstName,
+        childData.avatarKey,
+      ]);
       finalChildId = childResult.rows[0].id;
     }
 
@@ -185,10 +194,10 @@ router.post('/', async (req, res) => {
 
     // Verify customer/child belongs to the same studio as the slot
     if (finalCustomerId) {
-      const customerCheck = await client.query('SELECT id FROM customers WHERE id = $1 AND studio_id = $2', [
-        finalCustomerId,
-        slot.studio_id,
-      ]);
+      const customerCheck = await client.query(
+        'SELECT id FROM customers WHERE id = $1 AND studio_id = $2',
+        [finalCustomerId, slot.studio_id],
+      );
       if (customerCheck.rows.length === 0) {
         return res.status(404).json({
           error: 'Customer does not belong to this studio',
@@ -203,7 +212,7 @@ router.post('/', async (req, res) => {
         JOIN customers c ON ch.customer_id = c.id
         WHERE ch.id = $1 AND c.studio_id = $2
       `,
-        [finalChildId, slot.studio_id]
+        [finalChildId, slot.studio_id],
       );
 
       if (childCheck.rows.length === 0) {
@@ -218,7 +227,7 @@ router.post('/', async (req, res) => {
       `SELECT COUNT(*)::int as count
        FROM bookings 
        WHERE slot_id = $1`,
-      [slotId]
+      [slotId],
     );
     const bookedCount: number = capacityResult.rows[0].count;
 
@@ -226,7 +235,7 @@ router.post('/', async (req, res) => {
       `SELECT max_participants
        FROM slots
        WHERE id = $1`,
-      [slotId]
+      [slotId],
     );
     const maxParticipants: number = capacityInfo.rows[0].max_participants;
 
@@ -264,7 +273,16 @@ router.post('/', async (req, res) => {
 // GET /bookings - List bookings with filters
 router.get('/', async (req, res) => {
   try {
-    const { studioId, customerId, childId, slotId, status, paid, limit = '50', offset = '0' } = req.query;
+    const {
+      studioId,
+      customerId,
+      childId,
+      slotId,
+      status,
+      paid,
+      limit = '50',
+      offset = '0',
+    } = req.query;
 
     const client = getDbClient();
     const filters = [];
@@ -346,7 +364,9 @@ router.patch('/:id/status', async (req, res) => {
     const client = getDbClient();
 
     // Verify booking exists
-    const bookingCheck = await client.query('SELECT id, status FROM bookings WHERE id = $1', [bookingId]);
+    const bookingCheck = await client.query('SELECT id, status FROM bookings WHERE id = $1', [
+      bookingId,
+    ]);
     if (bookingCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Booking not found' });
     }
@@ -391,7 +411,7 @@ router.delete('/:id', async (req, res) => {
       JOIN slots s ON b.slot_id = s.id
       WHERE b.id = $1
     `,
-      [bookingId]
+      [bookingId],
     );
 
     if (bookingCheck.rows.length === 0) {

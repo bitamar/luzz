@@ -10,7 +10,9 @@ if (process.env.NODE_ENV === 'test') {
 const getDatabaseUrl = () => {
   if (process.env.NODE_ENV === 'test') {
     // For tests, use postgres_test database
-    return process.env.DATABASE_URL || 'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test';
+    return (
+      process.env.DATABASE_URL || 'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test'
+    );
   }
   return process.env.DATABASE_URL;
 };

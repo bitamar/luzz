@@ -240,7 +240,9 @@ export class Scenarios {
    */
   static createFamily() {
     const parent = Customers.createParent();
-    const children = Array.from({ length: faker.number.int({ min: 1, max: 3 }) }, () => Children.create());
+    const children = Array.from({ length: faker.number.int({ min: 1, max: 3 }) }, () =>
+      Children.create(),
+    );
 
     return { parent, children };
   }
@@ -276,7 +278,7 @@ export class Scenarios {
         Slots.create({
           startsAt: slotTime.toISOString(),
           durationMin: faker.helpers.arrayElement([60, 90]),
-        })
+        }),
       );
     }
 

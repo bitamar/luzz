@@ -38,7 +38,7 @@ describe('Studios API', () => {
       await db.query(
         `insert into users (google_sub, email) values ($1,$2)
          on conflict (google_sub) do update set email=excluded.email`,
-        ['sub-u-test', 'u@test']
+        ['sub-u-test', 'u@test'],
       );
       const { rows } = await db.query('select id from users where google_sub=$1', ['sub-u-test']);
       const token = await signAccessToken({ userId: rows[0].id, isAdmin: false }, '5m');

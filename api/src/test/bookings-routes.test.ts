@@ -34,7 +34,10 @@ describe('Bookings routes', () => {
       contact_email: 'a@b.c',
     } as any);
 
-    const created = await request(app).post('/bookings').send({ slotId: slot.id, customerId: customer.id }).expect(201);
+    const created = await request(app)
+      .post('/bookings')
+      .send({ slotId: slot.id, customerId: customer.id })
+      .expect(201);
     expect(created.body).toHaveProperty('id');
 
     const getOne = await request(app).get(`/bookings/${created.body.id}`).expect(200);
@@ -63,8 +66,14 @@ describe('Bookings routes', () => {
   it('validates ids and returns 404/400 where appropriate', async () => {
     const app = makeApp();
     await request(app).get('/bookings/not-a-uuid').expect(400);
-    await request(app).patch('/bookings/not-a-uuid/status').send({ status: 'CONFIRMED' }).expect(400);
-    await request(app).patch('/bookings/not-a-uuid/payment').send({ paidMethod: 'cash' }).expect(400);
+    await request(app)
+      .patch('/bookings/not-a-uuid/status')
+      .send({ status: 'CONFIRMED' })
+      .expect(400);
+    await request(app)
+      .patch('/bookings/not-a-uuid/payment')
+      .send({ paidMethod: 'cash' })
+      .expect(400);
     await request(app).delete('/bookings/not-a-uuid').expect(400);
   });
 
@@ -90,9 +99,15 @@ describe('Bookings routes', () => {
       contact_email: 'a2@a.a',
     } as any);
     // First booking succeeds
-    await request(app).post('/bookings').send({ slotId: slotA.id, customerId: customerA1.id }).expect(201);
+    await request(app)
+      .post('/bookings')
+      .send({ slotId: slotA.id, customerId: customerA1.id })
+      .expect(201);
     // Second booking hits capacity
-    await request(app).post('/bookings').send({ slotId: slotA.id, customerId: customerA2.id }).expect(409);
+    await request(app)
+      .post('/bookings')
+      .send({ slotId: slotA.id, customerId: customerA2.id })
+      .expect(409);
 
     // Cross-studio check: customer from B cannot book slot in A
     const studioB = await createTestStudio();
@@ -100,7 +115,10 @@ describe('Bookings routes', () => {
       first_name: 'B',
       contact_email: 'b@b.b',
     } as any);
-    await request(app).post('/bookings').send({ slotId: slotA.id, customerId: customerB.id }).expect(404);
+    await request(app)
+      .post('/bookings')
+      .send({ slotId: slotA.id, customerId: customerB.id })
+      .expect(404);
   });
 
   it('covers paid-twice, non-existent resources, inactive slot, invalid status', async () => {
@@ -120,27 +138,45 @@ describe('Bookings routes', () => {
       contact_email: 'p@q',
     } as any);
 
-    const created = await request(app).post('/bookings').send({ slotId: slot.id, customerId: customer.id }).expect(201);
+    const created = await request(app)
+      .post('/bookings')
+      .send({ slotId: slot.id, customerId: customer.id })
+      .expect(201);
 
     // Pay once ok
-    await request(app).patch(`/bookings/${created.body.id}/payment`).send({ paidMethod: 'cash' }).expect(200);
+    await request(app)
+      .patch(`/bookings/${created.body.id}/payment`)
+      .send({ paidMethod: 'cash' })
+      .expect(200);
     // Pay again -> 400
-    await request(app).patch(`/bookings/${created.body.id}/payment`).send({ paidMethod: 'cash' }).expect(400);
+    await request(app)
+      .patch(`/bookings/${created.body.id}/payment`)
+      .send({ paidMethod: 'cash' })
+      .expect(400);
 
     // Non-existent get/status/delete
     const missingId = '550e8400-e29b-41d4-a716-446655440099';
     await request(app).get(`/bookings/${missingId}`).expect(404);
-    await request(app).patch(`/bookings/${missingId}/status`).send({ status: 'CONFIRMED' }).expect(404);
+    await request(app)
+      .patch(`/bookings/${missingId}/status`)
+      .send({ status: 'CONFIRMED' })
+      .expect(404);
     await request(app).delete(`/bookings/${missingId}`).expect(404);
 
     // Invalid status value
-    await request(app).patch(`/bookings/${created.body.id}/status`).send({ status: 'WHATEVER' }).expect(400);
+    await request(app)
+      .patch(`/bookings/${created.body.id}/status`)
+      .send({ status: 'WHATEVER' })
+      .expect(400);
 
     // Inactive slot cannot be booked
     // Directly deactivate the slot
     const { getDbClient } = await import('../db');
     const client = getDbClient();
     await client.query('update slots set active=false where id=$1', [slot.id]);
-    await request(app).post('/bookings').send({ slotId: slot.id, customerId: customer.id }).expect(404);
+    await request(app)
+      .post('/bookings')
+      .send({ slotId: slot.id, customerId: customer.id })
+      .expect(404);
   });
 });

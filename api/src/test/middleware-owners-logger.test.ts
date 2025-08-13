@@ -11,12 +11,14 @@ function appWithOwnerRoute() {
     // stub user middleware
     (req, _res, next) => {
       (req as any).user = (
-        req.headers['x-user'] ? { userId: String(req.headers['x-user']), isAdmin: false } : undefined
+        req.headers['x-user']
+          ? { userId: String(req.headers['x-user']), isAdmin: false }
+          : undefined
       ) as any;
       next();
     },
     requireStudioOwner(),
-    (_req, res) => res.json({ ok: true })
+    (_req, res) => res.json({ ok: true }),
   );
   return app;
 }
@@ -44,20 +46,19 @@ describe('middleware: requireStudioOwner and requestLogger', () => {
 
     // Insert user and owner relation
     const client = getDbClient();
-    await client.query(`insert into users (id, google_sub, email) values ($1, $2, $3) on conflict do nothing`, [
-      'b9d5f7f0-0000-4000-8000-000000000001',
-      'sub-owner',
-      'o@o',
-    ]);
+    await client.query(
+      `insert into users (id, google_sub, email) values ($1, $2, $3) on conflict do nothing`,
+      ['b9d5f7f0-0000-4000-8000-000000000001', 'sub-owner', 'o@o'],
+    );
     await client.query(
       `insert into studios (id, slug, name, timezone, currency)
        values ($1, 'own-slug', 'Own', 'Asia/Jerusalem', 'ILS') on conflict do nothing`,
-      [studioId]
+      [studioId],
     );
     await client.query(
       `insert into studio_owners (studio_id, user_id, role)
        values ($1, $2, 'owner') on conflict do nothing`,
-      [studioId, 'b9d5f7f0-0000-4000-8000-000000000001']
+      [studioId, 'b9d5f7f0-0000-4000-8000-000000000001'],
     );
 
     await request(app)

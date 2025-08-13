@@ -48,7 +48,7 @@ router.post('/', requireUser(), async (req: AuthenticatedRequest, res: Response)
     if (userId) {
       await client.query(
         'insert into studio_owners (studio_id, user_id, role) values ($1,$2,$3) on conflict do nothing',
-        [rows[0].id, userId, 'owner']
+        [rows[0].id, userId, 'owner'],
       );
     }
 

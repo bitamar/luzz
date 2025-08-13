@@ -1,6 +1,12 @@
 import { db, getDbClient } from '../db';
 import { testTransaction } from './transaction-manager';
-import type { TestStudio, TestCustomer, TestSlot, CreateStudioRequest, CreateSlotRequest } from '../types';
+import type {
+  TestStudio,
+  TestCustomer,
+  TestSlot,
+  CreateStudioRequest,
+  CreateSlotRequest,
+} from '../types';
 
 // Legacy cleanup functions (kept for reference if needed)
 export async function cleanupDatabase() {
@@ -94,7 +100,7 @@ export const testData = {
 
 // Helper to create a studio and return its ID
 export async function createTestStudio(
-  studioData: Partial<CreateStudioRequest> = testData.studio.valid as Partial<CreateStudioRequest>
+  studioData: Partial<CreateStudioRequest> = testData.studio.valid as Partial<CreateStudioRequest>,
 ): Promise<TestStudio> {
   // Generate unique slug for each studio creation
   const uniqueStudioData = {
@@ -122,7 +128,7 @@ export async function createTestStudio(
 // Helper to create a slot and return its ID
 export async function createTestSlot(
   studioId: string,
-  slotData: Partial<CreateSlotRequest> = testData.slot.adult as Partial<CreateSlotRequest>
+  slotData: Partial<CreateSlotRequest> = testData.slot.adult as Partial<CreateSlotRequest>,
 ): Promise<TestSlot> {
   const query = `
     INSERT INTO slots (
@@ -151,7 +157,7 @@ export async function createTestSlot(
 // Helper to create a customer and return its ID
 export async function createTestCustomer(
   studioId: string,
-  customerData: Partial<TestCustomer> = testData.customer.withEmail as Partial<TestCustomer>
+  customerData: Partial<TestCustomer> = testData.customer.withEmail as Partial<TestCustomer>,
 ): Promise<TestCustomer> {
   const query = `
     INSERT INTO customers (studio_id, first_name, contact_email, contact_phone, created_at)

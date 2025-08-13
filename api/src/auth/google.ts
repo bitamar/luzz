@@ -12,7 +12,10 @@ export interface GoogleProfile {
  * Verify a Google ID token and return its payload.
  * allowedClientIds: one or more OAuth client IDs this backend accepts as audience.
  */
-export async function verifyGoogleIdToken(idToken: string, allowedClientIds: string[]): Promise<GoogleProfile> {
+export async function verifyGoogleIdToken(
+  idToken: string,
+  allowedClientIds: string[],
+): Promise<GoogleProfile> {
   if (!idToken) throw new Error('missing id token');
   if (!allowedClientIds || allowedClientIds.length === 0) throw new Error('no allowed client ids');
 

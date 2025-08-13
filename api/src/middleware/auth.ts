@@ -54,10 +54,10 @@ export function requireStudioOwner() {
       if (!studioId || !req.user) return res.status(403).json({ error: 'forbidden' });
       const { getDbClient } = await import('../db');
       const client = getDbClient();
-      const q = await client.query('select 1 from studio_owners where studio_id=$1 and user_id=$2 limit 1', [
-        studioId,
-        req.user.userId,
-      ]);
+      const q = await client.query(
+        'select 1 from studio_owners where studio_id=$1 and user_id=$2 limit 1',
+        [studioId, req.user.userId],
+      );
       if (q.rowCount === 0) return res.status(403).json({ error: 'forbidden' });
       return next();
     } catch {

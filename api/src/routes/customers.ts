@@ -15,7 +15,7 @@ const createCustomerSchema = z
     contactPhone: z.string().min(1).optional(),
     contactEmail: z.string().email().optional(),
   })
-  .refine(data => data.contactPhone || data.contactEmail, {
+  .refine((data) => data.contactPhone || data.contactEmail, {
     message: 'Either contactPhone or contactEmail must be provided',
   });
 
@@ -31,9 +31,8 @@ studioCustomersRouter.post('/:studioId/customers', async (req, res) => {
       return res.status(400).json({ error: 'Invalid studio ID' });
     }
 
-    const { firstName, avatarKey, contactPhone, contactEmail }: CreateCustomerRequest = createCustomerSchema.parse(
-      req.body
-    );
+    const { firstName, avatarKey, contactPhone, contactEmail }: CreateCustomerRequest =
+      createCustomerSchema.parse(req.body);
 
     const client = getDbClient();
 
@@ -46,18 +45,18 @@ studioCustomersRouter.post('/:studioId/customers', async (req, res) => {
     // Check if customer already exists with same contact info
     let existingCustomer = null;
     if (contactEmail) {
-      const emailCheck = await client.query('SELECT * FROM customers WHERE studio_id = $1 AND contact_email = $2', [
-        studioId,
-        contactEmail,
-      ]);
+      const emailCheck = await client.query(
+        'SELECT * FROM customers WHERE studio_id = $1 AND contact_email = $2',
+        [studioId, contactEmail],
+      );
       existingCustomer = emailCheck.rows[0];
     }
 
     if (!existingCustomer && contactPhone) {
-      const phoneCheck = await client.query('SELECT * FROM customers WHERE studio_id = $1 AND contact_phone = $2', [
-        studioId,
-        contactPhone,
-      ]);
+      const phoneCheck = await client.query(
+        'SELECT * FROM customers WHERE studio_id = $1 AND contact_phone = $2',
+        [studioId, contactPhone],
+      );
       existingCustomer = phoneCheck.rows[0];
     }
 
@@ -193,7 +192,9 @@ customersRouter.patch('/:id', async (req, res) => {
     const client = getDbClient();
 
     // Verify customer exists
-    const customerCheck = await client.query('SELECT id, studio_id FROM customers WHERE id = $1', [customerId]);
+    const customerCheck = await client.query('SELECT id, studio_id FROM customers WHERE id = $1', [
+      customerId,
+    ]);
     if (customerCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Customer not found' });
     }
@@ -266,7 +267,7 @@ customersRouter.delete('/:id', async (req, res) => {
       WHERE c.id = $1
       GROUP BY c.id, c.first_name
     `,
-      [customerId]
+      [customerId],
     );
 
     if (customerCheck.rows.length === 0) {

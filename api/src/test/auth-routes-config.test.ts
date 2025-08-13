@@ -22,7 +22,10 @@ describe('Auth routes - /auth/config', () => {
 
     process.env.GOOGLE_CLIENT_IDS = 'c1,c2';
     const adminToken = await signAccessToken({ userId: 'a', isAdmin: true }, '5m');
-    const ok = await request(app).get('/auth/config').set('Authorization', `Bearer ${adminToken}`).expect(200);
+    const ok = await request(app)
+      .get('/auth/config')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
     expect(ok.body.audiences).toEqual(['c1', 'c2']);
   });
 });

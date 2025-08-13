@@ -83,8 +83,8 @@ export async function createBusyStudio(): Promise<StudioFixture> {
 
   return {
     studio,
-    adults: slots.filter(s => !s.for_children),
-    children: slots.filter(s => s.for_children),
+    adults: slots.filter((s) => !s.for_children),
+    children: slots.filter((s) => s.for_children),
     slots,
     customers,
   };
@@ -127,11 +127,11 @@ export async function createFamilyStudio(): Promise<
 
   return {
     studio,
-    adults: familySlots.filter(s => !s.for_children),
-    children: familySlots.filter(s => s.for_children),
+    adults: familySlots.filter((s) => !s.for_children),
+    children: familySlots.filter((s) => s.for_children),
     slots: familySlots,
-    customers: families.map(f => f.parent),
-    families: families.map(f => ({
+    customers: families.map((f) => f.parent),
+    families: families.map((f) => ({
       customer: f.parent,
       children: f.children as any,
     })),
@@ -159,7 +159,7 @@ export async function createEdgeCaseStudio(): Promise<StudioFixture> {
         price: 0,
         minParticipants: 0,
         maxParticipants: 1,
-      })
+      }),
     ),
 
     // Very long class
@@ -169,7 +169,7 @@ export async function createEdgeCaseStudio(): Promise<StudioFixture> {
         title: 'Marathon Meditation',
         durationMin: 480, // 8 hours
         price: 200,
-      })
+      }),
     ),
 
     // Very short class
@@ -179,7 +179,7 @@ export async function createEdgeCaseStudio(): Promise<StudioFixture> {
         title: 'Quick Stretch',
         durationMin: 15,
         price: 5,
-      })
+      }),
     ),
 
     // High capacity class
@@ -190,7 +190,7 @@ export async function createEdgeCaseStudio(): Promise<StudioFixture> {
         minParticipants: 50,
         maxParticipants: 500,
         price: 10,
-      })
+      }),
     ),
   ];
 
@@ -201,7 +201,7 @@ export async function createEdgeCaseStudio(): Promise<StudioFixture> {
       studio.id,
       Customers.create({
         firstName: 'Pneumonoultramicroscopicsilicovolcanoconiosisaffectedperson',
-      }) as any
+      }) as any,
     ),
 
     // Customer with minimal data
@@ -210,14 +210,14 @@ export async function createEdgeCaseStudio(): Promise<StudioFixture> {
       Customers.create({
         firstName: 'A',
         contactEmail: 'a@b.co',
-      }) as any
+      }) as any,
     ),
   ];
 
   return {
     studio,
-    adults: edgeSlots.filter(s => !s.for_children),
-    children: edgeSlots.filter(s => s.for_children),
+    adults: edgeSlots.filter((s) => !s.for_children),
+    children: edgeSlots.filter((s) => s.for_children),
     slots: edgeSlots,
     customers: edgeCustomers,
   };
@@ -278,8 +278,8 @@ export async function createInternationalStudios(): Promise<StudioFixture[]> {
 
     studios.push({
       studio,
-      adults: slots.filter(s => !s.for_children),
-      children: slots.filter(s => s.for_children),
+      adults: slots.filter((s) => !s.for_children),
+      children: slots.filter((s) => s.for_children),
       slots,
       customers,
     });

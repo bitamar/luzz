@@ -39,7 +39,9 @@ describe('Public routes', () => {
       const app = makeApp();
       const now = new Date();
       const oneJan = new Date(now.getFullYear(), 0, 1);
-      const week = Math.ceil(((now.getTime() - oneJan.getTime()) / 86400000 + oneJan.getDay() + 1) / 7)
+      const week = Math.ceil(
+        ((now.getTime() - oneJan.getTime()) / 86400000 + oneJan.getDay() + 1) / 7,
+      )
         .toString()
         .padStart(2, '0');
       const res = await request(app)
@@ -85,7 +87,7 @@ describe('Public routes', () => {
         `insert into invites (studio_id, customer_id, short_hash, created_at, expires_at)
          values ($1, $2, 'short1234', now(), now() + interval '1 day')
          returning *`,
-        [studio.id, customer.id]
+        [studio.id, customer.id],
       );
 
       await request(app)
@@ -119,7 +121,7 @@ describe('Public routes', () => {
       const inv = await client.query(
         `insert into invites (studio_id, customer_id, short_hash, created_at, expires_at)
          values ($1, $2, 'shortch', now(), now() + interval '1 day') returning *`,
-        [studio.id, customer.id]
+        [studio.id, customer.id],
       );
 
       // Missing child -> 400
@@ -165,7 +167,7 @@ describe('Public routes', () => {
       const invite = await client.query(
         `insert into invites (studio_id, customer_id, short_hash, created_at, expires_at)
          values ($1, $2, 'exp1', now(), now() - interval '1 day') returning *`,
-        [studioA.id, customerA.id]
+        [studioA.id, customerA.id],
       );
 
       await request(app)
@@ -173,7 +175,10 @@ describe('Public routes', () => {
         .send({ slotId: slotB.id })
         .expect(404);
 
-      await request(app).post(`/public/invites/doesnotexist/bookings`).send({ slotId: slotB.id }).expect(404);
+      await request(app)
+        .post(`/public/invites/doesnotexist/bookings`)
+        .send({ slotId: slotB.id })
+        .expect(404);
       errSpy.mockRestore();
     });
   });

@@ -24,7 +24,7 @@ export async function upsertUserFromGoogle(profile: GoogleProfile): Promise<User
        name = excluded.name,
        avatar_url = excluded.avatar_url
      returning id, google_sub, email, name, avatar_url, is_admin, created_at`,
-    [profile.sub, profile.email ?? null, profile.name ?? null, profile.picture ?? null]
+    [profile.sub, profile.email ?? null, profile.name ?? null, profile.picture ?? null],
   );
 
   return result.rows[0] as User;

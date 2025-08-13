@@ -16,7 +16,9 @@ describe('middleware: auth basics', () => {
 
   it('optionalAuth toggles authenticated flag', async () => {
     const app = express();
-    app.get('/y', optionalAuth, (req, res) => res.json({ authed: (req as any).authenticated || false }));
+    app.get('/y', optionalAuth, (req, res) =>
+      res.json({ authed: (req as any).authenticated || false }),
+    );
     const r1 = await request(app).get('/y').expect(200);
     expect(r1.body.authed).toBe(false);
     const r2 = await request(app).get('/y').set('X-API-Key', 'dev-key-123').expect(200);

@@ -87,7 +87,10 @@ describe('Customers routes', () => {
 
     // 404 not found branches
     await request(app).get('/customers/550e8400-e29b-41d4-a716-446655440099').expect(404);
-    await request(app).patch('/customers/550e8400-e29b-41d4-a716-446655440099').send({ firstName: 'X' }).expect(404);
+    await request(app)
+      .patch('/customers/550e8400-e29b-41d4-a716-446655440099')
+      .send({ firstName: 'X' })
+      .expect(404);
     await request(app).delete('/customers/550e8400-e29b-41d4-a716-446655440099').expect(404);
   });
 });

@@ -24,12 +24,23 @@ router.post('/:studioId/slots', requireUser(), async (req: AuthenticatedRequest,
   try {
     const studioId = req.params.studioId;
     // Basic UUID format validation (36 chars with hyphens)
-    if (!studioId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(studioId)) {
+    if (
+      !studioId ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(studioId)
+    ) {
       return res.status(400).json({ error: 'Invalid studio ID' });
     }
 
-    const { title, startsAt, durationMin, recurrenceRule, price, minParticipants, maxParticipants, forChildren } =
-      createSlotSchema.parse(req.body);
+    const {
+      title,
+      startsAt,
+      durationMin,
+      recurrenceRule,
+      price,
+      minParticipants,
+      maxParticipants,
+      forChildren,
+    } = createSlotSchema.parse(req.body);
 
     // Get the appropriate database client (transaction in tests, regular pool otherwise)
     const client = getDbClient();
@@ -48,10 +59,10 @@ router.post('/:studioId/slots', requireUser(), async (req: AuthenticatedRequest,
     }
 
     // Ownership check after we know studio exists and input is valid
-    const ownerCheck = await client.query('SELECT 1 FROM studio_owners WHERE studio_id = $1 AND user_id = $2 LIMIT 1', [
-      studioId,
-      req.user?.userId,
-    ]);
+    const ownerCheck = await client.query(
+      'SELECT 1 FROM studio_owners WHERE studio_id = $1 AND user_id = $2 LIMIT 1',
+      [studioId, req.user?.userId],
+    );
     if (ownerCheck.rowCount === 0) {
       return res.status(403).json({ error: 'forbidden' });
     }

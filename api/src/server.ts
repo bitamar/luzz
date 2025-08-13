@@ -27,7 +27,7 @@ app.get('/health', (req, res) => {
 // Public routes (no auth required, but optional logging)
 app.use('/public', optionalAuth, publicApi);
 // Auth routes
-buildAuthRouter().then(authRouter => {
+buildAuthRouter().then((authRouter) => {
   app.use('/auth', authRouter);
 });
 

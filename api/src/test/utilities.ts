@@ -131,7 +131,7 @@ export const dbHelpers = {
     childTable: string,
     parentTable: string,
     childId: string,
-    parentField: string = 'studio_id'
+    parentField: string = 'studio_id',
   ): Promise<boolean> {
     const client = getDbClient();
     const query = `
@@ -165,7 +165,7 @@ export const performance = {
    */
   async benchmark<T>(
     fn: () => Promise<T>,
-    iterations: number = 10
+    iterations: number = 10,
   ): Promise<{
     results: T[];
     times: number[];
@@ -307,7 +307,9 @@ export const env = {
    * Get test database URL
    */
   getTestDatabaseUrl(): string {
-    return process.env.DATABASE_URL || 'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test';
+    return (
+      process.env.DATABASE_URL || 'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test'
+    );
   },
 
   /**

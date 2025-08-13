@@ -82,10 +82,10 @@ async function ensureDatabaseSchema() {
       WHERE table_schema = 'public'
     `;
     const result = await db.query(tablesQuery);
-    const existingTables = new Set(result.rows.map(row => row.table_name));
+    const existingTables = new Set(result.rows.map((row) => row.table_name));
 
-    const missingInitial = initialTables.filter(t => !existingTables.has(t));
-    const missingAuth = authTables.filter(t => !existingTables.has(t));
+    const missingInitial = initialTables.filter((t) => !existingTables.has(t));
+    const missingAuth = authTables.filter((t) => !existingTables.has(t));
 
     if (missingInitial.length || missingAuth.length) {
       console.log('📦 Missing tables detected, applying schema...');
@@ -106,7 +106,9 @@ async function ensureDatabaseSchema() {
  */
 async function applyDatabaseSchema(opts: { applyInitial: boolean; applyAuth: boolean }) {
   try {
-    const initialPath = await resolveRepoPath('supabase/migrations/20250101000000_initial_schema.sql');
+    const initialPath = await resolveRepoPath(
+      'supabase/migrations/20250101000000_initial_schema.sql',
+    );
     const authPath = await resolveRepoPath('supabase/migrations/20250102000000_auth_schema.sql');
     if (opts.applyInitial) {
       const initialSQL = await fs.readFile(initialPath, 'utf-8');

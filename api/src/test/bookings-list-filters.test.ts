@@ -38,20 +38,29 @@ describe('Bookings list filters', () => {
       contact_email: 'aaa@a',
     } as any);
 
-    const b1 = await request(app).post('/bookings').send({ slotId: adultSlot.id, customerId: customer.id }).expect(201);
+    const b1 = await request(app)
+      .post('/bookings')
+      .send({ slotId: adultSlot.id, customerId: customer.id })
+      .expect(201);
 
     // create a child for childSlot
     const { getDbClient } = await import('../db');
     const client = getDbClient();
     const childInsert = await client.query(
       `insert into children (customer_id, first_name, avatar_key) values ($1,$2,$3) returning *`,
-      [customer.id, 'Kido', 'k']
+      [customer.id, 'Kido', 'k'],
     );
     const child = childInsert.rows[0];
-    const b2 = await request(app).post('/bookings').send({ slotId: childSlot.id, childId: child.id }).expect(201);
+    const b2 = await request(app)
+      .post('/bookings')
+      .send({ slotId: childSlot.id, childId: child.id })
+      .expect(201);
 
     // pay b1
-    await request(app).patch(`/bookings/${b1.body.id}/payment`).send({ paidMethod: 'cash' }).expect(200);
+    await request(app)
+      .patch(`/bookings/${b1.body.id}/payment`)
+      .send({ paidMethod: 'cash' })
+      .expect(200);
 
     const q1 = await request(app).get('/bookings').query({ studioId: studio.id }).expect(200);
     expect(q1.body.length).toBeGreaterThanOrEqual(2);
@@ -62,7 +71,10 @@ describe('Bookings list filters', () => {
     const q3 = await request(app).get('/bookings').query({ childId: child.id }).expect(200);
     expect(q3.body.find((r: any) => r.id === b2.body.id)).toBeTruthy();
 
-    const q4 = await request(app).get('/bookings').query({ slotId: adultSlot.id, paid: 'true' }).expect(200);
+    const q4 = await request(app)
+      .get('/bookings')
+      .query({ slotId: adultSlot.id, paid: 'true' })
+      .expect(200);
     expect(q4.body.find((r: any) => r.id === b1.body.id)).toBeTruthy();
 
     const q5 = await request(app).get('/bookings').query({ status: 'CONFIRMED' }).expect(200);

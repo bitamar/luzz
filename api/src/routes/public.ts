@@ -55,7 +55,10 @@ router.get('/:slug/slots', async (req, res) => {
 
     // Verify studio exists
     const client = getDbClient();
-    const studioQuery = await client.query('SELECT id, name, timezone, currency FROM studios WHERE slug = $1', [slug]);
+    const studioQuery = await client.query(
+      'SELECT id, name, timezone, currency FROM studios WHERE slug = $1',
+      [slug],
+    );
     if (studioQuery.rows.length === 0) {
       return res.status(404).json({ error: 'Studio not found' });
     }
@@ -133,10 +136,10 @@ router.post('/invites/:hash/bookings', async (req, res) => {
     }
 
     // Verify slot exists and belongs to the same studio
-    const slotQuery = await client.query('SELECT * FROM slots WHERE id = $1 AND studio_id = $2 AND active = true', [
-      slotId,
-      invite.studio_id,
-    ]);
+    const slotQuery = await client.query(
+      'SELECT * FROM slots WHERE id = $1 AND studio_id = $2 AND active = true',
+      [slotId, invite.studio_id],
+    );
 
     if (slotQuery.rows.length === 0) {
       return res.status(404).json({ error: 'Slot not found or not available' });

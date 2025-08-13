@@ -15,15 +15,21 @@ router.get('/metrics', async (req, res) => {
     const client = getDbClient();
 
     // Get basic counts
-    const [studiosResult, customersResult, childrenResult, slotsResult, bookingsResult, invitesResult] =
-      await Promise.all([
-        client.query('SELECT COUNT(*) as count FROM studios'),
-        client.query('SELECT COUNT(*) as count FROM customers'),
-        client.query('SELECT COUNT(*) as count FROM children'),
-        client.query('SELECT COUNT(*) as count FROM slots WHERE active = true'),
-        client.query('SELECT COUNT(*) as count FROM bookings'),
-        client.query('SELECT COUNT(*) as count FROM invites WHERE expires_at > NOW()'),
-      ]);
+    const [
+      studiosResult,
+      customersResult,
+      childrenResult,
+      slotsResult,
+      bookingsResult,
+      invitesResult,
+    ] = await Promise.all([
+      client.query('SELECT COUNT(*) as count FROM studios'),
+      client.query('SELECT COUNT(*) as count FROM customers'),
+      client.query('SELECT COUNT(*) as count FROM children'),
+      client.query('SELECT COUNT(*) as count FROM slots WHERE active = true'),
+      client.query('SELECT COUNT(*) as count FROM bookings'),
+      client.query('SELECT COUNT(*) as count FROM invites WHERE expires_at > NOW()'),
+    ]);
 
     // Get booking metrics
     const bookingStatsResult = await client.query(`

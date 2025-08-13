@@ -12,9 +12,15 @@ const path = require('path');
 
 // Configuration
 const config = {
-  testDb: process.env.DATABASE_URL || 'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test',
-  migrationPath: path.join(__dirname, '../../supabase/migrations/20250101000000_initial_schema.sql'),
-  extraMigrations: [path.join(__dirname, '../../supabase/migrations/20250102000000_auth_schema.sql')],
+  testDb:
+    process.env.DATABASE_URL || 'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test',
+  migrationPath: path.join(
+    __dirname,
+    '../../supabase/migrations/20250101000000_initial_schema.sql',
+  ),
+  extraMigrations: [
+    path.join(__dirname, '../../supabase/migrations/20250102000000_auth_schema.sql'),
+  ],
   isCI: process.env.CI === 'true',
 };
 
@@ -101,7 +107,9 @@ function verifySetup() {
 
   for (const table of tables) {
     try {
-      execCommand(`psql "${config.testDb}" -c "SELECT 1 FROM ${table} LIMIT 1" > /dev/null`, { stdio: 'ignore' });
+      execCommand(`psql "${config.testDb}" -c "SELECT 1 FROM ${table} LIMIT 1" > /dev/null`, {
+        stdio: 'ignore',
+      });
     } catch {
       throw new Error(`Table ${table} does not exist or is not accessible`);
     }
@@ -120,7 +128,7 @@ function cleanupTestData() {
 
   console.log('🧹 Cleaning up test data...');
   execCommand(
-    `psql "${config.testDb}" -c "TRUNCATE TABLE bookings, children, invites, customers, slots, studios CASCADE"`
+    `psql "${config.testDb}" -c "TRUNCATE TABLE bookings, children, invites, customers, slots, studios CASCADE"`,
   );
   console.log('✅ Test data cleaned up');
 }

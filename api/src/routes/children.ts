@@ -31,7 +31,9 @@ customerChildrenRouter.post('/:customerId/children', async (req, res) => {
     const client = getDbClient();
 
     // Verify customer exists
-    const customerCheck = await client.query('SELECT id, studio_id FROM customers WHERE id = $1', [customerId]);
+    const customerCheck = await client.query('SELECT id, studio_id FROM customers WHERE id = $1', [
+      customerId,
+    ]);
     if (customerCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Customer not found' });
     }
@@ -69,7 +71,9 @@ customerChildrenRouter.get('/:customerId/children', async (req, res) => {
     const client = getDbClient();
 
     // Verify customer exists
-    const customerCheck = await client.query('SELECT id FROM customers WHERE id = $1', [customerId]);
+    const customerCheck = await client.query('SELECT id FROM customers WHERE id = $1', [
+      customerId,
+    ]);
     if (customerCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Customer not found' });
     }
@@ -211,7 +215,7 @@ childrenRouter.delete('/:id', async (req, res) => {
       WHERE ch.id = $1
       GROUP BY ch.id, ch.first_name
     `,
-      [childId]
+      [childId],
     );
 
     if (childCheck.rows.length === 0) {
