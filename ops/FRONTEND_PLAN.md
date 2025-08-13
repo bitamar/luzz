@@ -44,11 +44,11 @@ Subdomains (example):
 
 ## Tech choices
 
-- **Framework**: SvelteKit (SSR by default, disable CSR where you want ultra-light pages)
+- **Framework**: SvelteKit (static-first with `@sveltejs/adapter-static`; enable SSR later if needed)
 - **Components**: Bits UI (headless, accessible primitives)
 - **Styling**: Vanilla Extract + CSS variables from `ui-tokens` (no Tailwind required)
 - **Types/validation**: TypeScript + Zod
-- **Data**: typed `api-sdk` from OpenAPI; use `event.fetch` on server loads/actions
+- **Data**: typed `api-sdk` from OpenAPI; client-side `fetch` to API (no server `load` initially)
 - **Testing**: Vitest (unit), @testing-library/svelte (component), Playwright (E2E), contract tests for OpenAPI
 - **Build/CI**: Turborepo + pnpm, per-app Docker images; Helm/Caddy for routing
 - **Build tool routing (decision)**: Use Vite for build/dev/preview commands; use `svelte-kit` only for `sync`.
@@ -58,14 +58,13 @@ Subdomains (example):
 ## Auth and sessions
 
 - Backend issues httpOnly refresh + short-lived access token; cookie `Domain=.yourdomain`, `SameSite=Lax`, `Secure`.
-- SvelteKit `hooks.server.ts` reads/refreshes session → sets `event.locals.user` and `roles`.
-- Route guards in each app’s `+layout.server.ts` via shared helpers from `@luzz/auth`.
+- No `hooks.server.ts` initially (static-first). Do a lightweight client-side session probe in root `+layout.ts` or page `load` and redirect as needed. Shared helpers still come from `@luzz/auth`.
 - Login is a redirect to backend (`/auth/google` etc.), then return with `returnTo` param.
 
 ## Data layer patterns
 
-- Use `api-sdk` for client-side calls; on server, prefer `event.fetch` so cookies flow naturally.
-- Start with SvelteKit `load` + form `actions` for CRUD; add state libs only for highly interactive views.
+- Use `api-sdk` for client-side calls via `fetch` (no `event.fetch`/server `load` in static mode). Cookies from the backend are sent if scoped correctly.
+- Start with client `load` and form `actions` on the browser; add state libs only for highly interactive views.
 
 ## Design system with Bits UI
 
@@ -98,9 +97,9 @@ Subdomains (example):
    - Scope: Bits-based components (focus, keyboard nav), form widgets, dialogs.
    - Tools: @testing-library/svelte + Vitest; add `axe-core`/`vitest-axe` for a11y checks on key components.
 
-3. **Integration (SvelteKit)**
-   - Scope: route `load`/`actions` with mocked `api-sdk` and cookies; auth guards in `hooks.server`.
-   - Tools: Vitest running SvelteKit in test mode; MSW (or SDK-level mocks) for HTTP.
+3. **Integration (client-first)**
+   - Scope: page/component `load` performing client `fetch` to the API; client-side guards in layouts.
+   - Tools: Vitest + @testing-library/svelte with MSW (or SDK-level mocks) for HTTP.
 
 4. **E2E (per app)**
    - Scope: critical journeys (login, invite accept, book slot, create slot, admin views).
@@ -139,12 +138,12 @@ apps/
 
 ### Initial milestones (TDD-driven)
 
-1. Workspace setup: Turborepo, pnpm, SvelteKit scaffolds, adapter-node, Vitest/Playwright setup.
+1. Workspace setup: Turborepo, pnpm, SvelteKit scaffolds, adapter-static, Vitest/Playwright setup.
    - Red: failing CI skeleton (no tests) → Green: minimal sanity test per app.
 2. `ui-tokens` + `ui-svelte` base (Button, Input, Select, Dialog, Toast).
    - Start with component tests for focus/keyboard/a11y; then wire into a sample page.
-3. Auth foundation: `@luzz/auth`, `@luzz/auth-svelte`, `hooks.server` guard, login redirect.
-   - Integration tests for guard + role redirects; Playwright test for login flow.
+3. Auth foundation: `@luzz/auth`, `@luzz/auth-svelte`, client-side guard in layout, login redirect.
+   - Integration tests for client guards + role redirects; Playwright test for login flow.
 4. Sail invite flow (no CSR): form validation, token verify, account/child creation.
    - E2E: open invite link → successful signup → redirect to dashboard; integration tests for actions.
 5. Dock: slots CRUD with actions; optimistic UX optional later.
@@ -216,11 +215,13 @@ apps/
 - [x] Root scripts: `build`, `dev`, `lint`, `typecheck`, `test`, `test:e2e`
 - [ ] Pre-commit hooks (Husky + lint-staged) for lint/typecheck on changed files (optional)
 
-#### Adapters, Docker, Helm (baseline)
+#### Adapters, Docker/CDN, Helm (baseline)
 
-- [ ] Verify `adapter-node` builds for all apps (after adding `src/app.html` and updating `tsconfig`)
-- [ ] Add minimal Dockerfiles per app (Node runtime) and ignore files
-- [ ] Note: Helm/Caddy routes to be added in a later milestone
+- [ ] Switch apps to `@sveltejs/adapter-static` and set `export const prerender = true` at the root layout.
+- [ ] If SPA fallback is desired, configure adapter with `fallback: '200.html'` and ensure Caddy/NGINX serve SPA fallback.
+- [ ] Deployment Option A (preferred): upload `build/` to object storage (S3/GCS) and front with CDN; map `dock.|sail.|hq.` subdomains to CDN.
+- [ ] Deployment Option B (k3s): serve built assets from a tiny static container (NGINX/Caddy) per app and route via Caddy.
+- [ ] Update Caddy ingress to route `dock.|sail.|hq.` to CDN origins or to k8s Services for the static containers.
 
 #### Definition of done for Milestone 1
 

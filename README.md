@@ -2,8 +2,8 @@
 
 Tooling baseline
 
-- Node: 22 (LTS). See `.nvmrc` and `.node-version` (current dev: 22.14.0)
-- pnpm: 10.3.0
+- Node: 22 (LTS). Recommended: 22.14.0
+- pnpm: 10.14.0
 
 Quick start
 
@@ -19,12 +19,18 @@ pnpm -F @apps/hq dev
 # build all (turbo)
 pnpm -w build
 
-# run tests (vitest projects)
-pnpm vitest run
+# run frontend tests (Vitest projects)
+pnpm test:fe
 
 # optional
 pnpm -w lint
 pnpm -w typecheck
+
+# format frontend apps (Svelte-aware Prettier)
+pnpm format
+
+# format backend API only
+pnpm --filter api run format
 ```
 
 Workspace structure (planned)
@@ -33,3 +39,11 @@ Workspace structure (planned)
 - packages/: shared libs (api-sdk, auth, ui-tokens, ui-svelte, schemas, config)
 
 Details: see `ops/FRONTEND_PLAN.md`.
+
+Frontend build/deploy (static-first)
+
+- All SvelteKit apps use `@sveltejs/adapter-static` with `prerender = true` in root layouts.
+- `pnpm -F @apps/<name> build` writes static assets to `apps/<name>/build/`.
+- Deploy options:
+  - CDN: upload `build/` to object storage (e.g., S3/GCS) fronted by a CDN.
+  - k3s: serve `build/` from a tiny static container (NGINX/Caddy) per app and route via Caddy.
