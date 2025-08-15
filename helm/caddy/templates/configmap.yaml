@@ -8,4 +8,3 @@ data:
       encode gzip
       reverse_proxy {{ .Values.backendService }}.{{ .Values.backendNamespace }}.svc.cluster.local:{{ .Values.backendPort }}
     }
-

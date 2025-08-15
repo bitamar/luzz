@@ -59,10 +59,7 @@ async function verifyTestDatabase() {
     const dbName = result.rows[0].current_database;
 
     if (!dbName.includes('test')) {
-      console.warn(
-        '⚠️ Warning: Database name does not contain "test":',
-        dbName
-      );
+      console.warn('⚠️ Warning: Database name does not contain "test":', dbName);
     } else {
       console.log('✅ Connected to test database:', dbName);
     }
@@ -76,14 +73,7 @@ async function verifyTestDatabase() {
  */
 async function ensureDatabaseSchema() {
   try {
-    const initialTables = [
-      'studios',
-      'customers',
-      'slots',
-      'invites',
-      'children',
-      'bookings',
-    ];
+    const initialTables = ['studios', 'customers', 'slots', 'invites', 'children', 'bookings'];
     const authTables = ['users', 'studio_owners'];
 
     const tablesQuery = `
@@ -92,10 +82,10 @@ async function ensureDatabaseSchema() {
       WHERE table_schema = 'public'
     `;
     const result = await db.query(tablesQuery);
-    const existingTables = new Set(result.rows.map(row => row.table_name));
+    const existingTables = new Set(result.rows.map((row) => row.table_name));
 
-    const missingInitial = initialTables.filter(t => !existingTables.has(t));
-    const missingAuth = authTables.filter(t => !existingTables.has(t));
+    const missingInitial = initialTables.filter((t) => !existingTables.has(t));
+    const missingAuth = authTables.filter((t) => !existingTables.has(t));
 
     if (missingInitial.length || missingAuth.length) {
       console.log('📦 Missing tables detected, applying schema...');
@@ -114,17 +104,12 @@ async function ensureDatabaseSchema() {
 /**
  * Apply database schema from migration file
  */
-async function applyDatabaseSchema(opts: {
-  applyInitial: boolean;
-  applyAuth: boolean;
-}) {
+async function applyDatabaseSchema(opts: { applyInitial: boolean; applyAuth: boolean }) {
   try {
     const initialPath = await resolveRepoPath(
-      'supabase/migrations/20250101000000_initial_schema.sql'
+      'supabase/migrations/20250101000000_initial_schema.sql',
     );
-    const authPath = await resolveRepoPath(
-      'supabase/migrations/20250102000000_auth_schema.sql'
-    );
+    const authPath = await resolveRepoPath('supabase/migrations/20250102000000_auth_schema.sql');
     if (opts.applyInitial) {
       const initialSQL = await fs.readFile(initialPath, 'utf-8');
       await db.query(initialSQL);
@@ -160,14 +145,7 @@ async function resolveRepoPath(relativeFromRoot: string): Promise<string> {
  * Verify all required tables exist
  */
 async function verifyDatabaseTables() {
-  const requiredTables = [
-    'studios',
-    'customers',
-    'slots',
-    'invites',
-    'children',
-    'bookings',
-  ];
+  const requiredTables = ['studios', 'customers', 'slots', 'invites', 'children', 'bookings'];
 
   for (const table of requiredTables) {
     try {

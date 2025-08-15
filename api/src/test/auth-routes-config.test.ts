@@ -17,20 +17,11 @@ describe('Auth routes - /auth/config', () => {
 
     await request(app).get('/auth/config').expect(401);
 
-    const userToken = await signAccessToken(
-      { userId: 'u', isAdmin: false },
-      '5m'
-    );
-    await request(app)
-      .get('/auth/config')
-      .set('Authorization', `Bearer ${userToken}`)
-      .expect(403);
+    const userToken = await signAccessToken({ userId: 'u', isAdmin: false }, '5m');
+    await request(app).get('/auth/config').set('Authorization', `Bearer ${userToken}`).expect(403);
 
     process.env.GOOGLE_CLIENT_IDS = 'c1,c2';
-    const adminToken = await signAccessToken(
-      { userId: 'a', isAdmin: true },
-      '5m'
-    );
+    const adminToken = await signAccessToken({ userId: 'a', isAdmin: true }, '5m');
     const ok = await request(app)
       .get('/auth/config')
       .set('Authorization', `Bearer ${adminToken}`)

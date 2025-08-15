@@ -11,10 +11,7 @@ function getSecret(): Uint8Array {
   return new TextEncoder().encode(secret);
 }
 
-export async function signAccessToken(
-  claims: AccessClaims,
-  ttl: string = '15m'
-): Promise<string> {
+export async function signAccessToken(claims: AccessClaims, ttl: string = '15m'): Promise<string> {
   const alg = 'HS256';
   const secret = getSecret();
   const now = Math.floor(Date.now() / 1000);

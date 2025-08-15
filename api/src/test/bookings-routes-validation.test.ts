@@ -2,11 +2,7 @@ import { describe, it, expect } from 'vitest';
 import express from 'express';
 import request from 'supertest';
 import bookingsRouter from '../routes/bookings';
-import {
-  createTestStudio,
-  createTestSlot,
-  createTestCustomer,
-} from './test-helpers';
+import { createTestStudio, createTestSlot, createTestCustomer } from './test-helpers';
 import { getDbClient } from '../db';
 
 function appFactory() {
@@ -77,7 +73,7 @@ describe('Bookings routes - validations and 404s', () => {
     const childInsert = await client.query(
       `insert into children (customer_id, first_name, avatar_key)
        values ($1, $2, $3) returning *`,
-      [parentB.id, 'KidB', 'k']
+      [parentB.id, 'KidB', 'k'],
     );
     const childB = childInsert.rows[0];
 

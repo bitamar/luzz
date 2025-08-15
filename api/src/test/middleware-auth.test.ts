@@ -11,23 +11,17 @@ describe('middleware: auth basics', () => {
     await request(app).get('/x').expect(401);
     await request(app).get('/x').set('X-API-Key', 'bad').expect(403);
     await request(app).get('/x').set('X-API-Key', 'dev-key-123').expect(200);
-    await request(app)
-      .get('/x')
-      .set('Authorization', 'Bearer dev-key-123')
-      .expect(200);
+    await request(app).get('/x').set('Authorization', 'Bearer dev-key-123').expect(200);
   });
 
   it('optionalAuth toggles authenticated flag', async () => {
     const app = express();
     app.get('/y', optionalAuth, (req, res) =>
-      res.json({ authed: (req as any).authenticated || false })
+      res.json({ authed: (req as any).authenticated || false }),
     );
     const r1 = await request(app).get('/y').expect(200);
     expect(r1.body.authed).toBe(false);
-    const r2 = await request(app)
-      .get('/y')
-      .set('X-API-Key', 'dev-key-123')
-      .expect(200);
+    const r2 = await request(app).get('/y').set('X-API-Key', 'dev-key-123').expect(200);
     expect(r2.body.authed).toBe(true);
   });
 

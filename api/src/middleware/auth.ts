@@ -4,20 +4,13 @@ import { verifyAccessToken } from '../auth/jwt';
 
 // Simple API key authentication middleware
 // In production, you'd want to use JWT tokens or OAuth
-export function requireApiKey(
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-) {
-  const apiKey =
-    req.headers['x-api-key'] ||
-    req.headers['authorization']?.replace('Bearer ', '');
+export function requireApiKey(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  const apiKey = req.headers['x-api-key'] || req.headers['authorization']?.replace('Bearer ', '');
 
   if (!apiKey) {
     return res.status(401).json({
       error: 'API key required',
-      message:
-        'Provide API key in X-API-Key header or Authorization: Bearer <key>',
+      message: 'Provide API key in X-API-Key header or Authorization: Bearer <key>',
     });
   }
 
@@ -37,11 +30,7 @@ export function requireApiKey(
 
 // Studio-specific authorization middleware
 // Ensures the user has access to the specific studio
-export function requireStudioAccess(
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-) {
+export function requireStudioAccess(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const studioId = req.params.studioId;
   // const apiKey = (req as any).apiKey; // Future use for studio-specific permissions
 
@@ -59,20 +48,15 @@ export function requireStudioAccess(
 
 // Ensure the current user is an owner/manager of the studio in params
 export function requireStudioOwner() {
-  return async (
-    req: AuthenticatedRequest,
-    res: Response,
-    next: NextFunction
-  ) => {
+  return async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const studioId = req.params.studioId;
-      if (!studioId || !req.user)
-        return res.status(403).json({ error: 'forbidden' });
+      if (!studioId || !req.user) return res.status(403).json({ error: 'forbidden' });
       const { getDbClient } = await import('../db');
       const client = getDbClient();
       const q = await client.query(
         'select 1 from studio_owners where studio_id=$1 and user_id=$2 limit 1',
-        [studioId, req.user.userId]
+        [studioId, req.user.userId],
       );
       if (q.rowCount === 0) return res.status(403).json({ error: 'forbidden' });
       return next();
@@ -84,14 +68,8 @@ export function requireStudioOwner() {
 
 // Optional auth middleware for public endpoints
 // Logs requests but doesn't require authentication
-export function optionalAuth(
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-) {
-  const apiKey =
-    req.headers['x-api-key'] ||
-    req.headers['authorization']?.replace('Bearer ', '');
+export function optionalAuth(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  const apiKey = req.headers['x-api-key'] || req.headers['authorization']?.replace('Bearer ', '');
 
   if (apiKey) {
     const validApiKeys = process.env.API_KEYS?.split(',') || ['dev-key-123'];
@@ -136,11 +114,7 @@ export function rateLimit(maxRequests: number = 100, windowMs: number = 60000) {
 }
 
 // Request logging middleware
-export function requestLogger(
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-) {
+export function requestLogger(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const start = Date.now();
 
   res.on('finish', () => {
@@ -168,11 +142,7 @@ export function requestLogger(
 
 // Verify our first-party JWT access token, set req.user
 export function requireUser() {
-  return async (
-    req: AuthenticatedRequest,
-    res: Response,
-    next: NextFunction
-  ) => {
+  return async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const header = req.headers.authorization || '';
       const token = header.startsWith('Bearer ') ? header.slice(7) : '';

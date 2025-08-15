@@ -1,0 +1,30 @@
+{
+  "name": "luzz-monorepo",
+  "private": true,
+  "packageManager": "pnpm@10.14.0",
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "test": "vitest run",
+    "test:fe": "vitest run",
+    "test:e2e": "turbo test:e2e",
+    "format": "prettier --config apps/prettier.config.mjs --ignore-unknown --write 'apps/**'"
+  },
+  "devDependencies": {
+    "turbo": "^2.1.3",
+    "@types/node": "^20.11.0",
+    "jsdom": "^26.1.0",
+    "vitest": "^3.2.4",
+    "prettier": "^3.3.3",
+    "prettier-plugin-svelte": "^3.3.3",
+    "@testing-library/svelte": "^5.2.6",
+    "@testing-library/jest-dom": "^6.6.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "^6.3.5"
+    }
+  }
+}

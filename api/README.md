@@ -25,11 +25,13 @@ A comprehensive Node.js + TypeScript API for Luz, a platform that allows studios
 ## 🔧 Setup
 
 ### Prerequisites
+
 - Node.js 20+
 - PostgreSQL (via Supabase)
 - pnpm
 
 ### Local Development
+
 ```bash
 # Install dependencies
 pnpm install
@@ -54,6 +56,7 @@ pnpm format
 ```
 
 ### Environment Variables
+
 ```bash
 # Development
 DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres
@@ -83,6 +86,7 @@ curl -H "Authorization: Bearer dev-key-123" http://localhost:3000/studios
 ### Studios
 
 #### `POST /studios`
+
 Create a new studio.
 
 ```json
@@ -97,6 +101,7 @@ Create a new studio.
 ### Customers
 
 #### `POST /studios/:studioId/customers`
+
 Create a new customer for a studio.
 
 ```json
@@ -108,20 +113,25 @@ Create a new customer for a studio.
 ```
 
 #### `GET /studios/:studioId/customers`
+
 List all customers for a studio with child and booking counts.
 
 #### `GET /customers/:id`
+
 Get customer details with children and booking history.
 
 #### `PATCH /customers/:id`
+
 Update customer information.
 
 #### `DELETE /customers/:id`
+
 Delete customer (cascades to children and bookings).
 
 ### Children
 
 #### `POST /customers/:customerId/children`
+
 Create a new child for a customer.
 
 ```json
@@ -132,20 +142,25 @@ Create a new child for a customer.
 ```
 
 #### `GET /customers/:customerId/children`
+
 List all children for a customer.
 
 #### `GET /children/:id`
+
 Get child details with customer and booking info.
 
 #### `PATCH /children/:id`
+
 Update child information.
 
 #### `DELETE /children/:id`
+
 Delete child (cascades to bookings).
 
 ### Slots
 
 #### `POST /studios/:studioId/slots`
+
 Create a new time slot.
 
 ```json
@@ -164,6 +179,7 @@ Create a new time slot.
 ### Bookings
 
 #### `POST /bookings`
+
 Create a direct booking (admin/studio use).
 
 ```json
@@ -174,15 +190,19 @@ Create a direct booking (admin/studio use).
 ```
 
 #### `GET /bookings`
+
 List bookings with optional filters:
+
 - `studioId`, `customerId`, `childId`, `slotId`
 - `status`, `paid`
 - `limit`, `offset` for pagination
 
 #### `GET /bookings/:id`
+
 Get detailed booking information.
 
 #### `PATCH /bookings/:id/payment`
+
 Mark booking as paid.
 
 ```json
@@ -193,6 +213,7 @@ Mark booking as paid.
 ```
 
 #### `PATCH /bookings/:id/status`
+
 Update booking status.
 
 ```json
@@ -202,14 +223,17 @@ Update booking status.
 ```
 
 #### `DELETE /bookings/:id`
+
 Cancel/delete a booking.
 
 ### Public API (No auth required)
 
 #### `GET /public/:slug/slots?week=2024-W03`
+
 Get available slots for a studio by week.
 
 #### `POST /public/invites/:hash/bookings`
+
 Create a booking using an invite link.
 
 ```json
@@ -225,6 +249,7 @@ Create a booking using an invite link.
 ### Invites
 
 #### `POST /studios/:studioId/invites`
+
 Create an invite for a customer.
 
 ```json
@@ -237,13 +262,17 @@ Create an invite for a customer.
 ### Admin & Monitoring
 
 #### `GET /health`
+
 Basic health check.
 
 #### `GET /admin/health`
+
 Detailed health check with database latency.
 
 #### `GET /admin/metrics`
+
 System metrics including:
+
 - Entity counts (studios, customers, bookings, etc.)
 - Booking statistics by status
 - Revenue metrics (last 30 days)
@@ -251,7 +280,9 @@ System metrics including:
 - System uptime and memory usage
 
 #### `GET /admin/database/status`
+
 Database-specific metrics:
+
 - Database size and connection info
 - Table sizes
 - Active connections
@@ -277,6 +308,7 @@ pnpm test:ui
 ### Test Database
 
 Tests use transaction isolation for speed and reliability:
+
 - Each test runs in its own transaction
 - Automatic rollback after each test
 - No test pollution between runs
@@ -284,6 +316,7 @@ Tests use transaction isolation for speed and reliability:
 ## 🚀 Deployment
 
 ### Docker Build
+
 ```bash
 # Build image
 docker build -t malshinim/luzapi:latest .
@@ -293,13 +326,16 @@ docker push malshinim/luzapi:latest
 ```
 
 ### Kubernetes Deployment
+
 ```bash
 # Deploy to k3s
 kubectl apply -f helm/luz-api/
 ```
 
 ### GitHub Actions
+
 The CI/CD pipeline automatically:
+
 1. Runs tests with PostgreSQL service
 2. Builds and pushes Docker image
 3. Deploys to k3s cluster
@@ -307,17 +343,21 @@ The CI/CD pipeline automatically:
 ## 📈 Performance & Monitoring
 
 ### Rate Limiting
+
 - Production: 60 requests/minute per API key
 - Development: 200 requests/minute
 
 ### Logging
+
 All requests are logged with:
+
 - Method, URL, status code
 - Response time
 - API key (masked)
 - User agent and IP
 
 ### Error Handling
+
 - Zod validation with detailed error messages
 - Global error handler with environment-aware responses
 - Database connection error handling
@@ -333,6 +373,7 @@ All requests are logged with:
 ## 🎯 Next Steps
 
 ### Completed ✅
+
 - Complete CRUD operations for all entities
 - Comprehensive booking management
 - Authentication and authorization
@@ -342,6 +383,7 @@ All requests are logged with:
 - ESLint configuration
 
 ### Potential Improvements
+
 - [ ] JWT-based authentication for better security
 - [ ] WebSocket support for real-time updates
 - [ ] Background job system for recurring slots

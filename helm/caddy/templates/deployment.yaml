@@ -16,18 +16,18 @@ spec:
     spec:
       containers:
         - name: caddy
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["caddy"]
-          args: ["run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+          image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
+          imagePullPolicy: { { .Values.image.pullPolicy } }
+          command: ['caddy']
+          args: ['run', '--config', '/etc/caddy/Caddyfile', '--adapter', 'caddyfile']
           ports:
             - name: http
               containerPort: 80
-              hostPort: {{ .Values.hostPorts.http }}
+              hostPort: { { .Values.hostPorts.http } }
               protocol: TCP
             - name: https
               containerPort: 443
-              hostPort: {{ .Values.hostPorts.https }}
+              hostPort: { { .Values.hostPorts.https } }
               protocol: TCP
           volumeMounts:
             - name: caddy-config
@@ -48,4 +48,3 @@ spec:
         - name: caddy-data
           persistentVolumeClaim:
             claimName: caddy-data
-

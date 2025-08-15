@@ -24,7 +24,7 @@ const createBookingSchema = z
       })
       .optional(),
   })
-  .refine(data => data.customerId || data.childId || data.childData, {
+  .refine((data) => data.customerId || data.childId || data.childData, {
     message: 'Either customerId, childId, or childData must be provided',
   });
 
@@ -38,11 +38,7 @@ router.patch('/:id/payment', async (req, res) => {
   try {
     const bookingId = req.params.id;
     // Basic UUID format validation
-    if (
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        bookingId
-      )
-    ) {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(bookingId)) {
       return res.status(400).json({ error: 'Invalid booking ID' });
     }
 
@@ -51,19 +47,16 @@ router.patch('/:id/payment', async (req, res) => {
     const client = getDbClient();
 
     // Verify booking exists
-    const bookingCheck = await client.query(
-      'SELECT id, paid FROM bookings WHERE id = $1',
-      [bookingId]
-    );
+    const bookingCheck = await client.query('SELECT id, paid FROM bookings WHERE id = $1', [
+      bookingId,
+    ]);
     if (bookingCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Booking not found' });
     }
 
     const booking = bookingCheck.rows[0];
     if (booking.paid) {
-      return res
-        .status(400)
-        .json({ error: 'Booking is already marked as paid' });
+      return res.status(400).json({ error: 'Booking is already marked as paid' });
     }
 
     // Update payment status
@@ -76,11 +69,7 @@ router.patch('/:id/payment', async (req, res) => {
       RETURNING *
     `;
 
-    const { rows } = await client.query(updateQuery, [
-      paymentDate,
-      paidMethod,
-      bookingId,
-    ]);
+    const { rows } = await client.query(updateQuery, [paymentDate, paidMethod, bookingId]);
 
     res.json(rows[0]);
   } catch (error) {
@@ -101,11 +90,7 @@ router.get('/:id', async (req, res) => {
   try {
     const bookingId = req.params.id;
     // Basic UUID format validation
-    if (
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        bookingId
-      )
-    ) {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(bookingId)) {
       return res.status(400).json({ error: 'Invalid booking ID' });
     }
 
@@ -150,10 +135,9 @@ router.post('/', async (req, res) => {
     const client = getDbClient();
 
     // Verify slot exists and is active
-    const slotCheck = await client.query(
-      'SELECT * FROM slots WHERE id = $1 AND active = true',
-      [slotId]
-    );
+    const slotCheck = await client.query('SELECT * FROM slots WHERE id = $1 AND active = true', [
+      slotId,
+    ]);
     if (slotCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Slot not found or not active' });
     }
@@ -173,7 +157,7 @@ router.post('/', async (req, res) => {
       // Verify customer exists and belongs to the same studio
       const customerCheck = await client.query(
         'SELECT id FROM customers WHERE id = $1 AND studio_id = $2',
-        [customerId, slot.studio_id]
+        [customerId, slot.studio_id],
       );
       if (customerCheck.rows.length === 0) {
         return res.status(404).json({
@@ -212,7 +196,7 @@ router.post('/', async (req, res) => {
     if (finalCustomerId) {
       const customerCheck = await client.query(
         'SELECT id FROM customers WHERE id = $1 AND studio_id = $2',
-        [finalCustomerId, slot.studio_id]
+        [finalCustomerId, slot.studio_id],
       );
       if (customerCheck.rows.length === 0) {
         return res.status(404).json({
@@ -228,7 +212,7 @@ router.post('/', async (req, res) => {
         JOIN customers c ON ch.customer_id = c.id
         WHERE ch.id = $1 AND c.studio_id = $2
       `,
-        [finalChildId, slot.studio_id]
+        [finalChildId, slot.studio_id],
       );
 
       if (childCheck.rows.length === 0) {
@@ -243,7 +227,7 @@ router.post('/', async (req, res) => {
       `SELECT COUNT(*)::int as count
        FROM bookings 
        WHERE slot_id = $1`,
-      [slotId]
+      [slotId],
     );
     const bookedCount: number = capacityResult.rows[0].count;
 
@@ -251,14 +235,12 @@ router.post('/', async (req, res) => {
       `SELECT max_participants
        FROM slots
        WHERE id = $1`,
-      [slotId]
+      [slotId],
     );
     const maxParticipants: number = capacityInfo.rows[0].max_participants;
 
     if (bookedCount >= maxParticipants) {
-      return res
-        .status(409)
-        .json({ error: 'Slot capacity reached. Cannot create booking.' });
+      return res.status(409).json({ error: 'Slot capacity reached. Cannot create booking.' });
     }
 
     // Create booking
@@ -333,8 +315,7 @@ router.get('/', async (req, res) => {
       values.push(paid === 'true');
     }
 
-    const whereClause =
-      filters.length > 0 ? `WHERE ${filters.join(' AND ')}` : '';
+    const whereClause = filters.length > 0 ? `WHERE ${filters.join(' AND ')}` : '';
 
     const query = `
       SELECT 
@@ -374,11 +355,7 @@ router.get('/', async (req, res) => {
 router.patch('/:id/status', async (req, res) => {
   try {
     const bookingId = req.params.id;
-    if (
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        bookingId
-      )
-    ) {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(bookingId)) {
       return res.status(400).json({ error: 'Invalid booking ID' });
     }
 
@@ -387,10 +364,9 @@ router.patch('/:id/status', async (req, res) => {
     const client = getDbClient();
 
     // Verify booking exists
-    const bookingCheck = await client.query(
-      'SELECT id, status FROM bookings WHERE id = $1',
-      [bookingId]
-    );
+    const bookingCheck = await client.query('SELECT id, status FROM bookings WHERE id = $1', [
+      bookingId,
+    ]);
     if (bookingCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Booking not found' });
     }
@@ -421,11 +397,7 @@ router.patch('/:id/status', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const bookingId = req.params.id;
-    if (
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        bookingId
-      )
-    ) {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(bookingId)) {
       return res.status(400).json({ error: 'Invalid booking ID' });
     }
 
@@ -439,7 +411,7 @@ router.delete('/:id', async (req, res) => {
       JOIN slots s ON b.slot_id = s.id
       WHERE b.id = $1
     `,
-      [bookingId]
+      [bookingId],
     );
 
     if (bookingCheck.rows.length === 0) {

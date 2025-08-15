@@ -28,9 +28,7 @@ router.get('/metrics', async (req, res) => {
       client.query('SELECT COUNT(*) as count FROM children'),
       client.query('SELECT COUNT(*) as count FROM slots WHERE active = true'),
       client.query('SELECT COUNT(*) as count FROM bookings'),
-      client.query(
-        'SELECT COUNT(*) as count FROM invites WHERE expires_at > NOW()'
-      ),
+      client.query('SELECT COUNT(*) as count FROM invites WHERE expires_at > NOW()'),
     ]);
 
     // Get booking metrics
@@ -99,13 +97,11 @@ router.get('/metrics', async (req, res) => {
       },
 
       // Popular studios
-      popular_studios: popularStudiosResult.rows.map(
-        (row: PopularStudioRow) => ({
-          name: row.name,
-          slug: row.slug,
-          booking_count: parseInt(row.booking_count),
-        })
-      ),
+      popular_studios: popularStudiosResult.rows.map((row: PopularStudioRow) => ({
+        name: row.name,
+        slug: row.slug,
+        booking_count: parseInt(row.booking_count),
+      })),
     };
 
     res.json(metrics);

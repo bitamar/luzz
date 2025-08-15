@@ -1,0 +1,26 @@
+{
+  "name": "@apps/dock",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "sync": "svelte-kit sync",
+    "lint": "echo 'noop'",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "echo 'noop'",
+    "format": "prettier --config ../prettier.config.mjs --write ."
+  },
+  "dependencies": {
+    "@sveltejs/kit": "^2.7.0",
+    "svelte": "^5.0.0"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-node": "^5.2.0",
+    "@sveltejs/adapter-static": "^3.0.8",
+    "@types/node": "^20.11.0",
+    "typescript": "^5.4.0",
+    "vite": "^6.3.0"
+  }
+}

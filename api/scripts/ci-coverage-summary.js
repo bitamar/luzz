@@ -23,9 +23,13 @@ function main() {
   }
 
   const total = data.total || {};
-  const stat = key => {
+  const stat = (key) => {
     const k = total[key] || { total: 0, covered: 0, pct: 0 };
-    return { total: k.total, covered: k.covered, pct: k.pct || (k.total ? (k.covered / k.total) * 100 : 100) };
+    return {
+      total: k.total,
+      covered: k.covered,
+      pct: k.pct || (k.total ? (k.covered / k.total) * 100 : 100),
+    };
   };
   const s = stat('statements');
   const b = stat('branches');

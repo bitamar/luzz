@@ -1,16 +1,6 @@
-import {
-  createTestStudio,
-  createTestSlot,
-  createTestCustomer,
-} from './test-helpers';
+import { createTestStudio, createTestSlot, createTestCustomer } from './test-helpers';
 import { Studios, Slots, Customers, Scenarios } from './factories';
-import type {
-  TestStudio,
-  TestCustomer,
-  TestChild,
-  TestSlot,
-  Booking,
-} from '../types';
+import type { TestStudio, TestCustomer, TestChild, TestSlot, Booking } from '../types';
 
 /**
  * Test Fixtures - Pre-built test scenarios for complex testing
@@ -51,10 +41,7 @@ export async function createCompleteStudio(): Promise<StudioFixture> {
 
   const childrenSlots = [
     await createTestSlot(studio.id, Slots.createKidsClass()),
-    await createTestSlot(
-      studio.id,
-      Slots.createKidsClass({ title: 'Kids Art Class' })
-    ),
+    await createTestSlot(studio.id, Slots.createKidsClass({ title: 'Kids Art Class' })),
   ];
 
   // Create customers
@@ -91,15 +78,13 @@ export async function createBusyStudio(): Promise<StudioFixture> {
   // Create many customers
   const customers = [];
   for (let i = 0; i < 10; i++) {
-    customers.push(
-      await createTestCustomer(studio.id, Customers.create() as any)
-    );
+    customers.push(await createTestCustomer(studio.id, Customers.create() as any));
   }
 
   return {
     studio,
-    adults: slots.filter(s => !s.for_children),
-    children: slots.filter(s => s.for_children),
+    adults: slots.filter((s) => !s.for_children),
+    children: slots.filter((s) => s.for_children),
     slots,
     customers,
   };
@@ -123,18 +108,9 @@ export async function createFamilyStudio(): Promise<
   // Create family-friendly slots
   const familySlots = [
     await createTestSlot(studio.id, Slots.createKidsClass()),
-    await createTestSlot(
-      studio.id,
-      Slots.createKidsClass({ title: 'Tiny Tots Dance' })
-    ),
-    await createTestSlot(
-      studio.id,
-      Slots.createYogaClass({ title: 'Parent & Child Yoga' })
-    ),
-    await createTestSlot(
-      studio.id,
-      Slots.create({ title: 'Family Fitness', forChildren: false })
-    ),
+    await createTestSlot(studio.id, Slots.createKidsClass({ title: 'Tiny Tots Dance' })),
+    await createTestSlot(studio.id, Slots.createYogaClass({ title: 'Parent & Child Yoga' })),
+    await createTestSlot(studio.id, Slots.create({ title: 'Family Fitness', forChildren: false })),
   ];
 
   // Create families
@@ -151,11 +127,11 @@ export async function createFamilyStudio(): Promise<
 
   return {
     studio,
-    adults: familySlots.filter(s => !s.for_children),
-    children: familySlots.filter(s => s.for_children),
+    adults: familySlots.filter((s) => !s.for_children),
+    children: familySlots.filter((s) => s.for_children),
     slots: familySlots,
-    customers: families.map(f => f.parent),
-    families: families.map(f => ({
+    customers: families.map((f) => f.parent),
+    families: families.map((f) => ({
       customer: f.parent,
       children: f.children as any,
     })),
@@ -183,7 +159,7 @@ export async function createEdgeCaseStudio(): Promise<StudioFixture> {
         price: 0,
         minParticipants: 0,
         maxParticipants: 1,
-      })
+      }),
     ),
 
     // Very long class
@@ -193,7 +169,7 @@ export async function createEdgeCaseStudio(): Promise<StudioFixture> {
         title: 'Marathon Meditation',
         durationMin: 480, // 8 hours
         price: 200,
-      })
+      }),
     ),
 
     // Very short class
@@ -203,7 +179,7 @@ export async function createEdgeCaseStudio(): Promise<StudioFixture> {
         title: 'Quick Stretch',
         durationMin: 15,
         price: 5,
-      })
+      }),
     ),
 
     // High capacity class
@@ -214,7 +190,7 @@ export async function createEdgeCaseStudio(): Promise<StudioFixture> {
         minParticipants: 50,
         maxParticipants: 500,
         price: 10,
-      })
+      }),
     ),
   ];
 
@@ -224,9 +200,8 @@ export async function createEdgeCaseStudio(): Promise<StudioFixture> {
     await createTestCustomer(
       studio.id,
       Customers.create({
-        firstName:
-          'Pneumonoultramicroscopicsilicovolcanoconiosisaffectedperson',
-      }) as any
+        firstName: 'Pneumonoultramicroscopicsilicovolcanoconiosisaffectedperson',
+      }) as any,
     ),
 
     // Customer with minimal data
@@ -235,14 +210,14 @@ export async function createEdgeCaseStudio(): Promise<StudioFixture> {
       Customers.create({
         firstName: 'A',
         contactEmail: 'a@b.co',
-      }) as any
+      }) as any,
     ),
   ];
 
   return {
     studio,
-    adults: edgeSlots.filter(s => !s.for_children),
-    children: edgeSlots.filter(s => s.for_children),
+    adults: edgeSlots.filter((s) => !s.for_children),
+    children: edgeSlots.filter((s) => s.for_children),
     slots: edgeSlots,
     customers: edgeCustomers,
   };
@@ -256,10 +231,7 @@ export async function createInternationalStudios(): Promise<StudioFixture[]> {
     // Israeli studio
     {
       studioData: Studios.createIsraeliStudio(),
-      slots: [
-        Slots.create({ title: 'יוגה בוקר' }),
-        Slots.create({ title: 'פילאטיס ערב' }),
-      ],
+      slots: [Slots.create({ title: 'יוגה בוקר' }), Slots.create({ title: 'פילאטיס ערב' })],
     },
 
     // Japanese studio
@@ -306,8 +278,8 @@ export async function createInternationalStudios(): Promise<StudioFixture[]> {
 
     studios.push({
       studio,
-      adults: slots.filter(s => !s.for_children),
-      children: slots.filter(s => s.for_children),
+      adults: slots.filter((s) => !s.for_children),
+      children: slots.filter((s) => s.for_children),
       slots,
       customers,
     });

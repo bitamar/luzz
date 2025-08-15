@@ -1,0 +1,16 @@
+# Ignore Helm charts (templated YAML incompatible with Prettier YAML parser)
+helm/**
+
+# Ignore build outputs
+**/.svelte-kit/**
+**/dist/**
+**/build/**
+
+# Node/pnpm artifacts
+node_modules
+pnpm-lock.yaml
+
+# Use per-scope configs: apps has Svelte-specific Prettier config
+apps/**/.svelte-kit/**
+
+

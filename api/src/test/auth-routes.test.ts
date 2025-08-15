@@ -69,21 +69,12 @@ describe('POST /auth/google/token', () => {
     await request(app).get('/auth/config').expect(401);
 
     // Non-admin
-    const userToken = await signAccessToken(
-      { userId: 'u', isAdmin: false },
-      '5m'
-    );
-    await request(app)
-      .get('/auth/config')
-      .set('Authorization', `Bearer ${userToken}`)
-      .expect(403);
+    const userToken = await signAccessToken({ userId: 'u', isAdmin: false }, '5m');
+    await request(app).get('/auth/config').set('Authorization', `Bearer ${userToken}`).expect(403);
 
     // Admin
     process.env.GOOGLE_CLIENT_IDS = 'a,b';
-    const adminToken = await signAccessToken(
-      { userId: 'a1', isAdmin: true },
-      '5m'
-    );
+    const adminToken = await signAccessToken({ userId: 'a1', isAdmin: true }, '5m');
     const res = await request(app)
       .get('/auth/config')
       .set('Authorization', `Bearer ${adminToken}`)
