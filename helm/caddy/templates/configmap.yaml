@@ -6,5 +6,6 @@ data:
   Caddyfile: |
     {{ .Values.domain }} {
       encode gzip
-      reverse_proxy {{ .Values.backendService }}.{{ .Values.backendNamespace }}.svc.cluster.local:{{ .Values.backendPort }}
+      # API service only
+      reverse_proxy {{ .Values.apiService }}.{{ .Values.apiNamespace }}.svc.cluster.local:{{ .Values.apiPort }}
     }
