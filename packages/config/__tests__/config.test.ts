@@ -13,3 +13,4 @@ describe('loadServerConfigFromEnv', () => {
     expect('ENV' in cfg).toBe(false);
   });
 });
+

@@ -46,4 +46,4 @@ Frontend build/deploy (static-first)
 - `pnpm -F @apps/<name> build` writes static assets to `apps/<name>/build/`.
 - Deploy options:
   - CDN: upload `build/` to object storage (e.g., S3/GCS) fronted by a CDN.
-  - k3s: serve `build/` from a tiny static container (NGINX/Caddy) per app and route via Caddy.
+  - Optional: any static hosting platform (e.g., Netlify, Cloudflare Pages, GitHub Pages, NGINX). No Docker/Caddy required for frontend.

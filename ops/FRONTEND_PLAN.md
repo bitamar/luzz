@@ -50,7 +50,7 @@ Subdomains (example):
 - **Types/validation**: TypeScript + Zod
 - **Data**: typed `api-sdk` from OpenAPI; client-side `fetch` to API (no server `load` initially)
 - **Testing**: Vitest (unit), @testing-library/svelte (component), Playwright (E2E), contract tests for OpenAPI
-- **Build/CI**: Turborepo + pnpm, per-app Docker images; Helm/Caddy for routing
+- **Build/CI**: Turborepo + pnpm; deploy static assets to object storage + CDN (no per-app Docker; no Caddy required for frontend)
 - **Build tool routing (decision)**: Use Vite for build/dev/preview commands; use `svelte-kit` only for `sync`.
   - Each app must include `src/app.html` (SvelteKit 2 requirement) and set `tsconfig.json` to extend `./.svelte-kit/tsconfig.json`.
   - Root `vitest.config.ts` will define named projects so CI can filter reliably.
@@ -159,7 +159,7 @@ apps/
 - [x] Enable pnpm in repo (document version in `README`)
 - [x] Add `pnpm-workspace.yaml` covering `apps/*` and `packages/*`
 - [x] Add `turbo.json` with pipelines for build/test/lint/typecheck
-- [ ] Add `turbo` as a root devDependency so `turbo build` works in scripts/CI
+- [x] Add `turbo` as a root devDependency so `turbo build` works in scripts/CI
 - [x] Root `README` section for dev setup and commands
 
 #### Monorepo structure
@@ -174,7 +174,7 @@ apps/
 - [x] Scaffold SvelteKit in `apps/dock`
 - [x] Scaffold SvelteKit in `apps/sail`
 - [x] Scaffold SvelteKit in `apps/hq`
-- [x] Install `@sveltejs/adapter-node` in each app and configure `svelte.config.js`
+- [x] Install `@sveltejs/adapter-static` in each app and configure `svelte.config.js`
 - [x] Add `src/routes/+layout.svelte` with a minimal shell and `src/routes/+page.svelte` smoke
 - [x] Add per-app `static/config.json` placeholder
 - [x] Add `src/app.html` to each app (required by SvelteKit 2)
@@ -189,7 +189,7 @@ apps/
 #### Testing (unit, component)
 
 - [x] Add root `vitest.config.ts` with projects for `apps/*` and `packages/*`
-- [ ] Add `name` for each project in `vitest.config.ts` (so CI filters match)
+- [x] Add `name` for each project in `vitest.config.ts` (so CI filters match)
 - [x] Ensure CI uses named project filters or `pnpm test:fe`
 - [x] Add `@testing-library/svelte` setup for component tests
 - [x] Add first unit tests in `packages/config`
@@ -215,13 +215,11 @@ apps/
 - [x] Root scripts: `build`, `dev`, `lint`, `typecheck`, `test`, `test:e2e`
 - [ ] Pre-commit hooks (Husky + lint-staged) for lint/typecheck on changed files (optional)
 
-#### Adapters, Docker/CDN, Helm (baseline)
+#### Adapters and Deploy (CDN)
 
-- [ ] Switch apps to `@sveltejs/adapter-static` and set `export const prerender = true` at the root layout.
-- [ ] If SPA fallback is desired, configure adapter with `fallback: '200.html'` and ensure Caddy/NGINX serve SPA fallback.
-- [ ] Deployment Option A (preferred): upload `build/` to object storage (S3/GCS) and front with CDN; map `dock.|sail.|hq.` subdomains to CDN.
-- [ ] Deployment Option B (k3s): serve built assets from a tiny static container (NGINX/Caddy) per app and route via Caddy.
-- [ ] Update Caddy ingress to route `dock.|sail.|hq.` to CDN origins or to k8s Services for the static containers.
+- [x] Switch apps to `@sveltejs/adapter-static` and set `export const prerender = true` at the root layout.
+- [ ] If SPA fallback is desired, configure adapter with `fallback: '200.html'` and configure your CDN/object storage to serve `200.html` on 404.
+- [ ] Upload `build/` to object storage (S3/GCS) and front with a CDN; map `dock.|sail.|hq.` subdomains to CDN.
 
 #### Definition of done for Milestone 1
 
