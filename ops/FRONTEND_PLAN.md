@@ -218,7 +218,7 @@ apps/
 #### Adapters and Deploy (CDN)
 
 - [x] Switch apps to `@sveltejs/adapter-static` and set `export const prerender = true` at the root layout.
-- [ ] If SPA fallback is desired, configure adapter with `fallback: '200.html'` and configure your CDN/object storage to serve `200.html` on 404.
+- [x] If SPA fallback is desired, configure adapter with `fallback: '200.html'` and configure your CDN/object storage to serve `200.html` on 404.
 - [ ] Upload `build/` to object storage (S3/GCS) and front with a CDN; map `dock.|sail.|hq.` subdomains to CDN.
 
 #### Definition of done for Milestone 1
