@@ -46,7 +46,7 @@ app.use('/bookings', requireApiKey, bookings);
 app.use('/admin', requireApiKey, admin);
 
 // Global error handler
-app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+app.use((err: Error, req: express.Request, res: express.Response) => {
   console.error('Unhandled error:', err);
   res.status(500).json({
     error: 'Internal server error',

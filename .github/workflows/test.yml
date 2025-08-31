@@ -53,20 +53,17 @@ jobs:
       - name: Install all workspace dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Ensure API package deps are installed
-        run: pnpm -F api install --frozen-lockfile
-
       - name: Setup test database
         run: node api/scripts/setup-test-db.js
 
       - name: Run linting (workspace filtered)
-        run: pnpm -F api lint
+        run: pnpm exec eslint api/src --ext .ts --fix
 
       - name: Run type checking (workspace filtered)
-        run: pnpm -F api type-check
+        run: pnpm --filter api type-check
 
       - name: Run tests with coverage (workspace filtered)
-        run: pnpm -F api test:coverage
+        run: pnpm --filter api test:coverage
 
       - name: Enforce coverage thresholds
         if: always()

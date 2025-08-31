@@ -3,7 +3,7 @@ import 'dotenv/config';
 
 // Load test environment if in test mode
 if (process.env.NODE_ENV === 'test') {
-  require('dotenv').config({ path: '.env.test' });
+  import('dotenv').then(dotenv => dotenv.config({ path: '.env.test' }));
 }
 
 // Use test database when NODE_ENV=test
