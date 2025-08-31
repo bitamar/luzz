@@ -54,25 +54,20 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       - name: Setup test database
-        working-directory: ./api
-        run: node scripts/setup-test-db.js
+        run: node api/scripts/setup-test-db.js
 
-      - name: Run linting
-        working-directory: ./api
-        run: pnpm lint
+      - name: Run linting (workspace filtered)
+        run: pnpm -F api lint
 
-      - name: Run type checking
-        working-directory: ./api
-        run: pnpm type-check
+      - name: Run type checking (workspace filtered)
+        run: pnpm -F api type-check
 
-      - name: Run tests with coverage
-        working-directory: ./api
-        run: pnpm test:coverage
+      - name: Run tests with coverage (workspace filtered)
+        run: pnpm -F api test:coverage
 
       - name: Enforce coverage thresholds
         if: always()
-        working-directory: ./api
-        run: node scripts/enforce-coverage.js
+        run: node api/scripts/enforce-coverage.js
 
       - name: Upload coverage reports
         if: always()
@@ -84,8 +79,7 @@ jobs:
 
       - name: Coverage summary
         if: always()
-        working-directory: ./api
-        run: node scripts/ci-coverage-summary.js
+        run: node api/scripts/ci-coverage-summary.js
 
       - name: Comment coverage on PR
         if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
