@@ -1,4 +1,9 @@
-import { createTestStudio, createTestSlot, createTestCustomer } from './test-helpers';
+import {
+  createTestStudio,
+  createTestSlot,
+  createTestCustomer,
+  createTestChild,
+} from './test-helpers';
 import { Studios, Slots, Customers, Scenarios } from './factories';
 import type { TestStudio, TestCustomer, TestChild, TestSlot, Booking } from '../types';
 
@@ -146,9 +151,19 @@ export async function createFamilyStudio(): Promise<
       contact_phone: family.parent.contactPhone,
     });
 
+    // Create actual child records in the database
+    const children: TestChild[] = [];
+    for (const childData of family.children) {
+      const child = await createTestChild(parent.id, {
+        firstName: childData.firstName || 'Child',
+        avatarKey: childData.avatarKey,
+      });
+      children.push(child);
+    }
+
     families.push({
       parent,
-      children: family.children, // Note: children would need to be created after bookings
+      children,
     });
   }
 

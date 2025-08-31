@@ -3,6 +3,7 @@ import { testTransaction } from './transaction-manager';
 import type {
   TestStudio,
   TestCustomer,
+  TestChild,
   TestSlot,
   CreateStudioRequest,
   CreateSlotRequest,
@@ -171,6 +172,26 @@ export async function createTestCustomer(
     customerData.first_name,
     customerData.contact_email || null,
     customerData.contact_phone || null,
+  ]);
+  return rows[0];
+}
+
+// Helper to create a child and return its data
+export async function createTestChild(
+  customerId: string,
+  childData: { firstName: string; avatarKey?: string },
+): Promise<TestChild> {
+  const query = `
+    INSERT INTO children (customer_id, first_name, avatar_key, created_at)
+    VALUES ($1, $2, $3, NOW())
+    RETURNING *
+  `;
+
+  const client = getDbClient();
+  const { rows } = await client.query(query, [
+    customerId,
+    childData.firstName,
+    childData.avatarKey || `child-avatar-${Date.now()}`,
   ]);
   return rows[0];
 }

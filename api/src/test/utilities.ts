@@ -27,7 +27,7 @@ export const assertions = {
    * Assert that a response has valid timestamp format
    */
   toHaveValidTimestamp(response: { body: Record<string, unknown> }, field: string) {
-    const timestamp = response.body[field];
+    const timestamp = response.body[field] as string;
     expect(timestamp).toBeDefined();
     expect(new Date(timestamp).toISOString()).toBe(timestamp);
     return new Date(timestamp);
@@ -37,7 +37,7 @@ export const assertions = {
    * Assert that a price field is properly formatted
    */
   toHaveValidPrice(response: { body: Record<string, unknown> }, field: string = 'price') {
-    const price = response.body[field];
+    const price = response.body[field] as string;
     expect(price).toBeDefined();
     expect(typeof price).toBe('string');
     expect(parseFloat(price)).toBeGreaterThanOrEqual(0);
@@ -279,7 +279,8 @@ export const http = {
     details?: unknown;
   } {
     return {
-      message: response.body.error || response.body.message || 'Unknown error',
+      message:
+        (response.body.error as string) || (response.body.message as string) || 'Unknown error',
       details: response.body.details || response.body.data,
     };
   },

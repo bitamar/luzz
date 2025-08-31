@@ -60,7 +60,7 @@ jobs:
         run: pnpm exec eslint api/src --ext .ts --fix
 
       - name: Run type checking (workspace filtered)
-        run: pnpm --filter api type-check
+        run: pnpm --filter api typecheck
 
       - name: Run tests with coverage (workspace filtered)
         run: pnpm --filter api test:coverage
