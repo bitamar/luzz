@@ -49,11 +49,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'pnpm'
-          cache-dependency-path: pnpm-lock.yaml
 
-      - name: Install dependencies
-        working-directory: ./api
+      - name: Install workspace dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Setup test database
