@@ -10,7 +10,7 @@
     "lint": "pnpm -w lint",
     "typecheck": "svelte-check --fail-on-warnings",
     "test": "pnpm -w test:fe",
-    "format": "prettier --config ../prettier.config.mjs --write ."
+    "format": "pnpm -w format"
   },
   "dependencies": {
     "@sveltejs/kit": "^2.7.0",
