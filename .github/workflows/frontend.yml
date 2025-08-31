@@ -2,8 +2,9 @@ name: Frontend CI
 
 on:
   pull_request:
+    branches: [main]
   push:
-    branches: [main, master, develop, google-auth, frontend]
+    branches: [main]
 
 jobs:
   test-frontend:
@@ -29,6 +30,9 @@ jobs:
 
       - name: Generate SvelteKit types (sync)
         run: pnpm -r run sync
+
+      - name: Run Svelte typecheck (svelte-check)
+        run: pnpm -r run typecheck
 
       - name: Run frontend unit tests (Vitest projects)
         run: pnpm test:fe

@@ -7,9 +7,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "sync": "svelte-kit sync",
-    "lint": "echo 'noop'",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "echo 'noop'",
+    "lint": "pnpm -w lint",
+    "typecheck": "svelte-check --fail-on-warnings",
+    "test": "pnpm -w test:fe",
     "format": "prettier --config ../prettier.config.mjs --write ."
   },
   "dependencies": {
@@ -17,7 +17,6 @@
     "svelte": "^5.0.0"
   },
   "devDependencies": {
-    "@sveltejs/adapter-node": "^5.2.0",
     "@sveltejs/adapter-static": "^3.0.8",
     "@types/node": "^20.11.0",
     "typescript": "^5.4.0",

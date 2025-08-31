@@ -6,4 +6,8 @@ export default {
   trailingComma: 'all',
   bracketSpacing: true,
   arrowParens: 'always',
+  plugins: ['prettier-plugin-svelte'],
+  overrides: [
+    { files: ['**/*.svelte'], options: { parser: 'svelte' } },
+  ],
 };

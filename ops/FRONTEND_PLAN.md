@@ -215,11 +215,12 @@ apps/
 - [x] Root scripts: `build`, `dev`, `lint`, `typecheck`, `test`, `test:e2e`
 - [ ] Pre-commit hooks (Husky + lint-staged) for lint/typecheck on changed files (optional)
 
-#### Adapters and Deploy (CDN)
+#### Adapters and Deploy (GitHub Pages)
 
 - [x] Switch apps to `@sveltejs/adapter-static` and set `export const prerender = true` at the root layout.
 - [x] If SPA fallback is desired, configure adapter with `fallback: '200.html'` and configure your CDN/object storage to serve `200.html` on 404.
-- [ ] Upload `build/` to object storage (S3/GCS) and front with a CDN; map `dock.|sail.|hq.` subdomains to CDN.
+- [x] Configure SPA fallback via `fallback: '404.html'` and set `paths.base` from `BASE_PATH` env.
+- [x] Deploy to GitHub Pages using workflow `.github/workflows/deploy-pages.yml` (publishes `/dock`, `/sail`, `/hq`).
 
 #### Definition of done for Milestone 1
 

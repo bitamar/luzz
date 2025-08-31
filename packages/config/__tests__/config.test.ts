@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { loadServerConfigFromEnv } from '../src/index';
+import { loadServerConfigFromEnv } from '../src';
 
 describe('loadServerConfigFromEnv', () => {
   it('returns API_BASE_URL and ENV when provided', () => {
@@ -13,4 +13,3 @@ describe('loadServerConfigFromEnv', () => {
     expect('ENV' in cfg).toBe(false);
   });
 });
-

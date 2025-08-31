@@ -45,10 +45,10 @@ jobs:
           version: 10.14.0
           run_install: false
 
-      - name: Use Node.js 20
+      - name: Use Node.js from .nvmrc
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
           cache-dependency-path: api/pnpm-lock.yaml
 
