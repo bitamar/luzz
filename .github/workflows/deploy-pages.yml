@@ -1,0 +1,82 @@
+name: Deploy GitHub Pages (Dock/Sail/HQ)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+
+      - name: Install deps
+        run: pnpm i --frozen-lockfile
+
+      - name: Build Dock
+        run: BASE_PATH=/dock pnpm -F @apps/dock build
+
+      - name: Build Sail
+        run: BASE_PATH=/sail pnpm -F @apps/sail build
+
+      - name: Build HQ
+        run: BASE_PATH=/hq pnpm -F @apps/hq build
+
+      - name: Prepare Pages artifact
+        run: |
+          mkdir -p dist
+          cp -R apps/dock/build dist/dock
+          cp -R apps/sail/build dist/sail
+          cp -R apps/hq/build dist/hq
+          # Root index linking to sub-apps
+          cat > dist/index.html <<'HTML'
+          <!doctype html>
+          <meta charset="utf-8" />
+          <title>Luzz Apps</title>
+          <meta name="viewport" content="width=device-width,initial-scale=1" />
+          <body>
+            <h1>Luzz Frontend</h1>
+            <ul>
+              <li><a href="/dock/">Dock</a></li>
+              <li><a href="/sail/">Sail</a></li>
+              <li><a href="/hq/">HQ</a></li>
+            </ul>
+          </body>
+          HTML
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
