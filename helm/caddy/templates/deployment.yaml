@@ -16,10 +16,10 @@ spec:
     spec:
       containers:
         - name: caddy
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["caddy"]
-          args: ["run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+          image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
+          imagePullPolicy: '{{ .Values.image.pullPolicy }}'
+          command: ['caddy']
+          args: ['run', '--config', '/etc/caddy/Caddyfile', '--adapter', 'caddyfile']
           ports:
             - name: http
               containerPort: 80
@@ -48,4 +48,3 @@ spec:
         - name: caddy-data
           persistentVolumeClaim:
             claimName: caddy-data
-

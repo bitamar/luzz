@@ -19,14 +19,10 @@ export default async function buildAuthRouter(deps?: Partial<AuthDeps>) {
     try {
       const parse = schema.safeParse(req.body);
       if (!parse.success) {
-        return res
-          .status(400)
-          .json({ error: 'invalid body', details: parse.error.issues });
+        return res.status(400).json({ error: 'invalid body', details: parse.error.issues });
       }
       const { idToken } = parse.data;
-      const allowed = (process.env.GOOGLE_CLIENT_IDS || '')
-        .split(',')
-        .filter(Boolean);
+      const allowed = (process.env.GOOGLE_CLIENT_IDS || '').split(',').filter(Boolean);
       const profile = await verifyGoogleIdToken(idToken, allowed);
       const user = await upsertUserFromGoogle(profile);
 
@@ -35,8 +31,7 @@ export default async function buildAuthRouter(deps?: Partial<AuthDeps>) {
         isAdmin: user.is_admin,
       });
       // For now, a dummy opaque refresh token; to be replaced with rotate+store if needed
-      const refreshToken =
-        'r.' + Buffer.from(user.id + ':' + Date.now()).toString('base64url');
+      const refreshToken = 'r.' + Buffer.from(user.id + ':' + Date.now()).toString('base64url');
       res.cookie('refresh_token', refreshToken, {
         httpOnly: true,
         secure: true,
@@ -69,9 +64,7 @@ export default async function buildAuthRouter(deps?: Partial<AuthDeps>) {
       const claims = await verifyAccessToken(token);
       if (!claims.isAdmin) return res.status(403).json({ error: 'forbidden' });
 
-      const audiences = (process.env.GOOGLE_CLIENT_IDS || '')
-        .split(',')
-        .filter(Boolean);
+      const audiences = (process.env.GOOGLE_CLIENT_IDS || '').split(',').filter(Boolean);
       return res.json({ audiences });
     } catch {
       return res.status(401).json({ error: 'unauthorized' });

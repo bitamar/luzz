@@ -22,24 +22,18 @@ customerChildrenRouter.post('/:customerId/children', async (req, res) => {
   try {
     const customerId = req.params.customerId;
     // Basic UUID format validation
-    if (
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        customerId
-      )
-    ) {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(customerId)) {
       return res.status(400).json({ error: 'Invalid customer ID' });
     }
 
-    const { firstName, avatarKey }: CreateChildRequest =
-      createChildSchema.parse(req.body);
+    const { firstName, avatarKey }: CreateChildRequest = createChildSchema.parse(req.body);
 
     const client = getDbClient();
 
     // Verify customer exists
-    const customerCheck = await client.query(
-      'SELECT id, studio_id FROM customers WHERE id = $1',
-      [customerId]
-    );
+    const customerCheck = await client.query('SELECT id, studio_id FROM customers WHERE id = $1', [
+      customerId,
+    ]);
     if (customerCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Customer not found' });
     }
@@ -50,11 +44,7 @@ customerChildrenRouter.post('/:customerId/children', async (req, res) => {
       RETURNING *
     `;
 
-    const { rows } = await client.query(query, [
-      customerId,
-      firstName,
-      avatarKey,
-    ]);
+    const { rows } = await client.query(query, [customerId, firstName, avatarKey]);
 
     res.status(201).json(rows[0]);
   } catch (error) {
@@ -74,21 +64,16 @@ customerChildrenRouter.post('/:customerId/children', async (req, res) => {
 customerChildrenRouter.get('/:customerId/children', async (req, res) => {
   try {
     const customerId = req.params.customerId;
-    if (
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        customerId
-      )
-    ) {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(customerId)) {
       return res.status(400).json({ error: 'Invalid customer ID' });
     }
 
     const client = getDbClient();
 
     // Verify customer exists
-    const customerCheck = await client.query(
-      'SELECT id FROM customers WHERE id = $1',
-      [customerId]
-    );
+    const customerCheck = await client.query('SELECT id FROM customers WHERE id = $1', [
+      customerId,
+    ]);
     if (customerCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Customer not found' });
     }
@@ -115,11 +100,7 @@ customerChildrenRouter.get('/:customerId/children', async (req, res) => {
 childrenRouter.get('/:id', async (req, res) => {
   try {
     const childId = req.params.id;
-    if (
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        childId
-      )
-    ) {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(childId)) {
       return res.status(400).json({ error: 'Invalid child ID' });
     }
 
@@ -158,11 +139,7 @@ childrenRouter.get('/:id', async (req, res) => {
 childrenRouter.patch('/:id', async (req, res) => {
   try {
     const childId = req.params.id;
-    if (
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        childId
-      )
-    ) {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(childId)) {
       return res.status(400).json({ error: 'Invalid child ID' });
     }
 
@@ -175,10 +152,7 @@ childrenRouter.patch('/:id', async (req, res) => {
     const client = getDbClient();
 
     // Verify child exists
-    const childCheck = await client.query(
-      'SELECT id FROM children WHERE id = $1',
-      [childId]
-    );
+    const childCheck = await client.query('SELECT id FROM children WHERE id = $1', [childId]);
     if (childCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Child not found' });
     }
@@ -225,11 +199,7 @@ childrenRouter.patch('/:id', async (req, res) => {
 childrenRouter.delete('/:id', async (req, res) => {
   try {
     const childId = req.params.id;
-    if (
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        childId
-      )
-    ) {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(childId)) {
       return res.status(400).json({ error: 'Invalid child ID' });
     }
 
@@ -245,7 +215,7 @@ childrenRouter.delete('/:id', async (req, res) => {
       WHERE ch.id = $1
       GROUP BY ch.id, ch.first_name
     `,
-      [childId]
+      [childId],
     );
 
     if (childCheck.rows.length === 0) {

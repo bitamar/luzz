@@ -3,21 +3,17 @@ image:
   tag: 2.8.4
   pullPolicy: IfNotPresent
 
-service:
-  type: ClusterIP
-  port: 80
-
 hostPorts:
   http: 80
   https: 443
 
 domain: luz.mud.co.il
-backendService: luz-api-luz-api
-backendNamespace: luz-api
-backendPort: 80
+# API-only reverse proxy settings
+apiService: luz-api-luz-api
+apiNamespace: luz-api
+apiPort: 80
 
 persistence:
   enabled: true
   size: 1Gi
-  storageClassName: ""
-
+  storageClassName: ''
