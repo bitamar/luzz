@@ -26,7 +26,7 @@ export const assertions = {
   /**
    * Assert that a response has valid timestamp format
    */
-  toHaveValidTimestamp(response: any, field: string) {
+  toHaveValidTimestamp(response: { body: Record<string, unknown> }, field: string) {
     const timestamp = response.body[field];
     expect(timestamp).toBeDefined();
     expect(new Date(timestamp).toISOString()).toBe(timestamp);
@@ -36,7 +36,7 @@ export const assertions = {
   /**
    * Assert that a price field is properly formatted
    */
-  toHaveValidPrice(response: any, field: string = 'price') {
+  toHaveValidPrice(response: { body: Record<string, unknown> }, field: string = 'price') {
     const price = response.body[field];
     expect(price).toBeDefined();
     expect(typeof price).toBe('string');
@@ -48,7 +48,7 @@ export const assertions = {
   /**
    * Assert that response contains required fields
    */
-  toHaveRequiredFields(response: any, fields: string[]) {
+  toHaveRequiredFields(response: { body: Record<string, unknown> }, fields: string[]) {
     for (const field of fields) {
       expect(response.body[field]).toBeDefined();
     }
@@ -90,7 +90,7 @@ export const dbHelpers = {
   /**
    * Get a record by ID
    */
-  async getRecord(table: string, id: string): Promise<any> {
+  async getRecord(table: string, id: string): Promise<Record<string, unknown>> {
     const client = getDbClient();
     const result = await client.query(`SELECT * FROM ${table} WHERE id = $1`, [id]);
     return result.rows[0] || null;
@@ -108,7 +108,10 @@ export const dbHelpers = {
   /**
    * Get records with conditions
    */
-  async getRecords(table: string, where: Record<string, any> = {}): Promise<any[]> {
+  async getRecords(
+    table: string,
+    where: Record<string, unknown> = {},
+  ): Promise<Record<string, unknown>[]> {
     const client = getDbClient();
 
     if (Object.keys(where).length === 0) {
@@ -271,7 +274,10 @@ export const http = {
   /**
    * Extract error details from response
    */
-  extractError(response: any): { message: string; details?: any } {
+  extractError(response: { body: Record<string, unknown> }): {
+    message: string;
+    details?: unknown;
+  } {
     return {
       message: response.body.error || response.body.message || 'Unknown error',
       details: response.body.details || response.body.data,
@@ -281,7 +287,7 @@ export const http = {
   /**
    * Create URL with query parameters
    */
-  withQuery(url: string, params: Record<string, any>): string {
+  withQuery(url: string, params: Record<string, unknown>): string {
     const searchParams = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {

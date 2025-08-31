@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { JWTPayload } from 'jose';
 // Note: import implementation dynamically inside tests to allow module mocking
 
 describe('verifyGoogleIdToken', () => {
@@ -20,7 +21,7 @@ describe('verifyGoogleIdToken', () => {
   });
 
   it('verifies token via jose and returns normalized profile', async () => {
-    const payload = {
+    const payload: JWTPayload = {
       sub: '123',
       email: 'a@b.co',
       email_verified: true,
@@ -28,11 +29,11 @@ describe('verifyGoogleIdToken', () => {
       picture: 'https://img',
       aud: validAud[0],
       iss: 'https://accounts.google.com',
-    } as any;
+    };
 
     vi.resetModules();
     vi.doMock('jose', async () => ({
-      createRemoteJWKSet: () => (async () => ({})) as any,
+      createRemoteJWKSet: () => async () => ({}),
       jwtVerify: async () => ({ payload }),
     }));
     const { verifyGoogleIdToken: impl } = await import('../auth/google');
@@ -50,7 +51,7 @@ describe('verifyGoogleIdToken', () => {
   it('fails if jwtVerify rejects', async () => {
     vi.resetModules();
     vi.doMock('jose', async () => ({
-      createRemoteJWKSet: () => (async () => ({})) as any,
+      createRemoteJWKSet: () => async () => ({}),
       jwtVerify: async () => {
         throw new Error('bad token');
       },

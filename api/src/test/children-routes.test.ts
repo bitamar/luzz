@@ -19,7 +19,7 @@ describe('Children routes', () => {
     const customer = await createTestCustomer(studio.id, {
       first_name: 'P',
       contact_email: 'p@q.r',
-    } as any);
+    });
 
     const create = await request(app)
       .post(`/customers/${customer.id}/children`)
@@ -53,7 +53,7 @@ describe('Children routes', () => {
     const customer = await createTestCustomer(studio.id, {
       first_name: 'Q',
       contact_email: 'q@w.e',
-    } as any);
+    });
     const created = await request(app)
       .post(`/customers/${customer.id}/children`)
       .send({ firstName: 'Zed', avatarKey: 'av' })

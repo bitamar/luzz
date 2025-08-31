@@ -45,10 +45,26 @@ export async function createCompleteStudio(): Promise<StudioFixture> {
   ];
 
   // Create customers
+  const emailCustomer = Customers.createWithEmail();
+  const phoneCustomer = Customers.createWithPhone();
+  const parentCustomer = Customers.createParent();
+
   const customers = [
-    await createTestCustomer(studio.id, Customers.createWithEmail() as any),
-    await createTestCustomer(studio.id, Customers.createWithPhone() as any),
-    await createTestCustomer(studio.id, Customers.createParent() as any),
+    await createTestCustomer(studio.id, {
+      first_name: emailCustomer.firstName,
+      contact_email: emailCustomer.contactEmail,
+      contact_phone: emailCustomer.contactPhone,
+    }),
+    await createTestCustomer(studio.id, {
+      first_name: phoneCustomer.firstName,
+      contact_email: phoneCustomer.contactEmail,
+      contact_phone: phoneCustomer.contactPhone,
+    }),
+    await createTestCustomer(studio.id, {
+      first_name: parentCustomer.firstName,
+      contact_email: parentCustomer.contactEmail,
+      contact_phone: parentCustomer.contactPhone,
+    }),
   ];
 
   return {
@@ -78,7 +94,14 @@ export async function createBusyStudio(): Promise<StudioFixture> {
   // Create many customers
   const customers = [];
   for (let i = 0; i < 10; i++) {
-    customers.push(await createTestCustomer(studio.id, Customers.create() as any));
+    const customerData = Customers.create();
+    customers.push(
+      await createTestCustomer(studio.id, {
+        first_name: customerData.firstName,
+        contact_email: customerData.contactEmail,
+        contact_phone: customerData.contactPhone,
+      }),
+    );
   }
 
   return {
@@ -117,7 +140,11 @@ export async function createFamilyStudio(): Promise<
   const families = [];
   for (let i = 0; i < 3; i++) {
     const family = Scenarios.createFamily();
-    const parent = await createTestCustomer(studio.id, family.parent as any);
+    const parent = await createTestCustomer(studio.id, {
+      first_name: family.parent.firstName,
+      contact_email: family.parent.contactEmail,
+      contact_phone: family.parent.contactPhone,
+    });
 
     families.push({
       parent,
@@ -133,7 +160,7 @@ export async function createFamilyStudio(): Promise<
     customers: families.map((f) => f.parent),
     families: families.map((f) => ({
       customer: f.parent,
-      children: f.children as any,
+      children: f.children,
     })),
   };
 }
@@ -197,21 +224,16 @@ export async function createEdgeCaseStudio(): Promise<StudioFixture> {
   // Create edge case customers
   const edgeCustomers = [
     // Customer with very long name
-    await createTestCustomer(
-      studio.id,
-      Customers.create({
-        firstName: 'Pneumonoultramicroscopicsilicovolcanoconiosisaffectedperson',
-      }) as any,
-    ),
+    await createTestCustomer(studio.id, {
+      first_name: 'Pneumonoultramicroscopicsilicovolcanoconiosisaffectedperson',
+      contact_email: 'long@example.com',
+    }),
 
     // Customer with minimal data
-    await createTestCustomer(
-      studio.id,
-      Customers.create({
-        firstName: 'A',
-        contactEmail: 'a@b.co',
-      }) as any,
-    ),
+    await createTestCustomer(studio.id, {
+      first_name: 'A',
+      contact_email: 'a@b.co',
+    }),
   ];
 
   return {
@@ -271,9 +293,19 @@ export async function createInternationalStudios(): Promise<StudioFixture[]> {
       slots.push(await createTestSlot(studio.id, slotData));
     }
 
+    const customer1Data = Customers.create();
+    const customer2Data = Customers.create();
     const customers = [
-      await createTestCustomer(studio.id, Customers.create() as any),
-      await createTestCustomer(studio.id, Customers.create() as any),
+      await createTestCustomer(studio.id, {
+        first_name: customer1Data.firstName,
+        contact_email: customer1Data.contactEmail,
+        contact_phone: customer1Data.contactPhone,
+      }),
+      await createTestCustomer(studio.id, {
+        first_name: customer2Data.firstName,
+        contact_email: customer2Data.contactEmail,
+        contact_phone: customer2Data.contactPhone,
+      }),
     ];
 
     studios.push({

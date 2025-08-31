@@ -72,7 +72,7 @@ describe('Public routes', () => {
       const customer = await createTestCustomer(studio.id, {
         first_name: 'Cust',
         contact_email: 'c@e.x',
-      } as any);
+      });
       const slot = await createTestSlot(studio.id, {
         title: 'Adult',
         startsAt: new Date().toISOString(),
@@ -107,7 +107,7 @@ describe('Public routes', () => {
       const customer = await createTestCustomer(studio.id, {
         first_name: 'Par',
         contact_email: 'p@q.z',
-      } as any);
+      });
       const slot = await createTestSlot(studio.id, {
         title: 'Kids',
         startsAt: new Date().toISOString(),
@@ -143,17 +143,17 @@ describe('Public routes', () => {
     it('returns 404 for unknown/expired invite and when slot belongs to different studio', async () => {
       const app = makeApp();
       const originalErr = console.error;
-      const errSpy = vi.spyOn(console, 'error').mockImplementation((...args: any[]) => {
+      const errSpy = vi.spyOn(console, 'error').mockImplementation((...args: unknown[]) => {
         const msg = String(args[0] ?? '');
         if (msg.includes('Error creating booking:')) return;
-        originalErr(...(args as any));
+        originalErr(...args);
       });
       const studioA = await createTestStudio();
       const studioB = await createTestStudio();
       const customerA = await createTestCustomer(studioA.id, {
         first_name: 'AA',
         contact_email: 'aa@aa.aa',
-      } as any);
+      });
       const slotB = await createTestSlot(studioB.id, {
         title: 'B slot',
         startsAt: new Date().toISOString(),

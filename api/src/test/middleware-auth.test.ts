@@ -17,7 +17,9 @@ describe('middleware: auth basics', () => {
   it('optionalAuth toggles authenticated flag', async () => {
     const app = express();
     app.get('/y', optionalAuth, (req, res) =>
-      res.json({ authed: (req as any).authenticated || false }),
+      res.json({
+        authed: (req as express.Request & { authenticated?: boolean }).authenticated || false,
+      }),
     );
     const r1 = await request(app).get('/y').expect(200);
     expect(r1.body.authed).toBe(false);

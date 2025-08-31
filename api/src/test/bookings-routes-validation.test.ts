@@ -29,7 +29,7 @@ describe('Bookings routes - validations and 404s', () => {
     const otherCustomer = await createTestCustomer(otherStudio.id, {
       first_name: 'X',
       contact_email: 'x@y.z',
-    } as any);
+    });
 
     await request(app).post('/bookings').send({}).expect(400);
 
@@ -67,7 +67,7 @@ describe('Bookings routes - validations and 404s', () => {
     const parentB = await createTestCustomer(studioB.id, {
       first_name: 'PB',
       contact_email: 'pb@b',
-    } as any);
+    });
     // Create a child in B directly
     const client = getDbClient();
     const childInsert = await client.query(
@@ -87,7 +87,7 @@ describe('Bookings routes - validations and 404s', () => {
     const parentA = await createTestCustomer(studioA.id, {
       first_name: 'PA',
       contact_email: 'pa@a',
-    } as any);
+    });
     const slotAAdult = await createTestSlot(studioA.id, {
       title: 'Adult',
       startsAt: new Date().toISOString(),
