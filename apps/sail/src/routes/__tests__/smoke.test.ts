@@ -5,7 +5,3 @@ describe('sail smoke', () => {
     expect(true).toBe(true);
   });
 });
-
-
-
-

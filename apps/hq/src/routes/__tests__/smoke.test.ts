@@ -5,7 +5,3 @@ describe('hq smoke', () => {
     expect(true).toBe(true);
   });
 });
-
-
-
-
