@@ -15,7 +15,7 @@ const createCustomerSchema = z
     contactPhone: z.string().min(1).optional(),
     contactEmail: z.string().email().optional(),
   })
-  .refine(data => data.contactPhone || data.contactEmail, {
+  .refine((data) => data.contactPhone || data.contactEmail, {
     message: 'Either contactPhone or contactEmail must be provided',
   });
 
@@ -27,28 +27,17 @@ studioCustomersRouter.post('/:studioId/customers', async (req, res) => {
   try {
     const studioId = req.params.studioId;
     // Basic UUID format validation
-    if (
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        studioId
-      )
-    ) {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(studioId)) {
       return res.status(400).json({ error: 'Invalid studio ID' });
     }
 
-    const {
-      firstName,
-      avatarKey,
-      contactPhone,
-      contactEmail,
-    }: CreateCustomerRequest = createCustomerSchema.parse(req.body);
+    const { firstName, avatarKey, contactPhone, contactEmail }: CreateCustomerRequest =
+      createCustomerSchema.parse(req.body);
 
     const client = getDbClient();
 
     // Verify studio exists
-    const studioCheck = await client.query(
-      'SELECT id FROM studios WHERE id = $1',
-      [studioId]
-    );
+    const studioCheck = await client.query('SELECT id FROM studios WHERE id = $1', [studioId]);
     if (studioCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Studio not found' });
     }
@@ -58,7 +47,7 @@ studioCustomersRouter.post('/:studioId/customers', async (req, res) => {
     if (contactEmail) {
       const emailCheck = await client.query(
         'SELECT * FROM customers WHERE studio_id = $1 AND contact_email = $2',
-        [studioId, contactEmail]
+        [studioId, contactEmail],
       );
       existingCustomer = emailCheck.rows[0];
     }
@@ -66,7 +55,7 @@ studioCustomersRouter.post('/:studioId/customers', async (req, res) => {
     if (!existingCustomer && contactPhone) {
       const phoneCheck = await client.query(
         'SELECT * FROM customers WHERE studio_id = $1 AND contact_phone = $2',
-        [studioId, contactPhone]
+        [studioId, contactPhone],
       );
       existingCustomer = phoneCheck.rows[0];
     }
@@ -110,21 +99,14 @@ studioCustomersRouter.post('/:studioId/customers', async (req, res) => {
 studioCustomersRouter.get('/:studioId/customers', async (req, res) => {
   try {
     const studioId = req.params.studioId;
-    if (
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        studioId
-      )
-    ) {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(studioId)) {
       return res.status(400).json({ error: 'Invalid studio ID' });
     }
 
     const client = getDbClient();
 
     // Verify studio exists
-    const studioCheck = await client.query(
-      'SELECT id FROM studios WHERE id = $1',
-      [studioId]
-    );
+    const studioCheck = await client.query('SELECT id FROM studios WHERE id = $1', [studioId]);
     if (studioCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Studio not found' });
     }
@@ -153,11 +135,7 @@ studioCustomersRouter.get('/:studioId/customers', async (req, res) => {
 customersRouter.get('/:id', async (req, res) => {
   try {
     const customerId = req.params.id;
-    if (
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        customerId
-      )
-    ) {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(customerId)) {
       return res.status(400).json({ error: 'Invalid customer ID' });
     }
 
@@ -201,11 +179,7 @@ customersRouter.get('/:id', async (req, res) => {
 customersRouter.patch('/:id', async (req, res) => {
   try {
     const customerId = req.params.id;
-    if (
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        customerId
-      )
-    ) {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(customerId)) {
       return res.status(400).json({ error: 'Invalid customer ID' });
     }
 
@@ -218,10 +192,9 @@ customersRouter.patch('/:id', async (req, res) => {
     const client = getDbClient();
 
     // Verify customer exists
-    const customerCheck = await client.query(
-      'SELECT id, studio_id FROM customers WHERE id = $1',
-      [customerId]
-    );
+    const customerCheck = await client.query('SELECT id, studio_id FROM customers WHERE id = $1', [
+      customerId,
+    ]);
     if (customerCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Customer not found' });
     }
@@ -276,11 +249,7 @@ customersRouter.patch('/:id', async (req, res) => {
 customersRouter.delete('/:id', async (req, res) => {
   try {
     const customerId = req.params.id;
-    if (
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        customerId
-      )
-    ) {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(customerId)) {
       return res.status(400).json({ error: 'Invalid customer ID' });
     }
 
@@ -298,7 +267,7 @@ customersRouter.delete('/:id', async (req, res) => {
       WHERE c.id = $1
       GROUP BY c.id, c.first_name
     `,
-      [customerId]
+      [customerId],
     );
 
     if (customerCheck.rows.length === 0) {

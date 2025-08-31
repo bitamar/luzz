@@ -10,12 +10,12 @@ export default [
       parserOptions: {
         ecmaVersion: 2022,
         sourceType: 'module',
-        project: './tsconfig.json'
-      }
+        project: './tsconfig.json',
+      },
     },
     plugins: {
       '@typescript-eslint': typescript,
-      prettier: prettier
+      prettier: prettier,
     },
     rules: {
       'prettier/prettier': 'error',
@@ -25,23 +25,23 @@ export default [
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-non-null-assertion': 'warn',
       'prefer-const': 'error',
-      'no-console': ['warn', { allow: ['warn', 'error'] }]
-    }
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+    },
   },
   {
     files: ['src/test/**/*.ts'],
     rules: {
       'no-console': 'off',
-      '@typescript-eslint/no-explicit-any': 'off'
-    }
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
   },
   {
     files: ['src/middleware/**/*.ts', 'src/server.ts'],
     rules: {
-      'no-console': ['warn', { allow: ['warn', 'error', 'log'] }]
-    }
+      'no-console': ['warn', { allow: ['warn', 'error', 'log'] }],
+    },
   },
   {
-    ignores: ['dist/**', 'node_modules/**', 'coverage/**', '*.js']
-  }
+    ignores: ['dist/**', 'node_modules/**', 'coverage/**', '*.js'],
+  },
 ];

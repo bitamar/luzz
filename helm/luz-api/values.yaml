@@ -3,10 +3,10 @@ replicaCount: 2
 image:
   repository: luz-api
   pullPolicy: IfNotPresent
-  tag: "latest"
+  tag: 'latest'
 
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: ''
+fullnameOverride: ''
 
 service:
   type: ClusterIP
@@ -15,7 +15,7 @@ service:
 
 ingress:
   enabled: false
-  className: ""
+  className: ''
   annotations: {}
   hosts:
     - host: luz-api.local
@@ -46,7 +46,7 @@ affinity: {}
 # Environment variables
 env:
   NODE_ENV: production
-  PORT: "3000"
+  PORT: '3000'
 
 # Secret configuration
 secret:
@@ -66,4 +66,4 @@ healthCheck:
   initialDelaySeconds: 30
   periodSeconds: 10
   timeoutSeconds: 5
-  failureThreshold: 3 
+  failureThreshold: 3

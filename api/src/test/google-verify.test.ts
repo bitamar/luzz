@@ -11,16 +11,12 @@ describe('verifyGoogleIdToken', () => {
 
   it('throws on missing token', async () => {
     const { verifyGoogleIdToken } = await import('../auth/google');
-    await expect(verifyGoogleIdToken('', validAud)).rejects.toThrow(
-      'missing id token'
-    );
+    await expect(verifyGoogleIdToken('', validAud)).rejects.toThrow('missing id token');
   });
 
   it('throws on missing audience allowlist', async () => {
     const { verifyGoogleIdToken } = await import('../auth/google');
-    await expect(verifyGoogleIdToken('x', [])).rejects.toThrow(
-      'no allowed client ids'
-    );
+    await expect(verifyGoogleIdToken('x', [])).rejects.toThrow('no allowed client ids');
   });
 
   it('verifies token via jose and returns normalized profile', async () => {

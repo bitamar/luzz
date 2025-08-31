@@ -3,11 +3,7 @@ import express from 'express';
 import request from 'supertest';
 import bookingsRouter from '../routes/bookings';
 import { closeDatabase } from '../db';
-import {
-  createTestStudio,
-  createTestSlot,
-  createTestCustomer,
-} from './test-helpers';
+import { createTestStudio, createTestSlot, createTestCustomer } from './test-helpers';
 
 function makeApp() {
   const app = express();
@@ -44,15 +40,10 @@ describe('Bookings routes', () => {
       .expect(201);
     expect(created.body).toHaveProperty('id');
 
-    const getOne = await request(app)
-      .get(`/bookings/${created.body.id}`)
-      .expect(200);
+    const getOne = await request(app).get(`/bookings/${created.body.id}`).expect(200);
     expect(getOne.body.slot_id).toBe(slot.id);
 
-    const list = await request(app)
-      .get('/bookings')
-      .query({ slotId: slot.id })
-      .expect(200);
+    const list = await request(app).get('/bookings').query({ slotId: slot.id }).expect(200);
     expect(Array.isArray(list.body)).toBe(true);
     expect(list.body.length).toBeGreaterThan(0);
 
@@ -68,9 +59,7 @@ describe('Bookings routes', () => {
       .expect(200);
     expect(payment.body.paid).toBe(true);
 
-    const del = await request(app)
-      .delete(`/bookings/${created.body.id}`)
-      .expect(200);
+    const del = await request(app).delete(`/bookings/${created.body.id}`).expect(200);
     expect(del.body).toHaveProperty('deleted');
   });
 

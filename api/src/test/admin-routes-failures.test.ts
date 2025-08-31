@@ -24,13 +24,11 @@ describe('Admin routes - failure branches', () => {
       }),
     }));
     const originalErr = console.error;
-    const errSpy = vi
-      .spyOn(console, 'error')
-      .mockImplementation((...args: any[]) => {
-        const msg = String(args[0] ?? '');
-        if (msg.includes('Error fetching metrics:')) return;
-        originalErr(...(args as any));
-      });
+    const errSpy = vi.spyOn(console, 'error').mockImplementation((...args: any[]) => {
+      const msg = String(args[0] ?? '');
+      if (msg.includes('Error fetching metrics:')) return;
+      originalErr(...(args as any));
+    });
     const { default: adminRouter } = await import('../routes/admin');
     const app = express();
     app.use(express.json());
@@ -51,13 +49,11 @@ describe('Admin routes - failure branches', () => {
       }),
     }));
     const originalErr = console.error;
-    const errSpy = vi
-      .spyOn(console, 'error')
-      .mockImplementation((...args: any[]) => {
-        const msg = String(args[0] ?? '');
-        if (msg.includes('Health check failed:')) return;
-        originalErr(...(args as any));
-      });
+    const errSpy = vi.spyOn(console, 'error').mockImplementation((...args: any[]) => {
+      const msg = String(args[0] ?? '');
+      if (msg.includes('Health check failed:')) return;
+      originalErr(...(args as any));
+    });
     const { default: adminRouter } = await import('../routes/admin');
     const app = express();
     app.use(express.json());
@@ -78,13 +74,11 @@ describe('Admin routes - failure branches', () => {
       }),
     }));
     const originalErr = console.error;
-    const errSpy = vi
-      .spyOn(console, 'error')
-      .mockImplementation((...args: any[]) => {
-        const msg = String(args[0] ?? '');
-        if (msg.includes('Error fetching database status:')) return;
-        originalErr(...(args as any));
-      });
+    const errSpy = vi.spyOn(console, 'error').mockImplementation((...args: any[]) => {
+      const msg = String(args[0] ?? '');
+      if (msg.includes('Error fetching database status:')) return;
+      originalErr(...(args as any));
+    });
     const { default: adminRouter } = await import('../routes/admin');
     const app = express();
     app.use(express.json());
