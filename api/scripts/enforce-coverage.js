@@ -15,7 +15,7 @@ function readSummary() {
   // Try API directory first (when run from root), then current directory
   const apiPath = path.resolve(process.cwd(), 'api/coverage/coverage-summary.json');
   const localPath = path.resolve(process.cwd(), 'coverage/coverage-summary.json');
-  
+
   let p;
   if (fs.existsSync(apiPath)) {
     p = apiPath;
@@ -25,7 +25,7 @@ function readSummary() {
     console.error('coverage-summary.json not found at', apiPath, 'or', localPath);
     process.exit(1);
   }
-  
+
   return JSON.parse(fs.readFileSync(p, 'utf8'));
 }
 
