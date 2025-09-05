@@ -52,7 +52,7 @@ describe('Customers routes', () => {
     await createTestCustomer(studio.id, {
       first_name: 'A',
       contact_email: 'a@b.co',
-    } as any);
+    });
 
     const res = await request(app).get(`/studios/${studio.id}/customers`).expect(200);
     expect(Array.isArray(res.body)).toBe(true);
@@ -67,7 +67,7 @@ describe('Customers routes', () => {
     const customer = await createTestCustomer(studio.id, {
       first_name: 'X',
       contact_email: 'x@y.z',
-    } as any);
+    });
 
     const get = await request(app).get(`/customers/${customer.id}`).expect(200);
     expect(get.body.id).toBe(customer.id);

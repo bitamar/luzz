@@ -32,7 +32,7 @@ describe('Bookings routes', () => {
     const customer = await createTestCustomer(studio.id, {
       first_name: 'A',
       contact_email: 'a@b.c',
-    } as any);
+    });
 
     const created = await request(app)
       .post('/bookings')
@@ -93,11 +93,11 @@ describe('Bookings routes', () => {
     const customerA1 = await createTestCustomer(studioA.id, {
       first_name: 'A1',
       contact_email: 'a1@a.a',
-    } as any);
+    });
     const customerA2 = await createTestCustomer(studioA.id, {
       first_name: 'A2',
       contact_email: 'a2@a.a',
-    } as any);
+    });
     // First booking succeeds
     await request(app)
       .post('/bookings')
@@ -114,7 +114,7 @@ describe('Bookings routes', () => {
     const customerB = await createTestCustomer(studioB.id, {
       first_name: 'B',
       contact_email: 'b@b.b',
-    } as any);
+    });
     await request(app)
       .post('/bookings')
       .send({ slotId: slotA.id, customerId: customerB.id })
@@ -136,7 +136,7 @@ describe('Bookings routes', () => {
     const customer = await createTestCustomer(studio.id, {
       first_name: 'P',
       contact_email: 'p@q',
-    } as any);
+    });
 
     const created = await request(app)
       .post('/bookings')

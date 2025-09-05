@@ -24,10 +24,10 @@ describe('Admin routes - failure branches', () => {
       }),
     }));
     const originalErr = console.error;
-    const errSpy = vi.spyOn(console, 'error').mockImplementation((...args: any[]) => {
+    const errSpy = vi.spyOn(console, 'error').mockImplementation((...args: unknown[]) => {
       const msg = String(args[0] ?? '');
       if (msg.includes('Error fetching metrics:')) return;
-      originalErr(...(args as any));
+      originalErr(...args);
     });
     const { default: adminRouter } = await import('../routes/admin');
     const app = express();
@@ -49,10 +49,10 @@ describe('Admin routes - failure branches', () => {
       }),
     }));
     const originalErr = console.error;
-    const errSpy = vi.spyOn(console, 'error').mockImplementation((...args: any[]) => {
+    const errSpy = vi.spyOn(console, 'error').mockImplementation((...args: unknown[]) => {
       const msg = String(args[0] ?? '');
       if (msg.includes('Health check failed:')) return;
-      originalErr(...(args as any));
+      originalErr(...args);
     });
     const { default: adminRouter } = await import('../routes/admin');
     const app = express();
@@ -74,10 +74,10 @@ describe('Admin routes - failure branches', () => {
       }),
     }));
     const originalErr = console.error;
-    const errSpy = vi.spyOn(console, 'error').mockImplementation((...args: any[]) => {
+    const errSpy = vi.spyOn(console, 'error').mockImplementation((...args: unknown[]) => {
       const msg = String(args[0] ?? '');
       if (msg.includes('Error fetching database status:')) return;
-      originalErr(...(args as any));
+      originalErr(...args);
     });
     const { default: adminRouter } = await import('../routes/admin');
     const app = express();

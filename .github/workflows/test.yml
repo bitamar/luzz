@@ -49,33 +49,43 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
           cache: 'pnpm'
-          cache-dependency-path: api/pnpm-lock.yaml
 
-      - name: Install dependencies
-        working-directory: ./api
+      - name: Configure pnpm registry
+        run: pnpm config set registry https://registry.npmjs.org
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install all workspace dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Setup test database
-        working-directory: ./api
-        run: node scripts/setup-test-db.js
+        run: node api/scripts/setup-test-db.js
 
-      - name: Run linting
-        working-directory: ./api
-        run: pnpm lint
+      - name: Run linting (workspace filtered)
+        run: pnpm exec eslint api/src --ext .ts --fix
 
-      - name: Run type checking
-        working-directory: ./api
-        run: pnpm type-check
+      - name: Run type checking (workspace filtered)
+        run: pnpm --filter api typecheck
 
-      - name: Run tests with coverage
-        working-directory: ./api
-        run: pnpm test:coverage
+      - name: Run tests with coverage (workspace filtered)
+        run: pnpm --filter api test:coverage
 
       - name: Enforce coverage thresholds
         if: always()
-        working-directory: ./api
-        run: node scripts/enforce-coverage.js
+        run: node api/scripts/enforce-coverage.js
 
       - name: Upload coverage reports
         if: always()
@@ -87,8 +97,7 @@ jobs:
 
       - name: Coverage summary
         if: always()
-        working-directory: ./api
-        run: node scripts/ci-coverage-summary.js
+        run: node api/scripts/ci-coverage-summary.js
 
       - name: Comment coverage on PR
         if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}

@@ -17,7 +17,7 @@ spec:
       containers:
         - name: caddy
           image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
-          imagePullPolicy: '{{ .Values.image.pullPolicy }}'
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
           command: ['caddy']
           args: ['run', '--config', '/etc/caddy/Caddyfile', '--adapter', 'caddyfile']
           ports:

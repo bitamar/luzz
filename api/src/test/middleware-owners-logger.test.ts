@@ -10,11 +10,11 @@ function appWithOwnerRoute() {
     '/studios/:studioId/owners-only',
     // stub user middleware
     (req, _res, next) => {
-      (req as any).user = (
-        req.headers['x-user']
-          ? { userId: String(req.headers['x-user']), isAdmin: false }
-          : undefined
-      ) as any;
+      (req as express.Request & { user?: { userId: string; isAdmin: boolean } }).user = req.headers[
+        'x-user'
+      ]
+        ? { userId: String(req.headers['x-user']), isAdmin: false }
+        : undefined;
       next();
     },
     requireStudioOwner(),
