@@ -52,11 +52,9 @@ describe('Customers routes', () => {
     await createTestCustomer(studio.id, {
       first_name: 'A',
       contact_email: 'a@b.co',
-    } as any);
+    });
 
-    const res = await request(app)
-      .get(`/studios/${studio.id}/customers`)
-      .expect(200);
+    const res = await request(app).get(`/studios/${studio.id}/customers`).expect(200);
     expect(Array.isArray(res.body)).toBe(true);
 
     // invalid id
@@ -69,7 +67,7 @@ describe('Customers routes', () => {
     const customer = await createTestCustomer(studio.id, {
       first_name: 'X',
       contact_email: 'x@y.z',
-    } as any);
+    });
 
     const get = await request(app).get(`/customers/${customer.id}`).expect(200);
     expect(get.body.id).toBe(customer.id);
@@ -82,23 +80,17 @@ describe('Customers routes', () => {
 
     await request(app).patch(`/customers/${customer.id}`).send({}).expect(400);
 
-    const del = await request(app)
-      .delete(`/customers/${customer.id}`)
-      .expect(200);
+    const del = await request(app).delete(`/customers/${customer.id}`).expect(200);
     expect(del.body).toHaveProperty('deleted');
 
     await request(app).get(`/customers/${customer.id}`).expect(404);
 
     // 404 not found branches
-    await request(app)
-      .get('/customers/550e8400-e29b-41d4-a716-446655440099')
-      .expect(404);
+    await request(app).get('/customers/550e8400-e29b-41d4-a716-446655440099').expect(404);
     await request(app)
       .patch('/customers/550e8400-e29b-41d4-a716-446655440099')
       .send({ firstName: 'X' })
       .expect(404);
-    await request(app)
-      .delete('/customers/550e8400-e29b-41d4-a716-446655440099')
-      .expect(404);
+    await request(app).delete('/customers/550e8400-e29b-41d4-a716-446655440099').expect(404);
   });
 });

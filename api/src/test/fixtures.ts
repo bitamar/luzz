@@ -2,15 +2,10 @@ import {
   createTestStudio,
   createTestSlot,
   createTestCustomer,
+  createTestChild,
 } from './test-helpers';
 import { Studios, Slots, Customers, Scenarios } from './factories';
-import type {
-  TestStudio,
-  TestCustomer,
-  TestChild,
-  TestSlot,
-  Booking,
-} from '../types';
+import type { TestStudio, TestCustomer, TestChild, TestSlot, Booking } from '../types';
 
 /**
  * Test Fixtures - Pre-built test scenarios for complex testing
@@ -51,17 +46,30 @@ export async function createCompleteStudio(): Promise<StudioFixture> {
 
   const childrenSlots = [
     await createTestSlot(studio.id, Slots.createKidsClass()),
-    await createTestSlot(
-      studio.id,
-      Slots.createKidsClass({ title: 'Kids Art Class' })
-    ),
+    await createTestSlot(studio.id, Slots.createKidsClass({ title: 'Kids Art Class' })),
   ];
 
   // Create customers
+  const emailCustomer = Customers.createWithEmail();
+  const phoneCustomer = Customers.createWithPhone();
+  const parentCustomer = Customers.createParent();
+
   const customers = [
-    await createTestCustomer(studio.id, Customers.createWithEmail() as any),
-    await createTestCustomer(studio.id, Customers.createWithPhone() as any),
-    await createTestCustomer(studio.id, Customers.createParent() as any),
+    await createTestCustomer(studio.id, {
+      first_name: emailCustomer.firstName,
+      contact_email: emailCustomer.contactEmail,
+      contact_phone: emailCustomer.contactPhone,
+    }),
+    await createTestCustomer(studio.id, {
+      first_name: phoneCustomer.firstName,
+      contact_email: phoneCustomer.contactEmail,
+      contact_phone: phoneCustomer.contactPhone,
+    }),
+    await createTestCustomer(studio.id, {
+      first_name: parentCustomer.firstName,
+      contact_email: parentCustomer.contactEmail,
+      contact_phone: parentCustomer.contactPhone,
+    }),
   ];
 
   return {
@@ -91,15 +99,20 @@ export async function createBusyStudio(): Promise<StudioFixture> {
   // Create many customers
   const customers = [];
   for (let i = 0; i < 10; i++) {
+    const customerData = Customers.create();
     customers.push(
-      await createTestCustomer(studio.id, Customers.create() as any)
+      await createTestCustomer(studio.id, {
+        first_name: customerData.firstName,
+        contact_email: customerData.contactEmail,
+        contact_phone: customerData.contactPhone,
+      }),
     );
   }
 
   return {
     studio,
-    adults: slots.filter(s => !s.for_children),
-    children: slots.filter(s => s.for_children),
+    adults: slots.filter((s) => !s.for_children),
+    children: slots.filter((s) => s.for_children),
     slots,
     customers,
   };
@@ -123,41 +136,46 @@ export async function createFamilyStudio(): Promise<
   // Create family-friendly slots
   const familySlots = [
     await createTestSlot(studio.id, Slots.createKidsClass()),
-    await createTestSlot(
-      studio.id,
-      Slots.createKidsClass({ title: 'Tiny Tots Dance' })
-    ),
-    await createTestSlot(
-      studio.id,
-      Slots.createYogaClass({ title: 'Parent & Child Yoga' })
-    ),
-    await createTestSlot(
-      studio.id,
-      Slots.create({ title: 'Family Fitness', forChildren: false })
-    ),
+    await createTestSlot(studio.id, Slots.createKidsClass({ title: 'Tiny Tots Dance' })),
+    await createTestSlot(studio.id, Slots.createYogaClass({ title: 'Parent & Child Yoga' })),
+    await createTestSlot(studio.id, Slots.create({ title: 'Family Fitness', forChildren: false })),
   ];
 
   // Create families
   const families = [];
   for (let i = 0; i < 3; i++) {
     const family = Scenarios.createFamily();
-    const parent = await createTestCustomer(studio.id, family.parent as any);
+    const parent = await createTestCustomer(studio.id, {
+      first_name: family.parent.firstName,
+      contact_email: family.parent.contactEmail,
+      contact_phone: family.parent.contactPhone,
+    });
+
+    // Create actual child records in the database
+    const children: TestChild[] = [];
+    for (const childData of family.children) {
+      const child = await createTestChild(parent.id, {
+        firstName: childData.firstName || 'Child',
+        avatarKey: childData.avatarKey,
+      });
+      children.push(child);
+    }
 
     families.push({
       parent,
-      children: family.children, // Note: children would need to be created after bookings
+      children,
     });
   }
 
   return {
     studio,
-    adults: familySlots.filter(s => !s.for_children),
-    children: familySlots.filter(s => s.for_children),
+    adults: familySlots.filter((s) => !s.for_children),
+    children: familySlots.filter((s) => s.for_children),
     slots: familySlots,
-    customers: families.map(f => f.parent),
-    families: families.map(f => ({
+    customers: families.map((f) => f.parent),
+    families: families.map((f) => ({
       customer: f.parent,
-      children: f.children as any,
+      children: f.children,
     })),
   };
 }
@@ -183,7 +201,7 @@ export async function createEdgeCaseStudio(): Promise<StudioFixture> {
         price: 0,
         minParticipants: 0,
         maxParticipants: 1,
-      })
+      }),
     ),
 
     // Very long class
@@ -193,7 +211,7 @@ export async function createEdgeCaseStudio(): Promise<StudioFixture> {
         title: 'Marathon Meditation',
         durationMin: 480, // 8 hours
         price: 200,
-      })
+      }),
     ),
 
     // Very short class
@@ -203,7 +221,7 @@ export async function createEdgeCaseStudio(): Promise<StudioFixture> {
         title: 'Quick Stretch',
         durationMin: 15,
         price: 5,
-      })
+      }),
     ),
 
     // High capacity class
@@ -214,35 +232,29 @@ export async function createEdgeCaseStudio(): Promise<StudioFixture> {
         minParticipants: 50,
         maxParticipants: 500,
         price: 10,
-      })
+      }),
     ),
   ];
 
   // Create edge case customers
   const edgeCustomers = [
     // Customer with very long name
-    await createTestCustomer(
-      studio.id,
-      Customers.create({
-        firstName:
-          'Pneumonoultramicroscopicsilicovolcanoconiosisaffectedperson',
-      }) as any
-    ),
+    await createTestCustomer(studio.id, {
+      first_name: 'Pneumonoultramicroscopicsilicovolcanoconiosisaffectedperson',
+      contact_email: 'long@example.com',
+    }),
 
     // Customer with minimal data
-    await createTestCustomer(
-      studio.id,
-      Customers.create({
-        firstName: 'A',
-        contactEmail: 'a@b.co',
-      }) as any
-    ),
+    await createTestCustomer(studio.id, {
+      first_name: 'A',
+      contact_email: 'a@b.co',
+    }),
   ];
 
   return {
     studio,
-    adults: edgeSlots.filter(s => !s.for_children),
-    children: edgeSlots.filter(s => s.for_children),
+    adults: edgeSlots.filter((s) => !s.for_children),
+    children: edgeSlots.filter((s) => s.for_children),
     slots: edgeSlots,
     customers: edgeCustomers,
   };
@@ -256,10 +268,7 @@ export async function createInternationalStudios(): Promise<StudioFixture[]> {
     // Israeli studio
     {
       studioData: Studios.createIsraeliStudio(),
-      slots: [
-        Slots.create({ title: 'יוגה בוקר' }),
-        Slots.create({ title: 'פילאטיס ערב' }),
-      ],
+      slots: [Slots.create({ title: 'יוגה בוקר' }), Slots.create({ title: 'פילאטיס ערב' })],
     },
 
     // Japanese studio
@@ -299,15 +308,25 @@ export async function createInternationalStudios(): Promise<StudioFixture[]> {
       slots.push(await createTestSlot(studio.id, slotData));
     }
 
+    const customer1Data = Customers.create();
+    const customer2Data = Customers.create();
     const customers = [
-      await createTestCustomer(studio.id, Customers.create() as any),
-      await createTestCustomer(studio.id, Customers.create() as any),
+      await createTestCustomer(studio.id, {
+        first_name: customer1Data.firstName,
+        contact_email: customer1Data.contactEmail,
+        contact_phone: customer1Data.contactPhone,
+      }),
+      await createTestCustomer(studio.id, {
+        first_name: customer2Data.firstName,
+        contact_email: customer2Data.contactEmail,
+        contact_phone: customer2Data.contactPhone,
+      }),
     ];
 
     studios.push({
       studio,
-      adults: slots.filter(s => !s.for_children),
-      children: slots.filter(s => s.for_children),
+      adults: slots.filter((s) => !s.for_children),
+      children: slots.filter((s) => s.for_children),
       slots,
       customers,
     });

@@ -18,9 +18,7 @@ const createBookingSchema = z.object({
 });
 
 // Helper function to parse week parameter (YYYY-WW format)
-function parseWeekParam(
-  week: string
-): { startDate: Date; endDate: Date } | null {
+function parseWeekParam(week: string): { startDate: Date; endDate: Date } | null {
   const match = week.match(/^(\d{4})-(\d{2})$/);
   if (!match) return null;
 
@@ -47,23 +45,19 @@ router.get('/:slug/slots', async (req, res) => {
     const { week } = req.query;
 
     if (!week || typeof week !== 'string') {
-      return res
-        .status(400)
-        .json({ error: 'Week parameter is required (format: YYYY-WW)' });
+      return res.status(400).json({ error: 'Week parameter is required (format: YYYY-WW)' });
     }
 
     const weekRange = parseWeekParam(week);
     if (!weekRange) {
-      return res
-        .status(400)
-        .json({ error: 'Invalid week format. Use YYYY-WW' });
+      return res.status(400).json({ error: 'Invalid week format. Use YYYY-WW' });
     }
 
     // Verify studio exists
     const client = getDbClient();
     const studioQuery = await client.query(
       'SELECT id, name, timezone, currency FROM studios WHERE slug = $1',
-      [slug]
+      [slug],
     );
     if (studioQuery.rows.length === 0) {
       return res.status(404).json({ error: 'Studio not found' });
@@ -136,9 +130,7 @@ router.post('/invites/:hash/bookings', async (req, res) => {
     if (
       !slotId ||
       typeof slotId !== 'string' ||
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        slotId
-      )
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slotId)
     ) {
       return res.status(400).json({ error: 'slotId must be a valid UUID' });
     }
@@ -146,7 +138,7 @@ router.post('/invites/:hash/bookings', async (req, res) => {
     // Verify slot exists and belongs to the same studio
     const slotQuery = await client.query(
       'SELECT * FROM slots WHERE id = $1 AND studio_id = $2 AND active = true',
-      [slotId, invite.studio_id]
+      [slotId, invite.studio_id],
     );
 
     if (slotQuery.rows.length === 0) {
@@ -174,9 +166,7 @@ router.post('/invites/:hash/bookings', async (req, res) => {
 
     // Check if slot is for children
     if (slot.for_children && !finalChildId) {
-      return res
-        .status(400)
-        .json({ error: 'This slot requires a child to be specified' });
+      return res.status(400).json({ error: 'This slot requires a child to be specified' });
     }
 
     if (!slot.for_children && finalChildId) {

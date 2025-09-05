@@ -3,11 +3,7 @@ import express from 'express';
 import request from 'supertest';
 import publicRouter from '../routes/public';
 import { getDbClient } from '../db';
-import {
-  createTestStudio,
-  createTestSlot,
-  createTestCustomer,
-} from './test-helpers';
+import { createTestStudio, createTestSlot, createTestCustomer } from './test-helpers';
 
 function makeApp() {
   const app = express();
@@ -44,8 +40,7 @@ describe('Public routes', () => {
       const now = new Date();
       const oneJan = new Date(now.getFullYear(), 0, 1);
       const week = Math.ceil(
-        ((now.getTime() - oneJan.getTime()) / 86400000 + oneJan.getDay() + 1) /
-          7
+        ((now.getTime() - oneJan.getTime()) / 86400000 + oneJan.getDay() + 1) / 7,
       )
         .toString()
         .padStart(2, '0');
@@ -60,22 +55,13 @@ describe('Public routes', () => {
     it('400 on missing or bad week', async () => {
       const app = makeApp();
       await request(app).get(`/public/${slug}/slots`).expect(400);
-      await request(app)
-        .get(`/public/${slug}/slots`)
-        .query({ week: 'bad' })
-        .expect(400);
-      await request(app)
-        .get(`/public/${slug}/slots`)
-        .query({ week: '2024-54' })
-        .expect(400);
+      await request(app).get(`/public/${slug}/slots`).query({ week: 'bad' }).expect(400);
+      await request(app).get(`/public/${slug}/slots`).query({ week: '2024-54' }).expect(400);
     });
 
     it('404 for unknown studio', async () => {
       const app = makeApp();
-      await request(app)
-        .get(`/public/does-not-exist/slots`)
-        .query({ week: '2024-01' })
-        .expect(404);
+      await request(app).get(`/public/does-not-exist/slots`).query({ week: '2024-01' }).expect(404);
     });
   });
 
@@ -86,7 +72,7 @@ describe('Public routes', () => {
       const customer = await createTestCustomer(studio.id, {
         first_name: 'Cust',
         contact_email: 'c@e.x',
-      } as any);
+      });
       const slot = await createTestSlot(studio.id, {
         title: 'Adult',
         startsAt: new Date().toISOString(),
@@ -101,7 +87,7 @@ describe('Public routes', () => {
         `insert into invites (studio_id, customer_id, short_hash, created_at, expires_at)
          values ($1, $2, 'short1234', now(), now() + interval '1 day')
          returning *`,
-        [studio.id, customer.id]
+        [studio.id, customer.id],
       );
 
       await request(app)
@@ -121,7 +107,7 @@ describe('Public routes', () => {
       const customer = await createTestCustomer(studio.id, {
         first_name: 'Par',
         contact_email: 'p@q.z',
-      } as any);
+      });
       const slot = await createTestSlot(studio.id, {
         title: 'Kids',
         startsAt: new Date().toISOString(),
@@ -135,7 +121,7 @@ describe('Public routes', () => {
       const inv = await client.query(
         `insert into invites (studio_id, customer_id, short_hash, created_at, expires_at)
          values ($1, $2, 'shortch', now(), now() + interval '1 day') returning *`,
-        [studio.id, customer.id]
+        [studio.id, customer.id],
       );
 
       // Missing child -> 400
@@ -157,19 +143,17 @@ describe('Public routes', () => {
     it('returns 404 for unknown/expired invite and when slot belongs to different studio', async () => {
       const app = makeApp();
       const originalErr = console.error;
-      const errSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation((...args: any[]) => {
-          const msg = String(args[0] ?? '');
-          if (msg.includes('Error creating booking:')) return;
-          originalErr(...(args as any));
-        });
+      const errSpy = vi.spyOn(console, 'error').mockImplementation((...args: unknown[]) => {
+        const msg = String(args[0] ?? '');
+        if (msg.includes('Error creating booking:')) return;
+        originalErr(...args);
+      });
       const studioA = await createTestStudio();
       const studioB = await createTestStudio();
       const customerA = await createTestCustomer(studioA.id, {
         first_name: 'AA',
         contact_email: 'aa@aa.aa',
-      } as any);
+      });
       const slotB = await createTestSlot(studioB.id, {
         title: 'B slot',
         startsAt: new Date().toISOString(),
@@ -183,7 +167,7 @@ describe('Public routes', () => {
       const invite = await client.query(
         `insert into invites (studio_id, customer_id, short_hash, created_at, expires_at)
          values ($1, $2, 'exp1', now(), now() - interval '1 day') returning *`,
-        [studioA.id, customerA.id]
+        [studioA.id, customerA.id],
       );
 
       await request(app)

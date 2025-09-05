@@ -2,11 +2,7 @@ import { describe, it, expect } from 'vitest';
 import express from 'express';
 import request from 'supertest';
 import bookingsRouter from '../routes/bookings';
-import {
-  createTestStudio,
-  createTestSlot,
-  createTestCustomer,
-} from './test-helpers';
+import { createTestStudio, createTestSlot, createTestCustomer } from './test-helpers';
 import { getDbClient } from '../db';
 
 function appFactory() {
@@ -33,7 +29,7 @@ describe('Bookings routes - validations and 404s', () => {
     const otherCustomer = await createTestCustomer(otherStudio.id, {
       first_name: 'X',
       contact_email: 'x@y.z',
-    } as any);
+    });
 
     await request(app).post('/bookings').send({}).expect(400);
 
@@ -71,13 +67,13 @@ describe('Bookings routes - validations and 404s', () => {
     const parentB = await createTestCustomer(studioB.id, {
       first_name: 'PB',
       contact_email: 'pb@b',
-    } as any);
+    });
     // Create a child in B directly
     const client = getDbClient();
     const childInsert = await client.query(
       `insert into children (customer_id, first_name, avatar_key)
        values ($1, $2, $3) returning *`,
-      [parentB.id, 'KidB', 'k']
+      [parentB.id, 'KidB', 'k'],
     );
     const childB = childInsert.rows[0];
 
@@ -91,7 +87,7 @@ describe('Bookings routes - validations and 404s', () => {
     const parentA = await createTestCustomer(studioA.id, {
       first_name: 'PA',
       contact_email: 'pa@a',
-    } as any);
+    });
     const slotAAdult = await createTestSlot(studioA.id, {
       title: 'Adult',
       startsAt: new Date().toISOString(),

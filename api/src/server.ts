@@ -5,20 +5,11 @@ import slots from './routes/slots';
 import invites from './routes/invites';
 import publicApi from './routes/public';
 import bookings from './routes/bookings';
-import studioCustomers, {
-  customersRouter as customersByIdRouter,
-} from './routes/customers';
-import customerChildren, {
-  childrenRouter as childrenByIdRouter,
-} from './routes/children';
+import studioCustomers, { customersRouter as customersByIdRouter } from './routes/customers';
+import customerChildren, { childrenRouter as childrenByIdRouter } from './routes/children';
 import admin from './routes/admin';
 import buildAuthRouter from './routes/auth';
-import {
-  requireApiKey,
-  optionalAuth,
-  requestLogger,
-  rateLimit,
-} from './middleware/auth';
+import { requireApiKey, optionalAuth, requestLogger, rateLimit } from './middleware/auth';
 
 const app = express();
 
@@ -36,7 +27,7 @@ app.get('/health', (req, res) => {
 // Public routes (no auth required, but optional logging)
 app.use('/public', optionalAuth, publicApi);
 // Auth routes
-buildAuthRouter().then(authRouter => {
+buildAuthRouter().then((authRouter) => {
   app.use('/auth', authRouter);
 });
 
@@ -55,23 +46,13 @@ app.use('/bookings', requireApiKey, bookings);
 app.use('/admin', requireApiKey, admin);
 
 // Global error handler
-app.use(
-  (
-    err: Error,
-    req: express.Request,
-    res: express.Response,
-    _next: express.NextFunction
-  ) => {
-    console.error('Unhandled error:', err);
-    res.status(500).json({
-      error: 'Internal server error',
-      message:
-        process.env.NODE_ENV === 'development'
-          ? err.message
-          : 'Something went wrong',
-    });
-  }
-);
+app.use((err: Error, req: express.Request, res: express.Response) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({
+    error: 'Internal server error',
+    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong',
+  });
+});
 
 // 404 handler (catch-all)
 app.use((req, res) => {

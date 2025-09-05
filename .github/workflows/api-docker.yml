@@ -2,11 +2,11 @@ name: Build and Push API Image
 
 on:
   push:
-    branches: ["main"]
+    branches: ['main']
     paths:
-      - "api/**"
-      - "helm/**"
-      - ".github/workflows/**"
+      - 'api/**'
+      - 'helm/**'
+      - '.github/workflows/**'
 
 jobs:
   docker:
@@ -86,6 +86,4 @@ jobs:
               --set service.type=ClusterIP
             # Deploy/refresh Caddy
             helm --kubeconfig /etc/rancher/k3s/k3s.yaml upgrade --install caddy ./helm/caddy \
-              -n prod --set backendNamespace=prod --set backendService=luz-api
-
-
+              -n prod --set apiNamespace=prod --set apiService=luz-api

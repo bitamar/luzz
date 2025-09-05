@@ -15,17 +15,30 @@ function formatPct(n) {
 }
 
 function main() {
-  const summaryPath = path.resolve(process.cwd(), 'coverage/coverage-summary.json');
-  const data = readJson(summaryPath);
-  if (!data) {
-    console.error('coverage-summary.json not found. Did you run tests with coverage?');
+  // Try API directory first (when run from root), then current directory
+  const apiPath = path.resolve(process.cwd(), 'api/coverage/coverage-summary.json');
+  const localPath = path.resolve(process.cwd(), 'coverage/coverage-summary.json');
+  
+  let summaryPath;
+  if (fs.existsSync(apiPath)) {
+    summaryPath = apiPath;
+  } else if (fs.existsSync(localPath)) {
+    summaryPath = localPath;
+  } else {
+    console.error('coverage-summary.json not found at', apiPath, 'or', localPath);
     process.exit(1);
   }
+  
+  const data = readJson(summaryPath);
 
   const total = data.total || {};
-  const stat = key => {
+  const stat = (key) => {
     const k = total[key] || { total: 0, covered: 0, pct: 0 };
-    return { total: k.total, covered: k.covered, pct: k.pct || (k.total ? (k.covered / k.total) * 100 : 100) };
+    return {
+      total: k.total,
+      covered: k.covered,
+      pct: k.pct || (k.total ? (k.covered / k.total) * 100 : 100),
+    };
   };
   const s = stat('statements');
   const b = stat('branches');
@@ -51,7 +64,7 @@ function main() {
   }
 
   // Also write to a markdown file for PR comment steps
-  const outPath = path.resolve(process.cwd(), 'coverage/coverage-summary.md');
+  const outPath = path.resolve(path.dirname(summaryPath), 'coverage-summary.md');
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, content + '\n');
   console.log(`Wrote coverage summary markdown to ${outPath}`);

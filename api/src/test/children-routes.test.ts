@@ -19,7 +19,7 @@ describe('Children routes', () => {
     const customer = await createTestCustomer(studio.id, {
       first_name: 'P',
       contact_email: 'p@q.r',
-    } as any);
+    });
 
     const create = await request(app)
       .post(`/customers/${customer.id}/children`)
@@ -27,9 +27,7 @@ describe('Children routes', () => {
       .expect(201);
     expect(create.body).toHaveProperty('id');
 
-    const list = await request(app)
-      .get(`/customers/${customer.id}/children`)
-      .expect(200);
+    const list = await request(app).get(`/customers/${customer.id}/children`).expect(200);
     expect(Array.isArray(list.body)).toBe(true);
     expect(list.body.length).toBeGreaterThan(0);
 
@@ -55,15 +53,13 @@ describe('Children routes', () => {
     const customer = await createTestCustomer(studio.id, {
       first_name: 'Q',
       contact_email: 'q@w.e',
-    } as any);
+    });
     const created = await request(app)
       .post(`/customers/${customer.id}/children`)
       .send({ firstName: 'Zed', avatarKey: 'av' })
       .expect(201);
 
-    const got = await request(app)
-      .get(`/children/${created.body.id}`)
-      .expect(200);
+    const got = await request(app).get(`/children/${created.body.id}`).expect(200);
     expect(got.body.first_name).toBe('Zed');
 
     const patched = await request(app)
@@ -72,9 +68,7 @@ describe('Children routes', () => {
       .expect(200);
     expect(patched.body.first_name).toBe('Z');
 
-    const del = await request(app)
-      .delete(`/children/${created.body.id}`)
-      .expect(200);
+    const del = await request(app).delete(`/children/${created.body.id}`).expect(200);
     expect(del.body).toHaveProperty('deleted');
 
     // invalid id
@@ -83,15 +77,11 @@ describe('Children routes', () => {
     await request(app).delete('/children/not-a-uuid').expect(400);
 
     // 404 not found branches
-    await request(app)
-      .get('/children/550e8400-e29b-41d4-a716-446655440099')
-      .expect(404);
+    await request(app).get('/children/550e8400-e29b-41d4-a716-446655440099').expect(404);
     await request(app)
       .patch('/children/550e8400-e29b-41d4-a716-446655440099')
       .send({ firstName: 'Y' })
       .expect(404);
-    await request(app)
-      .delete('/children/550e8400-e29b-41d4-a716-446655440099')
-      .expect(404);
+    await request(app).delete('/children/550e8400-e29b-41d4-a716-446655440099').expect(404);
   });
 });

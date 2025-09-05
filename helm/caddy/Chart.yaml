@@ -3,5 +3,4 @@ name: caddy
 description: Lightweight reverse proxy with automatic HTTPS (Caddy)
 type: application
 version: 0.1.0
-appVersion: "2.8.4"
-
+appVersion: '2.8.4'

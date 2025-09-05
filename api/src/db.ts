@@ -3,7 +3,7 @@ import 'dotenv/config';
 
 // Load test environment if in test mode
 if (process.env.NODE_ENV === 'test') {
-  require('dotenv').config({ path: '.env.test' });
+  import('dotenv').then((dotenv) => dotenv.config({ path: '.env.test' }));
 }
 
 // Use test database when NODE_ENV=test
@@ -11,8 +11,7 @@ const getDatabaseUrl = () => {
   if (process.env.NODE_ENV === 'test') {
     // For tests, use postgres_test database
     return (
-      process.env.DATABASE_URL ||
-      'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test'
+      process.env.DATABASE_URL || 'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test'
     );
   }
   return process.env.DATABASE_URL;

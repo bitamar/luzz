@@ -19,17 +19,15 @@ export const assertions = {
   toHaveValidUuid(response: Response, field: string = 'id') {
     const uuid = response.body[field];
     expect(uuid).toBeDefined();
-    expect(uuid).toMatch(
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-    );
+    expect(uuid).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
     return uuid;
   },
 
   /**
    * Assert that a response has valid timestamp format
    */
-  toHaveValidTimestamp(response: any, field: string) {
-    const timestamp = response.body[field];
+  toHaveValidTimestamp(response: { body: Record<string, unknown> }, field: string) {
+    const timestamp = response.body[field] as string;
     expect(timestamp).toBeDefined();
     expect(new Date(timestamp).toISOString()).toBe(timestamp);
     return new Date(timestamp);
@@ -38,8 +36,8 @@ export const assertions = {
   /**
    * Assert that a price field is properly formatted
    */
-  toHaveValidPrice(response: any, field: string = 'price') {
-    const price = response.body[field];
+  toHaveValidPrice(response: { body: Record<string, unknown> }, field: string = 'price') {
+    const price = response.body[field] as string;
     expect(price).toBeDefined();
     expect(typeof price).toBe('string');
     expect(parseFloat(price)).toBeGreaterThanOrEqual(0);
@@ -50,7 +48,7 @@ export const assertions = {
   /**
    * Assert that response contains required fields
    */
-  toHaveRequiredFields(response: any, fields: string[]) {
+  toHaveRequiredFields(response: { body: Record<string, unknown> }, fields: string[]) {
     for (const field of fields) {
       expect(response.body[field]).toBeDefined();
     }
@@ -62,9 +60,7 @@ export const assertions = {
    */
   async toExistInDatabase(table: string, id: string) {
     const client = getDbClient();
-    const result = await client.query(`SELECT 1 FROM ${table} WHERE id = $1`, [
-      id,
-    ]);
+    const result = await client.query(`SELECT 1 FROM ${table} WHERE id = $1`, [id]);
     expect(result.rows.length).toBe(1);
   },
 
@@ -73,9 +69,7 @@ export const assertions = {
    */
   async toNotExistInDatabase(table: string, id: string) {
     const client = getDbClient();
-    const result = await client.query(`SELECT 1 FROM ${table} WHERE id = $1`, [
-      id,
-    ]);
+    const result = await client.query(`SELECT 1 FROM ${table} WHERE id = $1`, [id]);
     expect(result.rows.length).toBe(0);
   },
 };
@@ -96,11 +90,9 @@ export const dbHelpers = {
   /**
    * Get a record by ID
    */
-  async getRecord(table: string, id: string): Promise<any> {
+  async getRecord(table: string, id: string): Promise<Record<string, unknown>> {
     const client = getDbClient();
-    const result = await client.query(`SELECT * FROM ${table} WHERE id = $1`, [
-      id,
-    ]);
+    const result = await client.query(`SELECT * FROM ${table} WHERE id = $1`, [id]);
     return result.rows[0] || null;
   },
 
@@ -109,9 +101,7 @@ export const dbHelpers = {
    */
   async recordExists(table: string, id: string): Promise<boolean> {
     const client = getDbClient();
-    const result = await client.query(`SELECT 1 FROM ${table} WHERE id = $1`, [
-      id,
-    ]);
+    const result = await client.query(`SELECT 1 FROM ${table} WHERE id = $1`, [id]);
     return result.rows.length > 0;
   },
 
@@ -120,8 +110,8 @@ export const dbHelpers = {
    */
   async getRecords(
     table: string,
-    where: Record<string, any> = {}
-  ): Promise<any[]> {
+    where: Record<string, unknown> = {},
+  ): Promise<Record<string, unknown>[]> {
     const client = getDbClient();
 
     if (Object.keys(where).length === 0) {
@@ -129,9 +119,7 @@ export const dbHelpers = {
       return result.rows;
     }
 
-    const conditions = Object.keys(where).map(
-      (key, idx) => `${key} = $${idx + 1}`
-    );
+    const conditions = Object.keys(where).map((key, idx) => `${key} = $${idx + 1}`);
     const values = Object.values(where);
 
     const query = `SELECT * FROM ${table} WHERE ${conditions.join(' AND ')}`;
@@ -146,7 +134,7 @@ export const dbHelpers = {
     childTable: string,
     parentTable: string,
     childId: string,
-    parentField: string = 'studio_id'
+    parentField: string = 'studio_id',
   ): Promise<boolean> {
     const client = getDbClient();
     const query = `
@@ -166,9 +154,7 @@ export const performance = {
   /**
    * Measure execution time of an async function
    */
-  async measureTime<T>(
-    fn: () => Promise<T>
-  ): Promise<{ result: T; duration: number }> {
+  async measureTime<T>(fn: () => Promise<T>): Promise<{ result: T; duration: number }> {
     const start = process.hrtime.bigint();
     const result = await fn();
     const end = process.hrtime.bigint();
@@ -182,7 +168,7 @@ export const performance = {
    */
   async benchmark<T>(
     fn: () => Promise<T>,
-    iterations: number = 10
+    iterations: number = 10,
   ): Promise<{
     results: T[];
     times: number[];
@@ -230,9 +216,7 @@ export const validation = {
    * Validate UUID format
    */
   isValidUuid(uuid: string): boolean {
-    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-      uuid
-    );
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uuid);
   },
 
   /**
@@ -290,9 +274,13 @@ export const http = {
   /**
    * Extract error details from response
    */
-  extractError(response: any): { message: string; details?: any } {
+  extractError(response: { body: Record<string, unknown> }): {
+    message: string;
+    details?: unknown;
+  } {
     return {
-      message: response.body.error || response.body.message || 'Unknown error',
+      message:
+        (response.body.error as string) || (response.body.message as string) || 'Unknown error',
       details: response.body.details || response.body.data,
     };
   },
@@ -300,7 +288,7 @@ export const http = {
   /**
    * Create URL with query parameters
    */
-  withQuery(url: string, params: Record<string, any>): string {
+  withQuery(url: string, params: Record<string, unknown>): string {
     const searchParams = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
@@ -327,8 +315,7 @@ export const env = {
    */
   getTestDatabaseUrl(): string {
     return (
-      process.env.DATABASE_URL ||
-      'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test'
+      process.env.DATABASE_URL || 'postgresql://postgres:postgres@127.0.0.1:54322/postgres_test'
     );
   },
 

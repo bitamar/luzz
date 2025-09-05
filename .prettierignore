@@ -1,0 +1,8 @@
+helm/**/templates/*.yaml
+helm/**/templates/*.tpl
+apps/**/build/
+apps/**/.svelte-kit/
+.turbo/
+dist/
+coverage/
+node_modules/
